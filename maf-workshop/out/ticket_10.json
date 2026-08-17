@@ -1,0 +1,11 @@
+{
+  "id": "10",
+  "fecha": "2025-11-28",
+  "solicitante": "antonio.soto@empresa.local",
+  "departamento": "IT",
+  "categoria": "nuevo_equipo",
+  "prioridad": "media",
+  "estado": "pendiente",
+  "resumen": "Solicitud de portátil nuevo con 16GB de RAM",
+  "detalle": "Necesito un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana."
+}

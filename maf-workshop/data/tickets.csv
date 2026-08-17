@@ -1,0 +1,20 @@
+id,fecha,solicitante,departamento,categoria,prioridad,estado,resumen,detalle
+1,2025-01-10,antonio.soto@empresa.local,IT,nuevo_equipo,alta,en_progreso,Solicitud portátil para teletrabajo,Necesito un portátil con al menos 16GB de RAM y SSD para trabajar desde casa tres días a la semana.
+2,2025-01-12,maria.fraga@empresa.local,RRHH,certificado,media,resuelto_auto,Certificado de empresa,Solicito un certificado de empresa para presentar en una entidad bancaria.
+3,2025-01-15,carlos.gomez@empresa.local,IT,incidencia,alta,en_progreso,VPN no funciona,"No puedo conectar a la VPN corporativa desde mi portátil habitual, me da error de autenticación."
+4,2025-01-18,laura.fernandez@empresa.local,Facilities,mantenimiento,media,pendiente,Problema con aire acondicionado,En la sala de reuniones 3A el aire acondicionado no funciona y hace demasiado calor durante las reuniones.
+5,2025-01-20,antonio.soto@empresa.local,RRHH,vacaciones,baja,resuelto_auto,Consulta sobre días de vacaciones,Quisiera confirmar cuántos días de vacaciones me corresponden este año con mi antigüedad.
+6,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,alta,pendiente,Solicitud de portátil para teletrabajo,Necesito un portátil con 16GB de RAM para trabajar desde casa tres días a la semana.
+7,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo con 16GB de RAM,El usuario solicita un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+8,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil con 16GB de RAM,El usuario requiere un portátil nuevo con 16GB de RAM para teletrabajar tres días a la semana.
+9,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil con 16GB de RAM para teletrabajo,El usuario solicita un portátil nuevo que cuente con 16GB de RAM y lo utilizará para teletrabajar 3 días a la semana.
+10,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo con 16GB de RAM,Necesito un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+11,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,alta,pendiente,Solicitud de portátil para teletrabajo,Necesito un portátil con 16GB de RAM para trabajar desde casa tres días a la semana.
+12,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo con 16GB de RAM,El usuario requiere un portátil nuevo con 16GB de RAM para teletrabajar tres días a la semana.
+13,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo con 16GB de RAM.,El usuario solicita un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+14,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,alta,pendiente,Solicitud de portátil para teletrabajo,Necesito un portátil con 16GB de RAM para trabajar desde casa tres días a la semana.
+15,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo con 16GB de RAM para teletrabajo,El usuario necesita un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+16,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil con 16GB de RAM para teletrabajo.,El usuario necesita un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+17,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo para teletrabajo,Necesito un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+18,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil nuevo con 16GB de RAM,El usuario solicita un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.
+19,2025-11-28,antonio.soto@empresa.local,IT,nuevo_equipo,media,pendiente,Solicitud de portátil para teletrabajo,Necesito un portátil nuevo con 16GB de RAM para teletrabajar 3 días a la semana.

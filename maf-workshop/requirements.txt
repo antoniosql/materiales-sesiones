@@ -1,0 +1,7 @@
+agent-framework>=1.0.0b251120
+agent-framework-core>=1.0.0b251001
+graphviz>=0.21
+ipykernel>=7.1.0
+mcp-server-filesystem>=0.1.0
+pandas>=2.3.3
+python-dotenv>=1.2.1

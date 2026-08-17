@@ -1,0 +1,8 @@
+# Azure Functions + Durable Agents (Python)
+# Base workshop deps + Azure hosting/runtime deps
+agent-framework>=1.0.0b251120
+agent-framework-azurefunctions>=1.0.0b251120
+azure-identity>=1.17.0
+azure-functions>=1.20.0
+pandas>=2.3.3
+python-dotenv>=1.2.1
