@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frasohome-agents-foundry"
+version = "0.1.0"
+description = "FraSoHome Microsoft Foundry agents demo built from code."
+requires-python = ">=3.10"
+dependencies = [
+  "azure-ai-projects>=2.0.0",
+  "azure-identity>=1.21.0",
+  "python-dotenv>=1.0.1",
+  "pandas>=2.2.0",
+  "pydantic>=2.8.0",
+  "rich>=13.7.1",
+  "typer>=0.12.5",
+  "opentelemetry-sdk>=1.27.0",
+  "azure-core-tracing-opentelemetry>=1.0.0b11",
+]
+
+[project.scripts]
+frasohome-agents = "frasohome_agents.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
