@@ -1,0 +1,7 @@
+id_equipo,tipo,marca,modelo,ram_gb,almacenamiento,estado,ubicacion,usuario_asignado
+LAP-001,portatil,Lenovo,ThinkPad T14,16,512 SSD,disponible,Barcelona,
+LAP-002,portatil,Dell,Latitude 5440,8,256 SSD,en_uso,Madrid,carlos.gomez@empresa.local
+LAP-003,portatil,Lenovo,ThinkPad X1 Carbon,32,1TB SSD,disponible,Madrid,
+LAP-004,portatil,HP,EliteBook 840,16,512 SSD,en_uso,Barcelona,antonio.soto@empresa.local
+MON-001,monitor,Dell,U2720Q,0,0,disponible,Barcelona,
+MON-002,monitor,LG,27UL500,0,0,en_uso,Madrid,laura.fernandez@empresa.local
