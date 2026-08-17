@@ -1,0 +1,7 @@
+https://docs.microsoft.com/en-us/power-bi/developer/embedded/embed-service-principal
+
+Ejecutar Crear Azure App.ps1
+
+Crear el workspace en Power BI y asignarle el Service PRincipal y el grupo
+Asegurarse de que la opción de Configuración de acceso a API en el portal de administración está habilitada
+Incluir el grupo en esa opción de Administración
