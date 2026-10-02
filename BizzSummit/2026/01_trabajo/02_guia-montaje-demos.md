@@ -1,5 +1,9 @@
 # Guía de montaje de las demos — Bizz Summit 2026
 
+> **Sustituida el 2 de octubre** por [`demos/guia-despliegue-manual.html`](demos/guia-despliegue-manual.html).
+> Este plan asumía un tenant propio con el Default sin gobernar y semanas de margen. Se conserva
+> como referencia; para el evento manda la guía HTML.
+
 > El agente de Copilot Studio de FraSoHome **hay que construirlo**. Esta guía va de eso.
 > Del 13 de septiembre al 3 de octubre hay **20 días**. Es suficiente, pero el consentimiento de
 > admin para los scopes de Graph y la propagación de políticas de Purview **no** se pueden

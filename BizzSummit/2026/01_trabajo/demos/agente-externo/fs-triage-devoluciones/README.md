@@ -19,16 +19,22 @@ Eso es lo que se enseña primero, y por eso el `.env.example` lo dice en su prim
 
 ## Puesta en marcha
 
-```bash
+```powershell
 python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-cp .env.example .env               # y rellénalo
-python src/agent.py --verbose
+.\.venv\Scripts\python -m pip install -r requirements.txt
+Copy-Item .env.example .env        # y rellena CLAUDE_CLI_PATH
+.\.venv\Scripts\python src\agent.py --verbose
 ```
 
-El registro de aplicación de Entra necesita permiso de aplicación `Mail.Read`
-sobre el buzón compartido, con consentimiento de administrador.
+Dos modos de buzón, según `BUZON_ORIGEN` en el `.env`:
+
+| Valor | Qué lee | Qué necesita |
+|---|---|---|
+| `local` (por defecto) | Las 18 reclamaciones de `demos/datos/buzon/correos.json`, repartidas en la última semana | Nada del tenant. **Es el que se usa en la sala** |
+| `graph` | El buzón compartido real de Exchange | Registro de aplicación con permiso `Mail.Read` y consentimiento de administrador |
+
+En Windows el SDK exige un `claude.exe` nativo. El de la extensión de VS Code sirve:
+`C:\Users\<usuario>\.vscode\extensions\anthropic.claude-code-<versión>-win32-x64\resources\native-binary\claude.exe`.
 
 ## Los tres beats de la demo
 

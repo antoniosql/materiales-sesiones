@@ -39,7 +39,25 @@ no puedes enseñar."*
 
 ---
 
-## 3. Los dos agentes de FraSoHome
+## 3. Los agentes de FraSoHome
+
+> **2 de octubre:** se añade un tercer agente, hecho con **Agent Builder** en Copilot Chat. La
+> sesión se centra en Microsoft 365 y Agent 365, y las demos cambian: ver
+> `01_guion-minuto-a-minuto.md` y `demos/guia-despliegue-manual.html`. La regresión de versionado,
+> el bloqueo por IBAN en Dataverse y el endpoint filtering de este documento ya no se demuestran.
+
+### Agente C — el de Agent Builder (demos 1, 2 y 3) — **NUEVO**
+
+| | |
+|---|---|
+| Nombre | **Atajo Devoluciones MAD01** |
+| Construido con | **Agent Builder**, en Copilot Chat, en dos minutos |
+| Creado por | **Álvaro G.**, Store Manager de Gran Vía |
+| Conocimiento | El sitio `FraSoHome-KB-Operaciones` |
+| Compartido | Con su equipo, por enlace. No pasó por nadie |
+| Lo que enseña | Que aparece en *All agents* junto al de Copilot Studio, y que DSPM for AI ve el IBAN que Álvaro pegó en él |
+
+Le acompaña un duplicado, **Calculadora de reembolsos (copia)**, que se bloquea en la demo 3.
 
 ### Agente A — el de Copilot Studio (demos 1, 2 y 3)
 

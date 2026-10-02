@@ -38,42 +38,27 @@ Código de registro de speaker: `SPEAKERBIZZ26`.
 |---|---|
 | `00_escenario-frasohome.md` | **Léelo primero.** Cierra todos los marcadores `«FraSoHome: …»` del índice v2: el proceso, los dos agentes, las personas, el dato sensible, el test set |
 | `01_guion-minuto-a-minuto.md` | **El entregable principal.** Minutaje 11:00–11:50 con reloj de pared, frases literales, las cuatro demos beat a beat, planes B, mapa de slides y checkpoints de tiempo |
-| `02_guia-montaje-demos.md` | Qué hay que construir y cuándo, del 13 de septiembre al 3 de octubre |
+| `02_guia-montaje-demos.md` | **Sustituida** por `demos/guia-despliegue-manual.html`. Se conserva como referencia del plan original |
 | `BizzSummit2026_De_la_jungla_al_control_plane.pptx` | **El deck.** 34 slides sobre la plantilla oficial (30 visibles + 4 planes B ocultos), todas con notas del ponente |
 | `_generador/` | Scripts que construyeron el deck a partir de la plantilla. Para regenerarlo: `build_structure.py` y luego `fill.py` |
-| `demos/` | **El pack de despliegue de las cuatro demos.** Tenant configurable, ocho etapas por CLI, scripts de uso para generar telemetría y el agente externo en Claude Agent SDK. Tiene su propio README |
+| `demos/` | **Las cuatro demos.** `guia-despliegue-manual.html` con los escenarios revisados y el montaje manual, el agente de Copilot Studio como código y el agente externo en Claude Agent SDK. Tiene su propio README |
 
 ---
 
 ## Requisitos del equipo para las demos
 
-`demos/deploy.ps1` exige **PowerShell 7** (`#requires -Version 7.0`); en Windows PowerShell 5.1 falla
-con `ScriptRequiresUnmatchedPSVersion`. Ejecútalo desde `pwsh`, no desde `powershell.exe`.
+El montaje del tenant es manual, desde los portales: no hace falta PowerShell ni módulos.
+Solo el agente de Claude de la demo 4 tiene requisitos locales.
 
-| Requisito | Instalación | Versión probada |
+| Requisito | Para qué | Versión probada |
 |---|---|---|
-| PowerShell 7 (`pwsh`) | `winget install --id Microsoft.PowerShell --source winget` | 7.6.6 |
-| Azure CLI (`az`) | `winget install --id Microsoft.AzureCLI --source winget` | 2.90.0 |
-| Power Platform CLI (`pac`) | `winget install --id Microsoft.PowerAppsCLI --source winget` | 2.12.2 |
-| Módulo `Microsoft.PowerApps.Administration.PowerShell` | `Install-Module Microsoft.PowerApps.Administration.PowerShell -Scope CurrentUser` | 2.0.218 |
-| Módulo `Microsoft.Graph.Sites` | `Install-Module Microsoft.Graph.Sites -Scope CurrentUser` | 2.41.0 |
-| Módulo `Microsoft.Graph.Files` (etapa de SharePoint) | `Install-Module Microsoft.Graph.Files -RequiredVersion 2.41.0 -Scope CurrentUser` | 2.41.0 |
-| Módulo `Microsoft.Graph.Users.Actions` (`uso/Send-CorreosDevolucion.ps1`) | `Install-Module Microsoft.Graph.Users.Actions -RequiredVersion 2.41.0 -Scope CurrentUser` | 2.41.0 |
-| Módulo `ExchangeOnlineManagement` | `Install-Module ExchangeOnlineManagement -Scope CurrentUser` | 3.10.1 |
+| Python 3 con el entorno virtual de `demos/agente-externo/fs-triage-devoluciones/.venv` | Ejecutar el agente | 3.14.8 |
+| `claude-agent-sdk`, `httpx`, `python-dotenv` (`pip install -r requirements.txt`) | Dependencias del agente | SDK 0.2.163 |
+| Un `claude.exe` nativo, indicado en `CLAUDE_CLI_PATH` del `.env` | El SDK lo exige en Windows. Sirve el de la extensión de VS Code | 2.1.287 |
+| Claude Code en VS Code | Beat de observabilidad en vivo | |
 
-- Los módulos se instalan **desde `pwsh`**: los instalados desde Windows PowerShell 5.1 van a
-  `Documents\WindowsPowerShell\Modules`, ruta que PowerShell 7 no carga
-- Todos los módulos `Microsoft.Graph.*` en la **misma versión**; mezclar versiones da conflictos de ensamblados
-- **Inicio de sesión sin WAM**: desde el terminal integrado de VS Code la ventana de WAM queda oculta y
-  la autenticación se cancela. Ejecutar una vez en `pwsh`:
-  `Import-Module Microsoft.Graph.Authentication; Set-MgGraphOption -DisableLoginByWAM $true`
-  (Exchange y Purview ya llevan `-DisableWAM` en los scripts). Alternativa: `Connect-MgGraph -UseDeviceCode`
-  en el mismo terminal antes de lanzar el deploy
-- Tras instalar `az` y `pac` hay que **reabrir VS Code o el terminal** para que entren en el PATH
-- Terminal de VS Code: perfil por defecto apuntando a `pwsh.exe`
-  (`terminal.integrated.defaultProfile.windows`). Si `pwsh` viene de la Microsoft Store, la ruta es
-  `${env:LOCALAPPDATA}\Microsoft\WindowsApps\pwsh.exe`, no `C:\Program Files\PowerShell\7\pwsh.exe`
-- Comprobación: `./deploy.ps1 -ConfigPath ./config.local.json -ValidateOnly` no debe mostrar ninguna `x`
+- Con `BUZON_ORIGEN=local` el agente lee `demos/datos/buzon/correos.json` y no necesita Exchange
+- Si se actualiza la extensión de VS Code, cambia la carpeta de `claude.exe`: corrige `CLAUDE_CLI_PATH`
 
 ---
 
@@ -83,9 +68,15 @@ con `ScriptRequiresUnmatchedPSVersion`. Ejecútalo desde `pwsh`, no desde `power
   del índice v2. Manda la regla de la organización
 - **Proceso único: devoluciones omnicanal.** Las cuatro demos son el mismo proceso a cuatro alturas
 - **El agente de Copilot Studio hay que construirlo.** De ahí la guía de montaje
-- La demo 2 (bloqueo por Purview) **se graba por defecto**; solo va en vivo si se prueba
-  en la sala esa misma mañana
-- El único beat que debe ocurrir en vivo sí o sí es **ver los dos agentes juntos en *All agents***
+- **2 de octubre: demos rediseñadas.** Un solo tenant, el Default ya es Managed Environment y no hay
+  margen para controles que tardan días. Se retiran los scripts de despliegue y se monta a mano.
+  Detalle en `demos/guia-despliegue-manual.html`
+- **Foco en Microsoft 365 y Agent 365.** Power Platform queda en dos slides, como lo que ya existía
+  y no depende de Agent 365 (de cinco slides a dos; 28 visibles en total)
+- Demo 1 · ¿Cuántos hay?: All agents con un agente de Agent Builder y el de Copilot Studio
+- Demo 2 · ¿Qué hacen?: Purview DSPM for AI con las interacciones de los usuarios, incluido un IBAN
+- Demo 3 · ¿Quién decide?: aprobar una solicitud de publicación, bloquear un agente y la política de creación
+- Demo 4: el agente de Claude lee un buzón local; el registro en Agent 365 solo si el tenant lo tiene
 
 ## Pendiente
 

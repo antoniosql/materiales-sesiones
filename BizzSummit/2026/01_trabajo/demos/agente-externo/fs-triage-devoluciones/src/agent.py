@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 import sys
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -33,7 +34,11 @@ from claude_agent_sdk import (
     tool,
 )
 
-from buzon import BuzonDevoluciones, Mensaje
+from dotenv import load_dotenv
+
+from buzon import Mensaje, crear_buzon
+
+load_dotenv()
 
 MOTIVOS = {
     "R01": "Arrepentimiento o cambio de opinión",
@@ -44,7 +49,7 @@ MOTIVOS = {
 
 UMBRAL_PATRON = 3  # devoluciones del mismo remitente que ya merecen una mirada
 
-_buzon = BuzonDevoluciones()
+_buzon = crear_buzon()
 _cache: dict[str, Mensaje] = {}
 
 
@@ -176,6 +181,8 @@ async def ejecutar(prompt: str, verbose: bool = False) -> int:
             "mcp__devoluciones__guardar_resumen",
         ],
         max_turns=30,
+        # En Windows el SDK necesita un claude.exe nativo; el de la extensión de VS Code sirve.
+        cli_path=os.environ.get("CLAUDE_CLI_PATH") or None,
     )
 
     async with ClaudeSDKClient(options=opciones) as cliente:

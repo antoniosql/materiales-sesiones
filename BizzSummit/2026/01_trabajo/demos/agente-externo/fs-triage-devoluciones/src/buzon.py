@@ -10,13 +10,16 @@ Work IQ, y entonces el mismo acceso pasa a estar bajo control del admin.
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import httpx
 
 GRAPH = "https://graph.microsoft.com/v1.0"
+_RAIZ_DEMOS = Path(__file__).resolve().parents[3]
 
 
 @dataclass(frozen=True)
@@ -87,6 +90,49 @@ class BuzonDevoluciones:
         )
         respuesta.raise_for_status()
         return _a_mensaje(respuesta.json())
+
+
+class BuzonLocal:
+    """El mismo buzón, servido desde datos/buzon/correos.json.
+
+    Para ensayar y para la sala sin depender de Exchange: mismas 18 reclamaciones
+    que se sembrarían en el buzón real, repartidas en los últimos días para que
+    la detección de patrones encuentre el caso anómalo.
+    """
+
+    def __init__(self, ruta: Path | None = None) -> None:
+        ruta = ruta or Path(
+            os.environ.get("BUZON_FICHERO") or _RAIZ_DEMOS / "datos" / "buzon" / "correos.json"
+        )
+        brutos = json.loads(ruta.read_text(encoding="utf-8"))
+        ahora = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+        self._mensajes = [
+            Mensaje(
+                id=f"local-{i:03d}",
+                asunto=b.get("asunto", "(sin asunto)"),
+                remitente=b.get("remitente", "desconocido"),
+                # El más reciente primero, uno cada ~9 horas: 18 correos en una semana.
+                recibido=ahora - timedelta(hours=9 * i),
+                cuerpo=b.get("cuerpo", "").strip(),
+            )
+            for i, b in enumerate(brutos, start=1)
+        ]
+
+    def listar(self, limite: int = 25) -> list[Mensaje]:
+        return self._mensajes[:limite]
+
+    def leer(self, mensaje_id: str) -> Mensaje:
+        for m in self._mensajes:
+            if m.id == mensaje_id:
+                return m
+        raise KeyError(f"No existe el mensaje {mensaje_id}")
+
+
+def crear_buzon() -> BuzonDevoluciones | BuzonLocal:
+    """BUZON_ORIGEN=graph usa Exchange con las credenciales del .env; cualquier otro valor, el fichero local."""
+    if os.environ.get("BUZON_ORIGEN", "local").lower() == "graph":
+        return BuzonDevoluciones()
+    return BuzonLocal()
 
 
 def _a_mensaje(bruto: dict) -> Mensaje:
