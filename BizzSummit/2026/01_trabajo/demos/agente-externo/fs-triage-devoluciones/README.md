@@ -19,6 +19,9 @@ Eso es lo que se enseña primero, y por eso el `.env.example` lo dice en su prim
 
 ## Puesta en marcha
 
+Instrucciones completas, paso a paso y con el código: [`GUIA-PASO-A-PASO.md`](GUIA-PASO-A-PASO.md)
+(también en HTML: [`guia-paso-a-paso.html`](guia-paso-a-paso.html)). Resumen:
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -r requirements.txt
