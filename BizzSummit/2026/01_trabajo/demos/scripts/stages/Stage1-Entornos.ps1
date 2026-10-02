@@ -60,14 +60,29 @@ elseif ($sim) {
     Write-Paso "[simulado] Crearía el entorno '$($pe.displayName)' ($($pe.sku), $($pe.region))" -Nivel Salta
 }
 else {
-    Write-Paso "Creando entorno '$($pe.displayName)'..." -Nivel Info
-    $nuevo = New-AdminPowerAppEnvironment `
-        -DisplayName $pe.displayName `
-        -Location $pe.region `
-        -EnvironmentSku $pe.sku `
-        -ProvisionDatabase `
-        -CurrencyName $pe.currency `
-        -LanguageName $pe.languageCode
+    # New-AdminPowerAppEnvironment falla en pwsh 7 ("Cannot process argument
+    # transformation on parameter 'Route'"): se crea con pac, que además
+    # provisiona Dataverse por defecto.
+    $perfilAdmin = "FraSoHome-Admin"
+    $perfiles = Invoke-Pac -TolerarError auth list
+    if (($perfiles -join "`n") -match [regex]::Escape($perfilAdmin)) {
+        Invoke-Pac auth select --name $perfilAdmin | Out-Null
+    }
+    else {
+        Write-Paso "Inicia sesión en Power Platform CLI con la cuenta del tenant" -Nivel Info
+        Invoke-Pac auth create --name $perfilAdmin --tenant $cfg.tenant.domain | Out-Null
+    }
+
+    Write-Paso "Creando entorno '$($pe.displayName)' (tarda unos minutos)..." -Nivel Info
+    Invoke-Pac admin create `
+        --name $pe.displayName `
+        --region $pe.region `
+        --type $pe.sku `
+        --currency $pe.currency `
+        --language $pe.languageCode | Out-Null
+
+    $nuevo = Get-AdminPowerAppEnvironment | Where-Object { $_.DisplayName -eq $pe.displayName } | Select-Object -First 1
+    if (-not $nuevo) { throw "pac creó el entorno pero no aparece en Get-AdminPowerAppEnvironment." }
     $estado["platformEnvironmentId"] = $nuevo.EnvironmentName
     $estado.propiedad["platformEnvironment"] = $true
     Write-Paso "Creado [$($nuevo.EnvironmentName)]" -Nivel Ok

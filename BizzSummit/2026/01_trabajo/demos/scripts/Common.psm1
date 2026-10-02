@@ -148,6 +148,34 @@ function Test-ModuloPowerShell {
     return $false
 }
 
+function Connect-GraphDemo {
+    <#
+        Conexión a Microsoft Graph robusta para el terminal integrado de VS Code,
+        donde la ventana interactiva a menudo no aparece y falla con
+        "User canceled authentication". Reutiliza la sesión si ya tiene los
+        ámbitos; si no, intenta interactivo y cae a código de dispositivo.
+    #>
+    param(
+        [Parameter(Mandatory)][string[]]$Ambitos,
+        [string]$TenantId
+    )
+    $ctx = Get-MgContext
+    if ($ctx -and -not ($Ambitos | Where-Object { $ctx.Scopes -notcontains $_ })) {
+        Write-Paso "Reutilizando sesión de Graph de $($ctx.Account)" -Nivel Ok
+        return
+    }
+    $params = @{ Scopes = $Ambitos; NoWelcome = $true; ErrorAction = "Stop" }
+    if ($TenantId) { $params["TenantId"] = $TenantId }
+    try {
+        Connect-MgGraph @params
+    }
+    catch {
+        Write-Paso "Inicio de sesión interactivo fallido ($($_.Exception.Message)). Probando con código de dispositivo..." -Nivel Aviso
+        Connect-MgGraph @params -UseDeviceCode
+    }
+    Write-Paso "Conectado a Graph como $((Get-MgContext).Account)" -Nivel Ok
+}
+
 function Invoke-Pac {
     <#
         Envoltorio de la Power Platform CLI. Respeta -WhatIf del script llamante:
@@ -185,6 +213,8 @@ function Add-Runbook {
         [string]$Comando
     )
     if (-not $Estado.ContainsKey("runbook")) { $Estado["runbook"] = @() }
+    # Relanzar el despliegue no debe duplicar pasos: el título identifica al paso.
+    $Estado["runbook"] = @($Estado["runbook"] | Where-Object { $_.titulo -ne $Titulo })
     $Estado["runbook"] += [ordered]@{
         titulo  = $Titulo
         motivo  = $Motivo
@@ -254,4 +284,4 @@ function Test-PermisoRol {
 Export-ModuleMember -Function `
     Write-Paso, Write-Etapa, Get-DemoConfig, Resolve-RutaDemo, `
     Get-EstadoDespliegue, Save-EstadoDespliegue, Test-Herramienta, Test-ModuloPowerShell, `
-    Invoke-Pac, Add-Runbook, Write-RunbookFile, Test-PermisoRol
+    Connect-GraphDemo, Invoke-Pac, Add-Runbook, Write-RunbookFile, Test-PermisoRol

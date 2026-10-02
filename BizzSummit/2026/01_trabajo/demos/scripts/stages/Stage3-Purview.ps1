@@ -30,7 +30,7 @@ if ($sim) {
 }
 else {
     try {
-        Connect-IPPSSession -ShowBanner:$false -ErrorAction Stop
+        Connect-IPPSSession -ShowBanner:$false -DisableWAM -ErrorAction Stop
         Write-Paso "Conectado a Security & Compliance PowerShell" -Nivel Ok
     }
     catch {
@@ -106,33 +106,69 @@ $tieneDlp = Test-PermisoRol -Descripcion "administrar políticas DLP" -Sondeo {
     Get-DlpCompliancePolicy -ErrorAction Stop | Out-Null
 }
 
-if ($tieneDlp) {
-    $existe = if ($sim) { $null } else { Get-DlpCompliancePolicy -Identity $pv.dlpPolicyName -ErrorAction SilentlyContinue }
-    if ($existe) {
-        Write-Paso "Reutilizo la política DLP '$($pv.dlpPolicyName)'" -Nivel Salta
+# La ubicación de Microsoft 365 Copilot no es un parámetro propio: va como JSON
+# en -Locations, con el GUID fijo de Copilot y el plano de aplicación
+# CopilotExperiences. Las reglas de esta ubicación no admiten -BlockAccess ni
+# -NotifyUser: la acción es RestrictAccess/ExcludeContentProcessing y la
+# condición va en -AdvancedRule.
+$ubicacionCopilot = '[{"Workload":"Applications","Location":"470f2276-e011-4e9d-a6ec-20768be3a4b0","Inclusions":[{"Type":"Tenant","Identity":"All"}]}]'
+$reglaAvanzada = @{
+    Version   = "1.0"
+    Condition = @{
+        Operator      = "And"
+        SubConditions = @(
+            @{
+                ConditionName = "ContentContainsSensitiveInformation"
+                Value         = @(
+                    @{
+                        groups = @(
+                            @{
+                                Operator       = "Or"
+                                name           = "Default"
+                                sensitivetypes = @(
+                                    @{ name = $pv.sensitiveInfoTypeName; mincount = $pv.sensitiveInfoMinCount }
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+        )
     }
-    elseif ($sim) {
-        Write-Paso "[simulado] New-DlpCompliancePolicy + New-DlpComplianceRule (IBAN)" -Nivel Salta
+} | ConvertTo-Json -Depth 100
+
+if ($tieneDlp) {
+    if ($sim) {
+        Write-Paso "[simulado] New-DlpCompliancePolicy (ubicación Copilot) + New-DlpComplianceRule (IBAN)" -Nivel Salta
     }
     else {
-        # La ubicación de Microsoft 365 Copilot es la que cubre las respuestas de agentes.
-        New-DlpCompliancePolicy `
-            -Name $pv.dlpPolicyName `
-            -Comment "Demo Bizz Summit 2026. Bloquea respuestas de agentes que contengan IBAN." `
-            -Mode Enable `
-            -MicrosoftCopilotLocation All | Out-Null
-        Write-Paso "Política DLP creada" -Nivel Ok
-        $estado.propiedad["dlpPolicy"] = $true
+        if (Get-DlpCompliancePolicy -Identity $pv.dlpPolicyName -ErrorAction SilentlyContinue) {
+            Write-Paso "Reutilizo la política DLP '$($pv.dlpPolicyName)'" -Nivel Salta
+        }
+        else {
+            New-DlpCompliancePolicy `
+                -Name $pv.dlpPolicyName `
+                -Comment "Demo Bizz Summit 2026. Bloquea respuestas de agentes que contengan IBAN." `
+                -Mode Enable `
+                -Locations $ubicacionCopilot `
+                -EnforcementPlanes @("CopilotExperiences") | Out-Null
+            Write-Paso "Política DLP creada sobre la ubicación de Microsoft 365 Copilot" -Nivel Ok
+            $estado.propiedad["dlpPolicy"] = $true
+        }
 
-        New-DlpComplianceRule `
-            -Name $pv.dlpRuleName `
-            -Policy $pv.dlpPolicyName `
-            -ContentContainsSensitiveInformation @{ Name = $pv.sensitiveInfoTypeName; minCount = $pv.sensitiveInfoMinCount } `
-            -BlockAccess $true `
-            -NotifyUser "LastModifier" `
-            -Comment "Demo 2: el IBAN de $($cfg.datos.devolucionSensible) no puede salir en una respuesta." | Out-Null
-        Write-Paso "Regla DLP creada sobre el tipo '$($pv.sensitiveInfoTypeName)'" -Nivel Ok
-        $estado.propiedad["dlpRule"] = $true
+        if (Get-DlpComplianceRule -Identity $pv.dlpRuleName -ErrorAction SilentlyContinue) {
+            Write-Paso "Reutilizo la regla DLP '$($pv.dlpRuleName)'" -Nivel Salta
+        }
+        else {
+            New-DlpComplianceRule `
+                -Name $pv.dlpRuleName `
+                -Policy $pv.dlpPolicyName `
+                -AdvancedRule $reglaAvanzada `
+                -RestrictAccess @(@{ setting = "ExcludeContentProcessing"; value = "Block" }) `
+                -Comment "Demo 2: el IBAN de $($cfg.datos.devolucionSensible) no puede salir en una respuesta." | Out-Null
+            Write-Paso "Regla DLP creada sobre el tipo '$($pv.sensitiveInfoTypeName)'" -Nivel Ok
+            $estado.propiedad["dlpRule"] = $true
+        }
     }
     $estado["dlpPolicyName"] = $pv.dlpPolicyName
 }
@@ -141,12 +177,13 @@ else {
         -Titulo "Crear la política DLP que bloquea IBAN en respuestas de agentes" `
         -Motivo "La cuenta conectada no puede administrar DLP de cumplimiento." `
         -Comando @"
-New-DlpCompliancePolicy -Name '$($pv.dlpPolicyName)' ``
-    -Mode Enable -MicrosoftCopilotLocation All
+New-DlpCompliancePolicy -Name '$($pv.dlpPolicyName)' -Mode Enable ``
+    -Locations '$ubicacionCopilot' ``
+    -EnforcementPlanes @('CopilotExperiences')
 New-DlpComplianceRule -Name '$($pv.dlpRuleName)' ``
     -Policy '$($pv.dlpPolicyName)' ``
-    -ContentContainsSensitiveInformation @{ Name = '$($pv.sensitiveInfoTypeName)'; minCount = $($pv.sensitiveInfoMinCount) } ``
-    -BlockAccess `$true -NotifyUser 'LastModifier'
+    -AdvancedRule '$($reglaAvanzada -replace '\s+', ' ')' ``
+    -RestrictAccess @(@{ setting = 'ExcludeContentProcessing'; value = 'Block' })
 "@
 }
 

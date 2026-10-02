@@ -94,7 +94,7 @@ if ((Test-EsPropio -Clave "dlpPlataforma") -and $estado["dlpPlataformaId"]) {
 if ((Test-EsPropio -Clave "dlpPolicy") -or (Test-EsPropio -Clave "label")) {
     Import-Module ExchangeOnlineManagement -ErrorAction Stop
     try {
-        Connect-IPPSSession -ShowBanner:$false
+        Connect-IPPSSession -ShowBanner:$false -DisableWAM
         if ((Test-EsPropio -Clave "dlpRule") -and $PSCmdlet.ShouldProcess($cfg.purview.dlpRuleName, "Eliminar regla DLP")) {
             Remove-DlpComplianceRule -Identity $cfg.purview.dlpRuleName -Confirm:$false
             Write-Paso "Regla DLP eliminada" -Nivel Ok
@@ -122,7 +122,7 @@ if ((Test-EsPropio -Clave "dlpPolicy") -or (Test-EsPropio -Clave "label")) {
 if (Test-EsPropio -Clave "buzon") {
     Import-Module ExchangeOnlineManagement -ErrorAction Stop
     try {
-        Connect-ExchangeOnline -ShowBanner:$false
+        Connect-ExchangeOnline -ShowBanner:$false -DisableWAM
         if ($PSCmdlet.ShouldProcess($cfg.exchange.sharedMailbox, "Eliminar buzón compartido")) {
             Remove-Mailbox -Identity $cfg.exchange.sharedMailbox -Confirm:$false
             Write-Paso "Buzón eliminado" -Nivel Ok

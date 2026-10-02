@@ -26,7 +26,7 @@ if ($sim) {
 }
 else {
     try {
-        Connect-ExchangeOnline -ShowBanner:$false -ErrorAction Stop
+        Connect-ExchangeOnline -ShowBanner:$false -DisableWAM -ErrorAction Stop
         Write-Paso "Conectado a Exchange Online" -Nivel Ok
     }
     catch {

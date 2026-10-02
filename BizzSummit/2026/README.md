@@ -45,6 +45,38 @@ Código de registro de speaker: `SPEAKERBIZZ26`.
 
 ---
 
+## Requisitos del equipo para las demos
+
+`demos/deploy.ps1` exige **PowerShell 7** (`#requires -Version 7.0`); en Windows PowerShell 5.1 falla
+con `ScriptRequiresUnmatchedPSVersion`. Ejecútalo desde `pwsh`, no desde `powershell.exe`.
+
+| Requisito | Instalación | Versión probada |
+|---|---|---|
+| PowerShell 7 (`pwsh`) | `winget install --id Microsoft.PowerShell --source winget` | 7.6.6 |
+| Azure CLI (`az`) | `winget install --id Microsoft.AzureCLI --source winget` | 2.90.0 |
+| Power Platform CLI (`pac`) | `winget install --id Microsoft.PowerAppsCLI --source winget` | 2.12.2 |
+| Módulo `Microsoft.PowerApps.Administration.PowerShell` | `Install-Module Microsoft.PowerApps.Administration.PowerShell -Scope CurrentUser` | 2.0.218 |
+| Módulo `Microsoft.Graph.Sites` | `Install-Module Microsoft.Graph.Sites -Scope CurrentUser` | 2.41.0 |
+| Módulo `Microsoft.Graph.Files` (etapa de SharePoint) | `Install-Module Microsoft.Graph.Files -RequiredVersion 2.41.0 -Scope CurrentUser` | 2.41.0 |
+| Módulo `Microsoft.Graph.Users.Actions` (`uso/Send-CorreosDevolucion.ps1`) | `Install-Module Microsoft.Graph.Users.Actions -RequiredVersion 2.41.0 -Scope CurrentUser` | 2.41.0 |
+| Módulo `ExchangeOnlineManagement` | `Install-Module ExchangeOnlineManagement -Scope CurrentUser` | 3.10.1 |
+
+- Los módulos se instalan **desde `pwsh`**: los instalados desde Windows PowerShell 5.1 van a
+  `Documents\WindowsPowerShell\Modules`, ruta que PowerShell 7 no carga
+- Todos los módulos `Microsoft.Graph.*` en la **misma versión**; mezclar versiones da conflictos de ensamblados
+- **Inicio de sesión sin WAM**: desde el terminal integrado de VS Code la ventana de WAM queda oculta y
+  la autenticación se cancela. Ejecutar una vez en `pwsh`:
+  `Import-Module Microsoft.Graph.Authentication; Set-MgGraphOption -DisableLoginByWAM $true`
+  (Exchange y Purview ya llevan `-DisableWAM` en los scripts). Alternativa: `Connect-MgGraph -UseDeviceCode`
+  en el mismo terminal antes de lanzar el deploy
+- Tras instalar `az` y `pac` hay que **reabrir VS Code o el terminal** para que entren en el PATH
+- Terminal de VS Code: perfil por defecto apuntando a `pwsh.exe`
+  (`terminal.integrated.defaultProfile.windows`). Si `pwsh` viene de la Microsoft Store, la ruta es
+  `${env:LOCALAPPDATA}\Microsoft\WindowsApps\pwsh.exe`, no `C:\Program Files\PowerShell\7\pwsh.exe`
+- Comprobación: `./deploy.ps1 -ConfigPath ./config.local.json -ValidateOnly` no debe mostrar ninguna `x`
+
+---
+
 ## Decisiones tomadas
 
 - **50 minutos totales con Q&A dentro** (44' de contenido + 6' de Q&A), no los 51' + Q&A aparte

@@ -27,8 +27,7 @@ Import-Module Microsoft.Graph.Files -ErrorAction Stop
 
 $ambitos = @("Sites.ReadWrite.All", "Sites.Manage.All", "Files.ReadWrite.All")
 if (-not $sim) {
-    Connect-MgGraph -Scopes $ambitos -NoWelcome -ErrorAction Stop
-    Write-Paso "Conectado a Graph como $((Get-MgContext).Account)" -Nivel Ok
+    Connect-GraphDemo -Ambitos $ambitos -TenantId $cfg.tenant.domain
 }
 
 $kbOrigen = Join-Path $Contexto.RaizDatos "01_datos/rag_copilot_studio/knowledge_base/Documentos_Knowledge_Clasificados"
@@ -43,6 +42,55 @@ function Resolve-SitioGraph {
         return $null
     }
 }
+
+function Get-TokenSharePoint {
+    # Graph no crea sitios de comunicación: hace falta SharePoint REST, con un
+    # token cuya audiencia sea el propio tenant de SharePoint. Lo da az.
+    param([string]$RootUrl, [string]$Tenant)
+    $token = az account get-access-token --resource $RootUrl --query accessToken -o tsv 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $token) {
+        Write-Paso "Inicia sesión en Azure CLI con la cuenta del tenant (se abre el navegador)" -Nivel Info
+        az login --tenant $Tenant --allow-no-subscriptions --only-show-errors | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "az login falló." }
+        $token = az account get-access-token --resource $RootUrl --query accessToken -o tsv
+        if ($LASTEXITCODE -ne 0 -or -not $token) { throw "No se pudo obtener un token de SharePoint con az." }
+    }
+    return $token
+}
+
+function New-SitioComunicacion {
+    param([string]$RootUrl, [string]$Token, $Sitio, [string]$Owner, [int]$Lcid)
+    $cuerpo = @{
+        request = @{
+            Title               = $Sitio.title
+            Url                 = "$RootUrl/sites/$($Sitio.alias)"
+            Description         = $Sitio.description
+            Lcid                = $Lcid
+            WebTemplate         = "SITEPAGEPUBLISHING#0"
+            Owner               = $Owner
+            ShareByEmailEnabled = $false
+        }
+    } | ConvertTo-Json -Depth 5
+    $r = Invoke-RestMethod -Method Post -Uri "$RootUrl/_api/SPSiteManager/create" `
+        -Headers @{ Authorization = "Bearer $Token"; Accept = "application/json;odata=nometadata" } `
+        -ContentType "application/json;odata=nometadata" `
+        -Body ([Text.Encoding]::UTF8.GetBytes($cuerpo))
+    # SiteStatus: 1 = aprovisionando, 2 = listo, 3 = error
+    if ($r.SiteStatus -eq 3) { throw "SharePoint devolvió SiteStatus=3 (error) al crear $($Sitio.alias)." }
+    return $r
+}
+
+function Send-ArchivoDrive {
+    # El drive por defecto ES la biblioteca "Documentos compartidos": la ruta va
+    # relativa a su raíz. Subida simple: los FS-KB están muy por debajo de 4 MB.
+    param([string]$DriveId, [string]$Archivo)
+    $nombre = [Uri]::EscapeDataString((Split-Path -Leaf $Archivo))
+    Invoke-MgGraphRequest -Method PUT `
+        -Uri "https://graph.microsoft.com/v1.0/drives/$DriveId/root:/${nombre}:/content" `
+        -InputFilePath $Archivo -ContentType "application/octet-stream" -ErrorAction Stop | Out-Null
+}
+
+$tokenSp = $null
 
 foreach ($clave in @("kbSite", "restrictedSite")) {
     $sitio = $cfg.sharepoint.$clave
@@ -59,22 +107,38 @@ foreach ($clave in @("kbSite", "restrictedSite")) {
         $estado.propiedad["site_$($sitio.alias)"] = $false
     }
     else {
-        # La creación de sitios de comunicación va por el endpoint de SharePoint REST,
-        # que acepta el token de Graph del usuario conectado.
-        Add-Runbook -Estado $estado `
-            -Titulo "Crear el sitio de SharePoint '$($sitio.alias)'" `
-            -Motivo "El sitio no existe y la creación de site collections requiere rol de administrador de SharePoint." `
-            -Comando @"
-# Con el módulo PnP.PowerShell y una cuenta de SharePoint Administrator:
-Connect-PnPOnline -Url '$($cfg.sharepoint.rootUrl)' -Interactive
-New-PnPSite -Type CommunicationSite ``
-    -Title '$($sitio.title)' ``
-    -Url '$($cfg.sharepoint.rootUrl)/sites/$($sitio.alias)' ``
-    -Description '$($sitio.description)'
+        try {
+            if (-not $tokenSp) { $tokenSp = Get-TokenSharePoint -RootUrl $cfg.sharepoint.rootUrl -Tenant $cfg.tenant.domain }
+            Write-Paso "Creando sitio de comunicación $($cfg.sharepoint.rootUrl)/sites/$($sitio.alias)..." -Nivel Info
+            New-SitioComunicacion -RootUrl $cfg.sharepoint.rootUrl -Token $tokenSp -Sitio $sitio `
+                -Owner (Get-MgContext).Account -Lcid $cfg.powerPlatform.platformEnvironment.languageCode | Out-Null
+            # El aprovisionamiento es asíncrono: se espera a que Graph lo vea.
+            for ($i = 0; $i -lt 24 -and -not $existente; $i++) {
+                Start-Sleep -Seconds 5
+                $existente = Resolve-SitioGraph -RootUrl $cfg.sharepoint.rootUrl -Alias $sitio.alias
+            }
+            if (-not $existente) { throw "El sitio se pidió pero no aparece en Graph tras 2 minutos." }
+            Write-Paso "Sitio creado [$($existente.Id)]" -Nivel Ok
+            $estado.propiedad["site_$($sitio.alias)"] = $true
+        }
+        catch {
+            Add-Runbook -Estado $estado `
+                -Titulo "Crear el sitio de SharePoint '$($sitio.alias)'" `
+                -Motivo "No se pudo crear automáticamente: $($_.Exception.Message)" `
+                -Comando @"
+# SharePoint admin center > Sitios activos > Crear > Sitio de comunicación
+#   Nombre:      $($sitio.title)
+#   Dirección:   $($cfg.sharepoint.rootUrl)/sites/$($sitio.alias)
+#   Descripción: $($sitio.description)
 "@
-        continue
+            continue
+        }
     }
     $estado["site_$($sitio.alias)"] = $existente.Id
+    # Si una ejecución anterior lo dejó en el runbook, ya no está pendiente.
+    if ($estado.ContainsKey("runbook")) {
+        $estado["runbook"] = @($estado["runbook"] | Where-Object { $_.titulo -ne "Crear el sitio de SharePoint '$($sitio.alias)'" })
+    }
 }
 
 # --- Documentos vigentes + el obsoleto ---------------------------------------
@@ -95,9 +159,8 @@ else {
     if ($siteId) {
         $drive = Get-MgSiteDefaultDrive -SiteId $siteId
         foreach ($f in $aSubir) {
-            $destino = "root:/Documentos compartidos/$($f.Name):"
             try {
-                Set-MgDriveItemContent -DriveId $drive.Id -DriveItemId $destino -InFile $f.FullName -ErrorAction Stop | Out-Null
+                Send-ArchivoDrive -DriveId $drive.Id -Archivo $f.FullName
                 Write-Paso "Subido $($f.Name)" -Nivel Ok
             }
             catch {
@@ -125,8 +188,7 @@ else {
     $siteRestId = $estado["site_$($cfg.sharepoint.restrictedSite.alias)"]
     if ($siteRestId -and (Test-Path -LiteralPath $kb11Local)) {
         $driveR = Get-MgSiteDefaultDrive -SiteId $siteRestId
-        $destino = "root:/Documentos compartidos/$($cfg.datos.documentoConfidencial):"
-        Set-MgDriveItemContent -DriveId $driveR.Id -DriveItemId $destino -InFile $kb11Local | Out-Null
+        Send-ArchivoDrive -DriveId $driveR.Id -Archivo $kb11Local
         Write-Paso "FS-KB-11 subido al sitio restringido" -Nivel Ok
         $estado["kb11DriveId"] = $driveR.Id
     }

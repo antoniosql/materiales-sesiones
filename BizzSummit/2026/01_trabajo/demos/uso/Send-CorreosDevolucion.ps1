@@ -45,8 +45,7 @@ Write-Paso "$($correos.Count) correos" -Nivel Info
 
 if (-not $sim) {
     Import-Module Microsoft.Graph.Users.Actions -ErrorAction Stop
-    Connect-MgGraph -Scopes "Mail.Send", "Mail.ReadWrite" -NoWelcome -ErrorAction Stop
-    Write-Paso "Conectado a Graph como $((Get-MgContext).Account)" -Nivel Ok
+    Connect-GraphDemo -Ambitos "Mail.Send", "Mail.ReadWrite" -TenantId $cfg.tenant.domain
 }
 
 $i = 0

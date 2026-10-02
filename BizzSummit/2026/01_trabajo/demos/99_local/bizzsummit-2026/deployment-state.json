@@ -1,0 +1,35 @@
+{
+  "actualizado": "2026-10-02T06:24:31.4281157-07:00",
+  "creado": "2026-10-02T05:38:35.0135411-07:00",
+  "propiedad": {
+    "label": false,
+    "labelPolicy": true,
+    "dlpPolicy": true,
+    "dlpRule": true,
+    "platformEnvironment": false
+  },
+  "tenant": "vernedev.onmicrosoft.com",
+  "runbook": [
+    {
+      "titulo": "Crear el grupo de entornos 'FraSoHome-Produccion' y meter el entorno de plataforma",
+      "motivo": "Los environment groups se crean desde el Power Platform Admin Center; no hay cmdlet estable en el módulo de administración.",
+      "comando": "# Power Platform Admin Center > Manage > Environment groups > New group\r\n#   Nombre: FraSoHome-Produccion\r\n#   Añadir: FraSoHome-Plataforma\r\n#   Reglas de grupo: Managed Environments ON, sharing limitado, Settings Enforcer ON\r\n# Deja el entorno Default FUERA del grupo: la demo 1 necesita que siga sin gobernar."
+    },
+    {
+      "titulo": "Crear el sitio de SharePoint 'FraSoHome-KB-Operaciones'",
+      "motivo": "No se pudo crear automáticamente: Response status code does not indicate success: 401 (Unauthorized).",
+      "comando": "# SharePoint admin center > Sitios activos > Crear > Sitio de comunicación\r\n#   Nombre:      FraSoHome · KB Operaciones\r\n#   Dirección:   https://vernedev.sharepoint.com/sites/FraSoHome-KB-Operaciones\r\n#   Descripción: Conocimiento vigente del asistente de devoluciones"
+    },
+    {
+      "titulo": "Crear el sitio de SharePoint 'FraSoHome-PrevencionPerdidas'",
+      "motivo": "No se pudo crear automáticamente: Response status code does not indicate success: 401 (Unauthorized).",
+      "comando": "# SharePoint admin center > Sitios activos > Crear > Sitio de comunicación\r\n#   Nombre:      FraSoHome · Prevención de Pérdidas\r\n#   Dirección:   https://vernedev.sharepoint.com/sites/FraSoHome-PrevencionPerdidas\r\n#   Descripción: Documentación restringida. Fuera del alcance del asistente"
+    }
+  ],
+  "ultimaEtapa": 2,
+  "labelName": "FraSoHome-Confidencial-PrevencionPerdidas",
+  "dlpPolicyName": "FraSoHome - Bloqueo IBAN en agentes",
+  "defaultEnvironmentId": "Default-c2c0e5ea-f0e8-4934-8f1c-d8260ba230d7",
+  "defaultEnvironmentUrl": "https://org9e83f285.crm4.dynamics.com/",
+  "platformEnvironmentId": "561223b8-12ee-ec65-89d3-57736a6d9d52"
+}

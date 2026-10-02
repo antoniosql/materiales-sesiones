@@ -81,6 +81,7 @@ $ok = (Test-Herramienta -Nombre "pac") -and $ok
 $ok = (Test-Herramienta -Nombre "az") -and $ok
 $ok = (Test-ModuloPowerShell -Nombre "Microsoft.PowerApps.Administration.PowerShell") -and $ok
 $ok = (Test-ModuloPowerShell -Nombre "Microsoft.Graph.Sites") -and $ok
+$ok = (Test-ModuloPowerShell -Nombre "Microsoft.Graph.Files") -and $ok
 $ok = (Test-ModuloPowerShell -Nombre "ExchangeOnlineManagement") -and $ok
 
 if (-not $ok) {
@@ -157,13 +158,23 @@ $contexto = [pscustomobject]@{
 
 try {
     foreach ($n in $aEjecutar) {
-        $etapa = $ETAPAS[$n]
+        # [object]: en un [ordered] un índice [int] es posicional, no la clave.
+        $etapa = $ETAPAS[[object]$n]
         Write-Etapa "Etapa $n — $($etapa.Nombre)"
         $script = Join-Path $PSScriptRoot "scripts/stages/$($etapa.Script)"
         if (-not (Test-Path -LiteralPath $script -PathType Leaf)) {
             throw "No existe el script de la etapa $n : $script"
         }
-        & $script -Contexto $contexto
+        # Cada etapa en su propio pwsh: los módulos de Graph, Exchange y Power Apps
+        # traen versiones distintas de MSAL y no pueden convivir en un proceso.
+        Save-EstadoDespliegue -Estado $estado -EstadoPath $estadoPath
+        $argsEtapa = @("-NoProfile", "-File", (Join-Path $PSScriptRoot "scripts/Invoke-Etapa.ps1"),
+            "-ConfigPath", $config._configPath, "-EstadoPath", $estadoPath, "-Script", $script)
+        if ($contexto.Simular) { $argsEtapa += "-Simular" }
+        & (Get-Process -Id $PID).Path @argsEtapa
+        $codigo = $LASTEXITCODE
+        $estado = Get-EstadoDespliegue -EstadoPath $estadoPath
+        if ($codigo -ne 0) { throw "La etapa $n terminó con error (código $codigo). Revisa la salida de arriba." }
         $estado["ultimaEtapa"] = $n
         Save-EstadoDespliegue -Estado $estado -EstadoPath $estadoPath
     }
