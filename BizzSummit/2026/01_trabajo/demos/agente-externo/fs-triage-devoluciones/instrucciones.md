@@ -1,36 +1,48 @@
-WorkIQ is wired into the agent, but **I haven't been able to test it end to end.** Fetching the delegated tokens and writing them into a file was blocked for me, so you need to run that one step yourself.
+No he cambiado nada ni ejecutado las demos: solo he leído el tenant `vernedev` (Graph, `pac` y la auditoría y las políticas de Purview) y los guiones. La conclusión es que **las cuatro demos se sostienen, pero tres llevan una frase que el tenant ya no respalda, y la demo 4 ha perdido su premisa.**
 
-## What's set up
+## Lo que hay en el tenant
 
-- **`ToolingManifest.json`:** created by `a365 develop add-mcp-servers` with `mcp_MailTools` and `mcp_WordServer`.
-- **Permissions:**
-  - **Service principals:** the tenant was missing them for the two servers ("Work IQ Mail MCP" and "Work IQ Word MCP"). I created them with `az ad sp create`, because the CLI got stuck at an interactive `[y/N]` prompt.
-  - **Admin consent:** `a365 setup permissions mcp` then granted consent for all scopes.
-  - **Bot permissions:** I skipped the `permissions bot` step the CLI suggested, because it only applies to Teams/Copilot agents.
-- **New `src/workiq.py`:**
-  - It reads the manifest and passes each server to the Claude SDK as a remote MCP server, using that server's own token.
-  - It also allows all tools from those servers.
-  - If a token is missing and `SKIP_TOOLING_ON_ERRORS=true`, the agent starts without that server instead of failing.
-- **`src/agent.py`:** two narrow edits merge those servers into `ClaudeAgentOptions`. All the observability wrapping is still intact.
-- **`.env` and `.env.example`:** now have `BEARER_TOKEN_MCP_MAILTOOLS`, `BEARER_TOKEN_MCP_WORDSERVER` and `SKIP_TOOLING_ON_ERRORS=true`.
+| Área | Estado real |
+|---|---|
+| Licencias | E5 Developer (16 usuarios). Copilot y Agent 365 solo los tiene `admin@`. |
+| Agentes | 41 identidades de agente en Entra, 39 de Copilot Studio de otras pruebas («Prueba sin autor», «test», «Agent»…). Ya existen el Asistente (publicado en Default), `FsTriageDevoluciones Identity`, el Atajo y la Calculadora. |
+| Creadores | Todo lo de FraSoHome lo creó hoy Dev Admin, que es también el sponsor del Asistente y del agente de Claude. No hay ni Álvaro ni Marta. |
+| Auditoría | Activa. Están registradas hoy tus conversaciones con el Atajo, el Asistente y la Calculadora. |
+| Agente de Claude | Su telemetría **ya está en la auditoría de Purview**: 2 `InvokeAgent`, 46 `ExecuteToolBySDK` y 2 `InferenceCall`, con el tipo `CustomBuiltAgentsUsingSDK`. |
+| DLP | «FraSoHome – Bloqueo IBAN en agentes» está activa sobre los prompts de Copilot. **No ha saltado ninguna vez**: el prompt del IBAN en el Atajo recibió respuesta normal. Probablemente el texto decía «cuenta» y no «IBAN», y la regla exige confianza alta. |
+| DSPM | La única política creada es «Detect sensitive info added to AI sites», que vigila sitios de IA de terceros, no Copilot. No he podido comprobar si el IBAN aparece en Activity explorer. |
+| Calculadora | **No está bloqueada.** No hay rastro del bloqueo y se usó después. |
+| Sitio KB | Además de los documentos previstos, contiene FS-KB-02 (obsoleta) y **FS-KB-10 (prompt injection)**, que la guía decía no subir. |
+| Repo | El commit `a7f5f47` metió en `main` la observabilidad y Work IQ. El `instrucciones.md` del agente externo contiene mi respuesta anterior en inglés. |
 
-I checked that the agent still imports and that the WorkIQ servers are skipped cleanly when no token is set. That's the current state.
+## Propuesta por demo
 
-## What you need to do
+**Demo 1 · ¿Cuántos hay?** Usa la jungla real antes que la escenificada. Abre All agents sin filtrar y di algo como: *«Este es mi tenant de pruebas. Más de cuarenta agentes, y no recuerdo la mitad»*. Después filtra por FraSoHome.
+- No digas «Marta lo creó en marzo»: la ficha mostrará «Dev Admin, 2 de octubre». Cuéntalo como un caso hipotético («imaginad que quien lo creó cambió de equipo…»).
+- Antes de proyectar, revisa nombres como «UPV contabilidad» o «milsa-trillo», y entornos como FENIN o HIJOLUSA. Si alguno es de un cliente, llega a la pantalla ya filtrado.
 
-Each server has its own audience, so get one token per server and paste each into `.env`:
+**Demo 2 · ¿Qué hacen?** Lo seguro son las conversaciones con los tres agentes en DSPM Activity explorer o en Audit. El IBAN no está verificado.
+- Si a las 9:30 sale, perfecto.
+- Si no sale, no lo busques en vivo. Enseña la política de DLP y di: *«la política está; el prompt de ayer no la disparó porque…»*. Ese también es un mensaje honesto de gobierno.
+- El informe de uso casi seguro estará vacío: déjalo en una frase.
 
-```
-a365 develop get-token --resource-id 16b1878d-62c7-4009-aa25-68989d63bbad --scopes Tools.ListInvoke.All -o raw   # → BEARER_TOKEN_MCP_MAILTOOLS
-a365 develop get-token --resource-id c2d0c2b6-8013-4346-9f8b-b81d3b754a29 --scopes Tools.ListInvoke.All -o raw   # → BEARER_TOKEN_MCP_WORDSERVER
-```
+**Demo 3 · ¿Quién decide?** El bloqueo de la Calculadora puede ser **real y en vivo**, porque no se ha hecho. No hay captura de anoche, así que avisa de que la vista del usuario tarda en reflejarlo.
+- Comprueba a mano que la solicitud del Asistente está en Requests. No he podido verlo por API.
+- Reasignar propietario aparece en la slide 22 pero no en la demo. Si te sobra tiempo, el Asistente sin owners en Entra es un buen ejemplo.
 
-Then run, for example, `.venv\Scripts\python src\agent.py --verbose --prompt "Lee los últimos correos de devoluciones con Mail y redacta el resumen en un Word"`.
+**Demo 4 · El otro agente.** La premisa «funciona y nadie lo ve» ya no es cierta: el agente está registrado y emitiendo telemetría. Además, el beat de «el diff solo añade» no funciona en vivo, porque el código ya está en `main`. Propuesta de antes y después, sin ejecutar nada:
+1. **Antes:** el resumen ya generado y el `.env` con credenciales propias.
+2. **Qué cambió:** `git diff 8242e3f a7f5f47 -- src/agent.py`, el diff real y ya hecho. Sin depender del LLM ni de la red.
+3. **Después, el cierre fuerte:** una búsqueda en Purview Audit (`InvokeAgent`) que enseña juntos el Atajo (`DeclarativeAgent`), el Asistente (`CopilotStudio`) y `fs-triage` (`CustomBuiltAgentsUsingSDK`). Eso es literalmente *«el control plane no pregunta con qué lo construiste»*.
+4. **Work IQ:** solo contado. Corrige la frase del guion: la skill no se salta en silencio. Con S2S se para con un mensaje, y para Python + Claude no existe un adaptador publicado. La idea a transmitir sigue siendo «delegado, y se decide antes».
 
-Things to know:
-- **Token expiry:** the tokens act as you and last about an hour, so get fresh ones just before the session.
-- **Unattended runs:** this works for a demo, but not for an unattended scheduled run, because WorkIQ needs a signed-in user.
-- **Prompt:** the system prompt still points at the triage tools, so the agent only uses Mail and Word when you ask in `--prompt`. I haven't changed `buzon.py` or the triage flow.
-- **Tool tracing:** Mail and Word tool calls run inside the Claude CLI process, so they don't get their own tool spans. They're still covered by the run's invocation and inference spans.
+## Qué mirar a las 9:30 (sin cambiar nada)
 
-Nothing is committed. Since the observability and WorkIQ changes were meant to be shown live, you may want to commit them on a branch and start the demo from a clean `main`.
+1. All agents: si aparecen el Atajo, la Calculadora, el Asistente y **el de Claude**. Si el de Claude no sale, el paso 3 de la demo 4 se apoya solo en Audit.
+2. Que la solicitud del Asistente siga pendiente en Requests.
+3. DSPM Activity explorer: si hay interacciones y si alguna lleva el IBAN.
+4. Audit filtrado por `InvokeAgent`, guardado como búsqueda para la demo 4.
+5. No hagas al Atajo ni al Asistente preguntas que puedan traer FS-KB-10 o FS-KB-02.
+6. Cierra `instrucciones.md` y `.env` en VS Code salvo cuando quieras enseñarlos.
+
+Si quieres, lo dejo en una página de chuleta para el móvil.
