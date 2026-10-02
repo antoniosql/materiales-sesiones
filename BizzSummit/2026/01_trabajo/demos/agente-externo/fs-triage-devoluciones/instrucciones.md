@@ -1,5 +1,3 @@
-No he cambiado nada ni ejecutado las demos: solo he leído el tenant `vernedev` (Graph, `pac` y la auditoría y las políticas de Purview) y los guiones. La conclusión es que **las cuatro demos se sostienen, pero tres llevan una frase que el tenant ya no respalda, y la demo 4 ha perdido su premisa.**
-
 ## Lo que hay en el tenant
 
 | Área | Estado real |
@@ -45,4 +43,93 @@ No he cambiado nada ni ejecutado las demos: solo he leído el tenant `vernedev` 
 5. No hagas al Atajo ni al Asistente preguntas que puedan traer FS-KB-10 o FS-KB-02.
 6. Cierra `instrucciones.md` y `.env` en VS Code salvo cuando quieras enseñarlos.
 
-Si quieres, lo dejo en una página de chuleta para el móvil.
+
+
+## Cómo se conecta
+
+Ese panel es **Registry Sync** (Connected platforms). Para Anthropic se necesita esto:
+
+1. **En la consola de Anthropic** (lo hace quien administre la plataforma):
+   - Un workspace que **no** sea el Default, porque el Default no expone el ID de workspace que pide la conexión.
+   - Dentro de ese workspace, un *environment* y un **Managed Agent**.
+   - Una **API key con alcance de workspace**. Para crearla hace falta como mínimo el rol Developer.
+   - Una sesión en la que alguien use el agente, para que haya actividad que traer.
+2. **En el admin center** (lo que muestra tu captura): *Connect a platform* › **Anthropic Claude**, y después:
+   - Introduces el workspace ID y la API key.
+   - Pulsas *Verify authentication*.
+   - Guardas la conexión.
+   - Pulsas **Sync agents**. La sincronización es manual; no corre sola.
+3. **Verificación:** el agente aparece en All agents y su pestaña **Activity** muestra sesiones, excepciones y tiempo de ejecución. La actividad tarda entre 5 y 10 minutos en llegar. La columna de usuarios sale como no disponible, porque Anthropic no aporta identidades de Entra.
+
+Ten en cuenta que la API de Managed Agents está en beta, la integración es preview y la parte de observabilidad pertenece a Frontier.
+
+## Diferencia con el agente que hemos creado
+
+**Este conector no encontraría `fs-triage-devoluciones`.** Solo sincroniza Managed Agents, es decir, agentes que corren hospedados en la plataforma de Anthropic. El nuestro está hecho con el Claude Agent SDK y corre en tu portátil o en un contenedor; para Anthropic solo existen las llamadas al modelo, no el agente.
+
+| | Registry Sync (este panel) | Agent 365 SDK (lo que hicimos) |
+|---|---|---|
+| Dónde vive el agente | En la plataforma de Anthropic (Managed Agents) | Donde quieras: portátil, contenedor, cualquier nube |
+| Dirección | **Pull**: Microsoft lee la API de Anthropic | **Push**: el agente se registra y emite telemetría |
+| Cambios en el código | Ninguno | Sí: el blueprint, el resolver de tokens y los scopes de OTel |
+| Identidad | Una ficha importada en el registro. La documentación no habla de que se cree un Entra Agent ID | Blueprint, **Entra Agent ID** propio y sponsor |
+| Credencial | API key de Anthropic guardada en Microsoft | Credencial del blueprint en Entra |
+| Telemetría | Sesiones, excepciones y tiempo de ejecución en la pestaña Activity | Spans completos (invocación, inferencia y cada tool) en Purview Audit y Defender. Ya lo hemos comprobado |
+| Usuarios | No disponibles | Usuario o sponsor como llamante |
+| Acceso a datos de M365 | Ninguno | Work IQ (Mail y Word) con permisos delegados |
+| Esfuerzo | Unos 10 minutos de configuración | Trabajo de desarrollo |
+
+En una frase: **Registry Sync te deja ver un agente que vive en otra plataforma; el SDK convierte tu agente en una identidad gobernada dentro de Microsoft.** El primero sirve para inventariar, y el segundo para gobernar lo que haga dentro del tenant.
+
+## Para la sesión (sin cambiar las demos)
+
+Este panel encaja como una mención de 20 segundos en la demo 4, sin conectar nada en vivo: *«Hay dos puertas: si el agente vive en Bedrock, Vertex o los Managed Agents de Anthropic, lo sincronizas desde aquí. Si lo escribió David en su portátil, la única puerta es el SDK»*. Además responde a la pregunta de Q&A sobre agentes de otras nubes, que ya está en el guion.
+
+Conectarlo de verdad mañana obligaría a crear un workspace y un Managed Agent en Anthropic esta noche, y la actividad llega en preview y con retraso. No lo recomiendo para el día.
+
+Fuentes:
+- [Connected platforms in Microsoft Agent 365](https://learn.microsoft.com/en-us/microsoft-agent-365/admin/connected-platforms)
+- [Connect Anthropic Claude Managed Agents to Microsoft Agent 365](https://learn.microsoft.com/en-us/microsoft-agent-365/admin/connected-platforms-anthropic-claude)
+- [Third-party agent observability with Microsoft Agent 365 (Frontier)](https://learn.microsoft.com/en-us/microsoft-agent-365/admin/third-party-agent-observability)
+
+Las ejecuciones del agente de Claude ya están en la auditoría. Las encontré buscando por el ID de su identidad de agente, `3ee28114-5ad4-40c2-8d8b-82e0578b50a4`, y aparecieron 2 `InvokeAgent`, 46 `ExecuteToolBySDK` y 2 `InferenceCall`.
+
+## En el portal de Purview
+
+**purview.microsoft.com › Solutions › Audit › New search**, con estos valores:
+
+| Campo | Valor |
+|---|---|
+| Date and time range | Desde ayer hasta ahora. Las ejecuciones son del 2 de octubre por la tarde |
+| Keyword search | `3ee28114-5ad4-40c2-8d8b-82e0578b50a4` |
+| Record types *(opcional)* | `AIInvokeAgent`, `AIExecuteTool` y `AIInferenceCall` |
+| Search name | `fs-triage-devoluciones` |
+
+Con eso salen todas las operaciones del agente: la invocación, cada tool y la inferencia. Si filtras por usuario, recuerda que todas aparecen a nombre de `admin@vernedev.onmicrosoft.com`, el sponsor.
+
+**Para el cierre de la demo 4** necesitas otra búsqueda guardada, con los tres agentes juntos:
+
+| Campo | Valor |
+|---|---|
+| Record types | Solo `AIInvokeAgent` |
+| Keyword search | Vacío |
+
+Al abrir cada fila, el campo **PlatformTargetAgentType** distingue el origen:
+- `DeclarativeAgent`: el Atajo y la Calculadora (Agent Builder).
+- `CopilotStudio`: el Asistente.
+- `CustomBuiltAgentsUsingSDK`: `FsTriageDevoluciones Identity`.
+
+La búsqueda tarda unos minutos en completarse, así que lánzala y guárdala antes de las 10:45. Mañana solo tendrás que abrir los resultados.
+
+## Por PowerShell, como plan B
+
+Es lo mismo que usé yo para comprobarlo:
+
+```powershell
+Connect-ExchangeOnline -UserPrincipalName admin@vernedev.onmicrosoft.com -DisableWAM
+Search-UnifiedAuditLog -StartDate (Get-Date).AddDays(-2) -EndDate (Get-Date) `
+  -FreeText "3ee28114-5ad4-40c2-8d8b-82e0578b50a4" -ResultSize 200 |
+  Group-Object RecordType, Operations | Select-Object Count, Name
+```
+
+Si prefieres enseñarlo en Defender Advanced Hunting (tabla `CloudAppEvents`), puede tardar más en indexarse. Compruébalo a las 9:30 antes de contar con ello.
