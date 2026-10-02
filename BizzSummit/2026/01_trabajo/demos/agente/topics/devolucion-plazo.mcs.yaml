@@ -1,0 +1,32 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Plazo y excepciones de devolución
+    triggerQueries:
+      - ¿cuál es el plazo de devolución?
+      - ¿está en plazo esta devolución?
+      - quiere devolver un sofá comprado online
+      - plazo devolución tienda
+      - excepciones de devolución por tier
+      - qué productos no admiten devolución
+
+  actions:
+    - kind: SearchAndSummarizeContent
+      id: buscaPolitica
+      userInput: =System.Activity.Text
+      autoSend: false
+      variable: Topic.Respuesta
+      additionalInstructions: |-
+        Responde solo con la política de devoluciones VIGENTE (FS-KB-01 v1.3).
+        Si encuentras contenido de una versión marcada OBSOLETA, descártalo.
+        Indica siempre: plazo en días naturales, desde qué momento cuenta,
+        canal al que aplica y las excepciones por tier de fidelización.
+
+    - kind: SendActivity
+      id: responde
+      activity: |-
+        {Topic.Respuesta}
+
+        _Respuesta orientativa. La política vigente es FS-KB-01 v1.3._

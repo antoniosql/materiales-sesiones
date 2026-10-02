@@ -1,0 +1,62 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Métricas de ventas y devoluciones
+    triggerQueries:
+      - dame las ventas netas online
+      - cuál fue la tienda con más ventas netas
+      - calcula la tasa de devolución
+      - lista devoluciones aprobadas con motivo R04
+      - cuántos pedidos hubo en tienda
+      - qué SKUs tienen alerta de quiebra de stock
+
+  actions:
+    # Sin periodo no hay métrica: se pide antes de calcular nada.
+    - kind: Question
+      id: preguntaPeriodo
+      variable: Topic.Periodo
+      prompt: ¿De qué periodo? Indícame las fechas de inicio y fin.
+      entity: StringPrebuiltEntity
+      alwaysPrompt: false
+
+    - kind: Question
+      id: preguntaCanal
+      variable: Topic.Canal
+      prompt: ¿Online, tienda o los dos canales?
+      entity: StringPrebuiltEntity
+      alwaysPrompt: false
+
+    - kind: InvokeConnectorAction
+      id: consultaDatos
+      connectionReference: "{{PREFIJO}}_dataverse"
+      operationId: DV_ListSalesSummary
+      inputs:
+        periodo: =Topic.Periodo
+        canal: =Topic.Canal
+      output:
+        binding:
+          value: Topic.Datos
+
+    - kind: SearchAndSummarizeContent
+      id: buscaDefinicion
+      userInput: =System.Activity.Text
+      autoSend: false
+      variable: Topic.Definicion
+      additionalInstructions: |-
+        Recupera de FS-KB-03 la definición oficial del KPI que se está pidiendo
+        y su fórmula de cálculo. No inventes fórmulas.
+
+    - kind: SendActivity
+      id: responde
+      activity: |-
+        **Resumen**
+        {Topic.Datos}
+
+        **Detalle**
+        Periodo: {Topic.Periodo} · Canal: {Topic.Canal}
+        {Topic.Definicion}
+
+        **Fuentes**
+        FS-KB-03 (Diccionario de KPI v1.0) y las tablas de Dataverse consultadas.

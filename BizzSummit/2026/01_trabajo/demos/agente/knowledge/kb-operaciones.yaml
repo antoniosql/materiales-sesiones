@@ -1,0 +1,11 @@
+kind: SharePointKnowledgeSource
+displayName: FraSoHome KB Operaciones
+description: >-
+  Documentos FS-KB vigentes de política de devoluciones, KPI, manual de tienda,
+  conciliación de pagos, taxonomía de catálogo, fidelización y política de datos.
+  Incluye deliberadamente FS-KB-02 (v1.2, obsoleta) para que la regla de
+  versionado tenga algo que hacer: es lo que la demo 3 rompe.
+sites:
+  - url: "{{SHAREPOINT_KB}}"
+    includeSubsites: false
+searchScope: authorizedOnly
