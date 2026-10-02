@@ -1,0 +1,12 @@
+{
+  "tenantId": "c2c0e5ea-f0e8-4934-8f1c-d8260ba230d7",
+  "clientAppId": "f54280f4-395e-4ea8-9e48-bf2d4952aa14",
+  "environment": "AzureCloud",
+  "graphBaseUrl": "https://graph.microsoft.com",
+  "authorityHost": "https://login.microsoftonline.com",
+  "agentIdentityDisplayName": "FsTriageDevoluciones Identity",
+  "agentBlueprintDisplayName": "FsTriageDevoluciones Blueprint",
+  "agentDescription": "FsTriageDevoluciones",
+  "aiTeammate": false,
+  "useBlueprint": true
+}
