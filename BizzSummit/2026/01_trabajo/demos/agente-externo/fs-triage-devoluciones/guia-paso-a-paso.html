@@ -87,7 +87,7 @@ summary { cursor: pointer; padding: 10px 0; font-weight: 500; }
 <a href="#11-el-triaje-completo">11. El triaje completo</a>
 <a href="#12-prepara-la-demo-4">12. Prepara la demo 4</a>
 <a href="#13-opcional-leer-el-buz-n-real-de-exchange">13. Opcional: leer el buzón real de Exchange</a>
-<a href="#14-opcional-registrarlo-en-agent-365">14. Opcional: registrarlo en Agent 365</a>
+<a href="#14-las-skills-de-agent-365">14. Las skills de Agent 365</a>
 <a href="#problemas-frecuentes">Problemas frecuentes</a>
     </nav>
     <article>
@@ -97,7 +97,7 @@ Python. Es el protagonista de la <strong>demo 4</strong>: funciona, hace un trab
 inventario de Microsoft 365.</p>
 <p>Esta guía sirve para dos cosas:</p>
 <ul>
-<li><strong>Ponerlo en marcha</strong> en un equipo nuevo a partir del repositorio (pasos 1, 7 a 11).</li>
+<li><strong>Ponerlo en marcha</strong> en un equipo nuevo a partir del repositorio (pasos 1, 7 a 12 y 14).</li>
 <li><strong>Construirlo desde cero</strong>, fichero a fichero (pasos 1 a 11).</li>
 </ul>
 <p>Tiempo: unos 30 minutos desde cero, 10 si ya tienes el repositorio. Todo está probado en Windows 11
@@ -802,19 +802,111 @@ una Application Access Policy de Exchange. Ese exceso de permisos es, precisamen
 que la demo 4 señala.</p>
 </blockquote>
 <hr />
-<h2 id="14-opcional-registrarlo-en-agent-365">14. Opcional: registrarlo en Agent 365</h2>
-<p>Solo si tu tenant tiene Agent 365. Si algo no sale a la primera, descártalo y cierra la demo con la
-slide del blueprint.</p>
-<pre><code class="language-powershell">gh skill add microsoft/agent365-skills
+<h2 id="14-las-skills-de-agent-365">14. Las skills de Agent 365</h2>
+<p>Son un <strong>plugin de Claude Code</strong> publicado por Microsoft en <code>microsoft/agent365-skills</code>. En el
+equipo de la sesión <strong>ya están instaladas</strong> (plugin <code>agent365</code> 1.0.2, alcance de usuario).</p>
+<p><strong>14.1 · Instalarlas en otro equipo.</strong> Dentro de una sesión de Claude Code:</p>
+<pre><code class="language-text">/plugin marketplace add https://github.com/microsoft/agent365-skills
+/plugin install agent365@agent365-skills
 </code></pre>
-<p>Después, en Claude Code sobre esta carpeta:</p>
+<p>O desde PowerShell, con el <code>claude.exe</code> del paso 8.1:</p>
+<pre><code class="language-powershell">$claude = Get-ChildItem &quot;$env:USERPROFILE\.vscode\extensions&quot; -Recurse -Filter claude.exe |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+&amp; $claude plugin marketplace add https://github.com/microsoft/agent365-skills
+&amp; $claude plugin install agent365@agent365-skills
+&amp; $claude plugin details agent365@agent365-skills
+</code></pre>
+<blockquote>
+<p><code>gh skill add microsoft/agent365-skills</code>, que aparece en el README del repositorio, instala las
+skills para <strong>GitHub Copilot</strong>, no para Claude Code.</p>
+</blockquote>
+<p>Abre una <strong>sesión nueva</strong> de Claude Code después de instalarlas: las sesiones abiertas no las ven.</p>
+<p><strong>14.2 · Las ocho skills y cuál usa la demo.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Qué hace</th>
+<th>En la demo 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>instrument-observability</code></td>
+<td>Cablea OpenTelemetry y el exportador de Agent 365</td>
+<td><strong>Beat 1.</strong> No necesita tenant</td>
+</tr>
+<tr>
+<td><code>a365-setup</code></td>
+<td>Punto de entrada: comprueba requisitos y delega en la skill adecuada</td>
+<td>Beat 2, si hay Agent 365</td>
+</tr>
+<tr>
+<td><code>make-a365-agent</code></td>
+<td>Blueprint y permisos de Entra para un agente que no es AI Teammate</td>
+<td>Beat 2, si hay Agent 365</td>
+</tr>
+<tr>
+<td><code>add-workiq-tools</code></td>
+<td>Servidores MCP de Work IQ (correo, Word, SharePoint…)</td>
+<td>No: exige permisos delegados</td>
+</tr>
+<tr>
+<td><code>a365-code-validator</code></td>
+<td>Diagnostica si la telemetría llegará al admin center</td>
+<td>Ensayo</td>
+</tr>
+<tr>
+<td><code>test-local</code></td>
+<td>Prueba local con AgentsPlayground</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>purview-dlp-integration</code></td>
+<td>Puerta de DLP de Purview antes del modelo</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>make-ai-teammate</code></td>
+<td>Convierte el agente en AI Teammate</td>
+<td><strong>No</strong>: requiere Frontier preview</td>
+</tr>
+</tbody>
+</table>
+<p><strong>14.3 · Beat 1, observabilidad.</strong> Es el que se hace en vivo. En Claude Code, con esta carpeta
+abierta:</p>
+<pre><code class="language-text">añade observabilidad con OpenTelemetry a este agente, sin cambiar su lógica
+</code></pre>
+<p>Debe dispararse <code>instrument-observability</code>. Ensáyalo como en el paso 12.2 y deja el repositorio
+limpio con el paso 12.3.</p>
+<p><strong>14.4 · Beat 2, registro.</strong> Solo si tu tenant tiene Agent 365. En el equipo de la sesión ya está
+todo preparado (2 de octubre): .NET 8.0.425, CLI <code>a365</code> 1.1.226, Azure CLI con sesión como
+<code>admin@vernedev.onmicrosoft.com</code> y <code>a365 setup requirements</code> superado. En otro equipo:</p>
+<pre><code class="language-powershell">winget install --id Microsoft.DotNet.SDK.8 --source winget
+dotnet tool install -g Microsoft.Agents.A365.DevTools.Cli    # abre un terminal nuevo después
+az config set core.enable_broker_on_windows=false            # inicio de sesión en el navegador, no en una ventana oculta
+az login --tenant &lt;tu dominio&gt; --allow-no-subscriptions
+a365 setup requirements                                      # una vez por tenant, con un administrador
+</code></pre>
+<p>Resultado esperado de <code>a365 setup requirements</code>: Azure Authentication y Client App Configuration en
+<strong>Pass</strong>. Usa la aplicación de primera parte del CLI (<code>f54280f4-395e-4ea8-9e48-bf2d4952aa14</code>), así
+que no hay que registrar ninguna aplicación propia. Instala por su cuenta el módulo
+<code>Microsoft.Graph.Applications</code> si falta.</p>
+<blockquote>
+<p><strong>El aviso que siempre sale:</strong> «Frontier Preview Program — Tenant enrollment cannot be verified
+automatically». El CLI no puede comprobar si el tenant está inscrito en el programa Frontier.
+Compruébalo tú en el admin center antes de contar con el beat 2: sin inscripción, el registro
+puede fallar más adelante.</p>
+</blockquote>
+<p>Después, en Claude Code:</p>
 <pre><code class="language-text">set up this project for Agent 365
 register this agent with Agent 365
 validate this Agent 365 integration
 </code></pre>
+<p>Si algo no sale a la primera, descártalo y cierra la demo con la slide del blueprint.</p>
 <blockquote>
-<p>Las herramientas de Work IQ (<code>add-workiq-tools</code>) necesitan <strong>permisos delegados</strong>. Con el modo
-<code>graph</code> de este agente, que usa permisos de aplicación (S2S), la skill se salta sola y sin avisar.</p>
+<p>Las herramientas de Work IQ necesitan <strong>permisos delegados</strong> (OBO). Con el modo <code>graph</code> de este
+agente, que usa permisos de aplicación (S2S), <code>add-workiq-tools</code> se salta sola y sin avisar.</p>
 </blockquote>
 <hr />
 <h2 id="problemas-frecuentes">Problemas frecuentes</h2>
@@ -866,6 +958,16 @@ validate this Agent 365 integration
 <td>Funcionaba y deja de funcionar tras actualizar VS Code</td>
 <td>La extensión cambió de versión y de carpeta</td>
 <td>Repite el paso 8.3</td>
+</tr>
+<tr>
+<td>Claude Code no dispara <code>instrument-observability</code></td>
+<td>La sesión se abrió antes de instalar el plugin</td>
+<td>Abre una sesión nueva, o pide «usa la skill instrument-observability»</td>
+</tr>
+<tr>
+<td><code>a365</code> no se reconoce como comando</td>
+<td>Falta el CLI, o el terminal se abrió antes de instalarlo</td>
+<td>Paso 14.4, y abre un terminal nuevo</td>
 </tr>
 </tbody>
 </table>

@@ -72,10 +72,19 @@ identidad y telemetría. Uno es de Copilot Studio; el otro es este.
 
 ## Preparación previa
 
-```bash
-gh skill add microsoft/agent365-skills
+Las skills de Agent 365 son un plugin de Claude Code (en el equipo de la sesión ya están instaladas).
+En una sesión de Claude Code:
 
+```text
+/plugin marketplace add https://github.com/microsoft/agent365-skills
+/plugin install agent365@agent365-skills
+```
+
+`gh skill add` las instala para GitHub Copilot, no para Claude Code. Detalle en el paso 14 de la guía.
+
+```text
 # En Claude Code, sobre este repositorio:
+#   "añade observabilidad con OpenTelemetry"  -> instrument-observability (beat 1, sin tenant)
 #   "set up this project for Agent 365"      -> a365-setup
 #   "register this agent with Agent 365"     -> make-a365-agent   (camino standard)
 #   "validate this Agent 365 integration"    -> a365-code-validator
