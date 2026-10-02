@@ -3,3 +3,5 @@ salida/
 __pycache__/
 *.pyc
 .venv/
+*.local.json
+a365.generated.config.json
