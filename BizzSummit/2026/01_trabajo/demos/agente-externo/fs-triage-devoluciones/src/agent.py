@@ -4,17 +4,6 @@ Construido con el Claude Agent SDK. Lee devoluciones@frasohome.es, clasifica
 cada entrada por motivo, detecta patrones anómalos y redacta un resumen diario
 para el Store Manager.
 
-Estado en el que arranca la demo 4: funciona, lleva semanas funcionando, y no
-aparece en ningún inventario. Sin Entra Agent ID, sin telemetría, sin
-propietario declarado. Eso es lo que se enseña primero.
-
-Después, en vivo:
-
-    "añade observabilidad a este agente"      -> instrument-observability
-    "conecta Mail y Word a través de Work IQ" -> add-workiq-tools
-
-Las skills son aditivas: no reescriben este archivo, lo instrumentan. Ese diff
-es media demo, así que conviene tener el repositorio limpio antes de empezar.
 """
 
 from __future__ import annotations

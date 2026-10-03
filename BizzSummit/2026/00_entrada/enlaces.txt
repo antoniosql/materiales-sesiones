@@ -1,3 +1,0 @@
-https://blue16.nl/microsoft-agent-365-control-plane.html
-
-https://github.com/stefanpems/a365-lab-toolkit
