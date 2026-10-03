@@ -11,6 +11,4 @@ Evento recurrente. Una subcarpeta por edición.
 - Web: https://bizzsummit.es · YouTube: http://youtube.com/bizzsummites · info@bizzsummit.es
 - Lema 2026: *Power, people, party*
 - **Las sesiones son de 50 minutos** (los workshops, 2 h)
-- La plantilla oficial de speakers incluye una **slide de sponsors que no se puede eliminar**
-- Todas las demos se construyen sobre el caso **FraSoHome**
-  (`C:\Users\anton\OneDrive\Materiales\FraSoHome`)
+
