@@ -1,6 +1,6 @@
 # Bizz Summit
 
-Evento recurrente. Una subcarpeta por edición.
+Evento anual relacionado con tecnologías Power Platform y "hermanas". Una subcarpeta por edición.
 
 | Edición | Fechas | Sede | Sesión |
 |---|---|---|---|
