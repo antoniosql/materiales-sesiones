@@ -12,3 +12,7 @@ Veremos que skills utilizar, cuando crear las nuestras, al igual que ocurre con 
 Al final del workshop, te llevarás un sistema funcionando, auditables, trazable, y que podrás utilizar para tus futuros proyectos
 
 Poco PowerPoint y muchas historias abuelo cebolleta. 
+
+Miguel.egea@gmail.com
+eladio.rincon@gmail.com 
+antoniosotorodriguez@gmail.com 
