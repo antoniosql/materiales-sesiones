@@ -1,0 +1,13 @@
+CONFIGURACIÓN ILUSTRATIVA PARA PROYECCIÓN
+Todos los identificadores y valores de este archivo son ficticios.
+No es un archivo ejecutable ni una plantilla para configurar el agente.
+
+Modo de buzón: local (datos de muestra)
+Tenant: <tenant-del-laboratorio>
+Blueprint: <identidad-de-la-definición>
+Agent ID: <identidad-concreta-del-agente>
+Sponsor: <persona-responsable>
+Credencial: <almacenada-fuera-de-la-proyección>
+
+Identidad + permisos + telemetría se comprueban por separado.
+Work IQ delegado: integración pendiente de validación completa.

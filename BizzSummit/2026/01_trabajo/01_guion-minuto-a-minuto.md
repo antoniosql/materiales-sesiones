@@ -1,452 +1,250 @@
 # De la jungla de agentes al control plane
-## Guion minuto a minuto — Bizz Summit Madrid 2026
 
-| | |
-|---|---|
-| **Sesión** | De la jungla de agentes al control plane: gobierno real de Copilot Studio con Agent 365 |
-| **Cuándo** | Sábado 3 de octubre de 2026, **11:00** |
-| **Dónde** | U-tad, Calle Playa de Liencres 2 dupdo., Las Rozas (Madrid) |
-| **Slot** | **50 minutos, Q&A incluido** (regla de la organización) |
-| **Reparto** | 43' de contenido + 7' de Q&A |
-| **Nivel** | 300 |
-| **Escenario** | FraSoHome — ver `00_escenario-frasohome.md` |
-| **Montaje de demos** | `demos/guia-despliegue-manual.html` |
+## Guion de sala · Bizz Summit 2026
 
-> **Versión del 2 de octubre.** El foco pasa a Microsoft 365 y Agent 365: ver todos los agentes
-> (también los de Agent Builder), saber qué hacen los usuarios con ellos, decidir desde un solo
-> sitio y registrar los externos. Power Platform queda en dos slides, como lo que ya existía
-> antes de Agent 365. Las notas del deck ya están alineadas con este guion.
+3 de octubre de 2026, 11:00–11:50 · 43 minutos de contenido + 7 de preguntas. **36 diapositivas: 30 visibles y 6 ocultas (31–36)**. Las notas del PowerPoint siguen este mismo mapa.
 
----
+## Estado de referencia y límites de la evidencia
 
-## Cómo leer este guion
+Actualizado el 2 de octubre de 2026 a partir de `demos/agente-externo/fs-triage-devoluciones/instrucciones.md` y del código del repositorio. Esta revisión documental no ejecuta agentes ni comprueba el tenant en directo.
 
-- **Reloj** = hora de pared, para que mires el móvil y sepas si vas bien.
-- Lo que va *en cursiva y entre comillas* se dice **literal**.
-- Los **`⏱ CHECKPOINT`** son los cuatro puntos de control. La sección C dice qué recortar.
-
-**La frase ancla, que se repite tres veces** (síntomas, control central y cadencia):
-
-> *"Un agente sin propietario nombrado no es un agente: es una incidencia esperando fecha."*
-
----
+- 41 identidades en Entra; no equivale a 41 agentes visibles en All agents.
+- Atajo, Calculadora, Asistente y fs-triage existen. Dev Admin creó los recursos de FraSoHome y es sponsor de Asistente y fs-triage. Las personas del relato son ficticias.
+- Audit tiene conversaciones de los agentes Microsoft y, para Claude, 2 InvokeAgent, 46 ExecuteToolBySDK y 2 InferenceCall según el informe.
+- La política DLP de IBAN está activa, pero el caso probado no disparó. La causa y la evidencia en DSPM no están verificadas.
+- Calculadora no bloqueada en el ensayo. Solicitud pendiente del Asistente no confirmada. Verificar ambos estados antes de decidir el recorrido.
+- La KB contiene FS-KB-02 obsoleta y FS-KB-10 de prompt injection: evitar consultas que puedan recuperarlos en la demo principal. Su retirada o una demo adversarial requieren preparación aparte.
+- Work IQ es explicación de arquitectura; no se presenta como integración Mail/Word probada. Con S2S la skill se detiene con mensaje. Python + Claude necesita integración específica.
 
 ## Mapa de tiempos
 
-| Reloj | Slide | Bloque | Dura |
-|---|---|---|---|
-| 11:00 | 1–2 | Título + sponsors | 0:40 |
-| 11:00:40 | 3–6 | Apertura, contrato y FraSoHome | 1:50 |
-| 11:02:30 | 7, 9, 10 | **1 · La jungla** | 4:00 |
-| 11:06:30 | 11–12 | **2 · Las tres capas** | 3:00 |
-| 11:09:30 | 13 | **3 · El inventario ya existe** | 2:00 |
-| 11:11:30 | 14 | 🎬 **DEMO 1** — ¿cuántos hay y de quién son? | 4:00 |
-| 11:15:30 | 16–17 | **4 · Lo que ya teníais** (Power Platform) | 4:00 |
-| 11:19:30 | 19 | **5 · Qué hacen los usuarios** | 2:00 |
-| 11:21:30 | 20 | 🎬 **DEMO 2** — ¿qué hacen con ellos? | 4:00 |
-| 11:25:30 | 22 | **6 · Control central** | 2:00 |
-| 11:27:30 | 23 | 🎬 **DEMO 3** — ¿quién decide? | 3:30 |
-| 11:31 | 25–26 | **7 · El agente que no es de Microsoft** | 2:30 |
-| 11:33:30 | 27 | 🎬 **DEMO 4** — el otro agente | 4:30 |
-| 11:38 | 29–30 | **8 · Cadencia y cierre** | 4:00 |
-| 11:42 | 31 | Recursos + QR | 1:00 |
-| 11:43 | 32 | **Q&A** | 7:00 |
-
-Demos: **16 minutos** sobre 43 de contenido. Power Platform baja de once minutos a cuatro.
-
----
-
-# BLOQUE 0 — Apertura · 11:00 → 11:02:30
-
-### Slides 1 y 2 · 40"
-La de sponsors es obligatoria. No la leas.
-
-> *"Gracias a los patrocinadores, que son los que hacen que esto exista. Vamos al grano,
-> porque tengo cincuenta minutos y cuatro demos."*
-
-### Slide 3 · el gancho
-> *"Manos arriba: ¿cuántos de vosotros tenéis agentes en vuestro tenant ahora mismo?"*
-> *"Bajad la mano los que no podríais demostrarlo con una captura en los próximos dos minutos."*
-> *"Esa diferencia es de lo que va esta sesión."*
-
-### Slide 4 · el dato
-> *"En los primeros meses de preview de Agent 365 aparecieron decenas de millones de agentes en el
-> registry. No eran proyecciones: eran agentes que ya existían."*
-
-### Slide 5 · lo que te llevas el lunes
-1. **Inventario**: todos los agentes —Agent Builder, Copilot Studio, SharePoint, terceros— y de quién es cada uno
-2. **Uso y control**: qué hacen los usuarios con ellos, y aprobar, bloquear o reasignar desde un sitio
-3. **Agentes externos**: cómo entran en el mismo control plane
-
-> *"Las tres pasan por el admin center de Microsoft 365. No por Power Platform."*
-
-### Slide 6 · FraSoHome, 20 segundos
-> *"Todo lo que veáis hoy pasa en FraSoHome: muebles y decoración, tres tiendas, e-commerce.
-> Un proceso, devoluciones, y tres agentes: uno que hizo un jefe de tienda con Agent Builder,
-> otro que hizo Operaciones con Copilot Studio, y otro que hizo un desarrollador con el SDK de Claude."*
-
----
-
-# BLOQUE 1 — La jungla · 11:02:30 → 11:06:30
-
-### Slide 7 · no es la Shadow IT de siempre
-> *"La Shadow IT clásica era un problema de exposición. Esto es un problema de agencia."*
-
-> *"Y la diferencia de 2026: crear un agente ya no exige Power Platform. Cualquiera con Copilot
-> Chat lo hace con Agent Builder en dos minutos."*
-
-(La slide 8, los cuatro riesgos, queda oculta. Si te sobra un minuto, se puede mostrar.)
-
-### Slide 9 · los cinco síntomas
-Cuenta con los dedos:
-
-1. **Agentes que nadie ha contado**, creados con Agent Builder
-2. **Compartidos sin control**: un enlace y lo usa media empresa
-3. **Nadie sabe qué les preguntan** ni qué datos devuelven
-4. **Agentes fuera de Microsoft**, en el portátil de un dev, sin identidad
-5. **El maker ya no está**: cambió de equipo hace seis meses
-
-> *"Si habéis marcado tres o más, no tenéis un problema de tecnología. Tenéis una jungla."*
-
-**Primera repetición de la frase ancla**, en el quinto síntoma.
-
-### Slide 10 · visibilidad antes que control
-> *"Bloquear la creación de agentes funciona seis semanas. Luego la gente se va a otras herramientas
-> y el problema no desaparece: se vuelve invisible."*
-
-**Transición:** *"Si el control sin visibilidad no funciona, ¿por dónde se empieza? Por contar los agentes."*
-
-`⏱ CHECKPOINT 1 — 11:06:30.` Si vas por encima de 11:07:30: slide 7 en una frase.
-
----
-
-# BLOQUE 2 — Las tres capas · 11:06:30 → 11:09:30
-
-**La slide central (11).** Vuelve a ella con el puntero en cada demo.
-
-| Capa | Pregunta | Dónde |
+| Reloj | Diapositivas | Bloque |
 |---|---|---|
-| **Identidad** | ¿Qué agentes hay y de quién son? | Agent 365 Registry · admin center de M365 · Entra Agent ID |
-| **Plataforma** | ¿Dónde vive, qué conectores usa, cómo se promociona? | Power Platform Admin Center. Ya existía |
-| **Datos y runtime** | ¿Qué preguntan, qué devuelve, qué hace? | Purview DSPM for AI, auditoría y DLP · Defender |
+| 11:00–11:03 | 1–6 | Apertura y FraSoHome |
+| 11:03–11:06 | 7–9 | El problema y la evidencia |
+| 11:06–11:10 | 10–12 | Capas, licencias e inventario |
+| 11:10–11:14 | 13 | Demo 1 |
+| 11:14–11:16 | 14 | Power Platform |
+| 11:16–11:18 | 15 | Actividad / detección / prevención |
+| 11:18–11:22 | 16 | Demo 2 |
+| 11:22–11:24 | 17 | Decisiones y alcance |
+| 11:24–11:27 | 18 | Demo 3 |
+| 11:27–11:33 | 19–22 | SDK, identidad, permisos y rutas |
+| 11:33–11:38 | 23 | Demo 4 |
+| 11:38–11:41 | 24–25 | Operación y cierre |
+| 11:41–11:43 | 26–27 | Checklist y recursos |
+| 11:43–11:50 | 28 | Preguntas |
+| 11:50 | 29–30 | Gracias y contacto |
 
-> *"La capa de identidad y la de datos están en Microsoft 365, y ahí es donde aparece Agent 365.
-> La de plataforma la veremos rápido, porque ya la conocéis."*
+## Comprobación previa a la sesión
 
-### Slide 12 · tres mensajes y licenciamiento
-1. *"Agent 365 no sustituye al PPAC. Es identidad, observabilidad y control."*
-2. *"La capa de datos ya la tenéis si tenéis E5. Lo que falta casi nunca es licencia: es configuración."*
-3. Licenciamiento, rápido y sin disculparte: por usuario; base E5 o Defender + Purview Suite FLW;
-   incluido en M365 E7; **E3 + Copilot no es elegible**; cubre gobierno, no ejecución.
+**09:30, sin cambiar configuración:** revisar All agents y filtrar referencias de terceros antes de proyectar; comprobar los cuatro agentes, Requests del Asistente y estado de Calculadora; abrir Audit y, solo si hay evidencia, DSPM Activity explorer. No hacer consultas que recuperen FS-KB-02 o FS-KB-10. No usar el ensayo para borrar ni resetear recursos.
 
-> *"Apuntad la última línea, que es la que os salva de prometer algo que luego no podéis entregar."*
+**Antes de las 10:45:** dejar terminadas y guardadas las búsquedas de Audit. Preparar PowerPoint, código, diff y resumen generado. Cerrar `.env`, `instrucciones.md`, pestañas con secretos y resultados ajenos a FraSoHome. Para explicar configuración usar `demo-configuracion-segura.txt`.
 
----
+**Búsqueda de fs-triage:** Purview → Solutions → Audit → New search; rango que incluya la tarde del 2 de octubre de 2026, con zona horaria comprobada; Keyword search `3ee28114-5ad4-40c2-8d8b-82e0578b50a4`; Record types opcionales `AIInvokeAgent`, `AIExecuteTool`, `AIInferenceCall`. Nombre `fs-triage-devoluciones`. El actor puede ser el sponsor administrador, no un usuario final.
 
-# BLOQUE 3 — El inventario ya existe · 11:09:30 → 11:11:30
+**Búsqueda de cierre:** Record type `AIInvokeAgent`, sin keyword para no excluir los otros dos agentes. Revisar resultados antes de proyectar y limitar la vista a FraSoHome. En los detalles, `PlatformTargetAgentType`: `DeclarativeAgent`, `CopilotStudio`, `CustomBuiltAgentsUsingSDK`. Si la búsqueda no está terminada, usar respaldo 34; no esperar en escena.
 
-### Slide 13
-- **Todos, en una lista**: admin center de M365 › Agents. Los de Agent Builder, Copilot Studio y
-  SharePoint, los de Microsoft y los de terceros.
-- Cada agente de Copilot Studio nace con su **Entra Agent ID**.
-  > *"La pregunta no es cómo construir el inventario. Es quién lo mira, y con qué cadencia."*
-- **Registry y control**: Registry · Access Control · Visualization · Interoperability · Security.
-  La columna **Risks** consolida Defender, Entra y Purview.
-- Desde la misma lista: **aprobar, bloquear, desplegar y reasignar propietario**.
+## Narración por diapositiva
 
-> *"Si mantenéis el CoE Starter Kit para inventariar, sabed que el inventario que importa ya no está
-> ahí: un agente de Agent Builder no vive en ningún entorno."*
+### 1. De la jungla de agentes al control plane
 
-**La semilla de la demo 4:**
-> *"Lo que no se registra solo aparece como Shadow AI: lo detectas, pero no lo gobiernas como
-> identidad. Guardad esa frase, que volvemos a ella en la última demo."*
+11:00. Saludo breve. La sesión dura 50 minutos: 43 de contenido y 7 de preguntas. Promesa: pasar de una lista de agentes a decisiones y evidencias.
 
----
+### 2. Patrocinadores
 
-# 🎬 DEMO 1 — «¿Cuántos hay y de quién son?» · 11:11:30 → 11:15:30
+Agradecer a los patrocinadores sin leer los logotipos. Diapositiva obligatoria de la organización.
 
-**4:00 · riesgo bajo · plan B: slide 15 (oculta), capturas de All agents**
+### 3. Antonio Soto
 
-Ventanas abiertas y maximizadas, zoom al 125%: Copilot Chat con el Atajo, y All agents ya filtrado.
+Presentación en diez segundos: más de 25 años trabajando con datos y analítica; hoy, soluciones de inteligencia artificial para empresas.
 
-**Beat 1 · 45" · Así nace un agente** *(Copilot Chat)*
-Abres **«Atajo Devoluciones MAD01»**, que Álvaro, jefe de tienda de Gran Vía, hizo con Agent Builder
-y compartió con su equipo. Una pregunta y responde.
+### 4. ¿Cuántos agentes hay en vuestro tenant?
 
-> *"Dos minutos. Sin entorno, sin solución, sin pasar por nadie. Así nace un agente en 2026."*
+Manos arriba: ¿cuántos tenéis agentes en vuestro tenant? Bajad la mano quienes no podríais demostrar cuántos hay con una evidencia en dos minutos. Esa diferencia abre la sesión.
 
-**Beat 2 · 1:30" · Todos en una lista** *(admin center › Agents › All agents)*
-Llegas con el filtro aplicado. Están el Atajo, la Calculadora y el **Asistente de Devoluciones** de
-Copilot Studio. Abres el Atajo: quién lo creó, con quién está compartido y qué conocimiento usa.
+### 5. Cuatro preguntas. Cuatro demos.
 
-**Beat 3 · 1:00" · La identidad**
-Abres el Asistente: **Entra Agent ID**, propietario, usuarios y Risks si hay señal.
+Contrato con la audiencia: inventario, actividad, decisiones y agente externo. El objetivo es saber dónde mirar y qué decisión tomar, no recorrer todos los portales.
 
-> *"Dos herramientas, dos makers, una sola lista. Y ninguno ha pedido permiso a nadie."*
+### 6. FraSoHome: un proceso, cuatro agentes
 
-**Beat 4 · 45" · Remate**
-> *"El Asistente lo creó Marta, de Operaciones, en marzo. Marta pasó a e-commerce en julio.
-> Nadie se lo dijo a este agente."*
+11:02. FraSoHome y sus personas son ficticios. Los cuatro agentes existen en el laboratorio. Los creó Dev Admin, que también es sponsor de Asistente y fs-triage. Álvaro y Marta solo pueden aparecer como hipótesis, nunca como propietarios que la ficha real demostraría.
 
-**Si algo falla:** pasa a la slide 15 sin anunciarlo: *"lo tengo capturado, que esto tarda"*.
+### 7. Lo que cambia es el margen de decisión
 
-`⏱ CHECKPOINT 2 — 11:15:30.` Si vas por encima de 11:17: la slide 16 en una frase y directo a la tabla.
+11:03. No contraponer aplicación pasiva y agente activo: ambas pueden actuar. La diferencia útil para gobernar es el margen de decisión, las herramientas y el contexto que puede usar. No todos los agentes son autónomos ni todos usan delegación.
 
----
+### 8. Cinco síntomas de la jungla
 
-# BLOQUE 4 — Lo que ya teníais · 11:15:30 → 11:19:30
+Ancla: un agente sin responsable nombrado es una incidencia esperando fecha. Un cambio de equipo del maker es un riesgo organizativo; no convierte automáticamente al agente en huérfano en el portal.
 
-### Slide 16 · Power Platform, en una slide
-> *"Todo esto ya existía antes de Agent 365, y nada de esto depende de Agent 365."*
+### 9. Ver → decidir → comprobar
 
-- **Carriles**: entornos por carril con Managed Environments, environment groups y Settings Enforcer.
-  El Default endurecido, pero no apagado. *"El maker no pide permiso a un comité: elige carril."*
-- **DLP y ACP**: autenticación, canales, conectores y endpoint filtering; las ACP pasan a allowlist y
-  bloquean servidores MCP.
-- **ALM y calidad**: pipelines y Git, component collections, evaluaciones antes de Producción.
+11:05. Una ficha en el inventario no demuestra que la telemetría llegue ni que la política se aplique. El control plane conecta decisiones con evidencias. Cero alertas tampoco equivale a cero riesgo.
 
-> *"El matiz importante: estos controles solo ven lo que se construye en Power Platform. Un agente de
-> Agent Builder o uno externo no vive en ningún entorno, y aquí no aparece."*
+### 10. Tres capas que se complementan
 
-### Slide 17 · la tabla de carriles
-> *"Esta slide no es para leerla aquí: es para hacerle una foto."* *(tres segundos de silencio)*
+11:06. No hay un único interruptor que sustituya las tres capas. El centro de administración ayuda a coordinar; la aplicación de cada control sigue dependiendo del servicio, la plataforma y el canal.
 
-Lee solo dos filas: **Agentes externos** y **Propietario**.
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/office365/servicedescriptions/microsoft-agent-365/microsoft-agent-365).
 
-> *"Fijaos que las dos filas que más importan son las que no resuelve Power Platform."*
+### 11. Registro base y Agent 365
 
-(La slide 18, carriles y comités, queda oculta: su idea está en la 16.)
+11:07. Diferenciar capacidades base de Microsoft 365 y las añadidas por Agent 365. No atribuir todo el registro a una licencia Agent 365 ni prometer que E5 por sí solo da todos los insights. La documentación de licencia se revisa por función; consultar apéndice 36.
 
----
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/office365/servicedescriptions/microsoft-agent-365/microsoft-agent-365) · [Microsoft 2](https://www.microsoft.com/licensing/faqs/122).
 
-# BLOQUE 5 — Qué hacen los usuarios · 11:19:30 → 11:21:30
+### 12. Un inventario útil responde a cuatro cosas
 
-### Slide 19
-- **Uso**: los informes de uso de agentes del admin center: qué agentes se usan, cuántos usuarios y
-  cuáles nadie abre. Agent 365 añade la visualización por agente, también de los externos con telemetría.
-  > *"Un agente sin uso es un candidato a archivar. Uno con mucho uso y sin propietario, una urgencia."*
-- **Interacciones y datos**: Purview **DSPM for AI** enseña qué preguntan, qué responde y qué datos
-  sensibles aparecen. La DLP de Purview bloquea el prompt o la respuesta; las etiquetas con cifrado
-  impiden extraer lo que el usuario no puede extraer.
-- **El prerrequisito que hunde proyectos**: auditoría unificada activa.
+11:09. El informe del 2 de octubre cuenta 41 identidades de agente en Entra. No trasladar esa cifra al registro All agents sin comprobarlo: son inventarios de distinta cobertura. Agentes antiguos, conectados y de distintas plataformas pueden tener modelos de identidad diferentes.
 
-> *"Antes de bloquear nada, mirad qué hacen."*
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-registry?view=o365-worldwide).
 
----
+### 13. DEMO 1
 
-# 🎬 DEMO 2 — «¿Qué hacen con ellos?» · 11:21:30 → 11:25:30
+11:10–11:14. Abrir All agents con los nombres revisados previamente; si hay referencias a terceros, llegar filtrado por FraSoHome. Mostrar Atajo, Calculadora y Asistente; buscar fs-triage solo si se verificó su presencia. Separar cobertura de All agents y las 41 identidades documentadas en Entra. Mostrar creador real Dev Admin; el cambio de equipo de Marta es hipotético. Abrir responsable, permisos y origen. Si falta una fila, explicar la cobertura sin improvisar. PLAN B: diapositiva 31, inventario documentado. Volver a 14. CHECKPOINT 11:14.
 
-**4:00 · riesgo medio · plan B: slide 21 (oculta), vídeo o capturas**
+### 14. Power Platform sigue siendo el cimiento
 
-> ⚠️ Solo va en vivo si a las 9:30 el Activity explorer ya enseña las interacciones de anoche.
+11:14–11:16. Una sola diapositiva. El tenant de laboratorio usa Default; no fingir que existen entornos de desarrollo, prueba y producción separados. La separación es la recomendación para el ciclo de vida. Matriz de cuatro carriles en el apéndice 35.
 
-**Beat 1 · 1:30" · Las conversaciones** *(Purview › DSPM for AI › Activity explorer)*
-Interacciones con los agentes de FraSoHome: usuario, agente, prompt y respuesta. Filtras por
-información sensible: aparece un **IBAN**. Álvaro pegó la cuenta de un cliente en un agente.
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/office365/servicedescriptions/microsoft-agent-365/microsoft-agent-365).
 
-> *"Nadie ha revisado este agente. Y ya sé que por él ha pasado una cuenta bancaria."*
+### 15. Actividad, detección y prevención
 
-**Beat 2 · 1:15" · El uso** *(informe de uso de agentes, o Agent 365)*
-Qué agentes se usan y cuáles no. Si el informe aún no tiene datos, dilo:
+11:16–11:18. DLP se explica por ubicación, condición, canal y acción; no como un filtro universal de todos los prompts y respuestas. La auditoría no demuestra por sí sola prevención. En el ensayo, la política de IBAN estaba activa, pero no disparó; su causa está pendiente de diagnóstico. DSPM detect sensitive info added to AI sites cubre sitios de IA de terceros, no prueba cobertura de Copilot.
 
-> *"Este informe tarda hasta dos días en llenarse. Por eso la visibilidad se activa el primer día,
-> no el día que la necesitas."*
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/purview/dlp-microsoft365-copilot-location-learn-about).
 
-**Beat 3 · 45" · Remate**
-> *"La visibilidad estaba en la capa, no en el agente. Y es lo que os deja decidir qué bloquear
-> con datos, y no con miedo."*
+### 16. DEMO 2
 
----
+11:18–11:22. Prioridad: búsqueda de Audit terminada antes de la sesión. Mostrar conversaciones del Atajo, Asistente y Calculadora según resultados disponibles; abrir actor, agente, operación y hora. DSPM Activity explorer solo si se confirmó la evidencia. IBAN: la política existe, pero el prompt de prueba recibió respuesta normal; no se ha validado detección ni bloqueo. No atribuirlo con certeza a confianza o palabras clave. Si falta evidencia, mostrar estado de la política y el siguiente paso de diagnóstico. Informes de uso: una frase si están vacíos. PLAN B: 32. Volver a 17. CHECKPOINT 11:22.
 
-# BLOQUE 6 — Control central · 11:25:30 → 11:27:30
+### 17. Una decisión, un responsable y un alcance
 
-### Slide 22 · tres acciones, un solo sitio
-- **Aprobar**: un agente que quiere llegar a toda la organización pide paso. Revisas qué hace, qué toca
-  y con quién se comparte antes de publicarlo.
-- **Reasignar**: un agente cuyo propietario se fue recibe uno nuevo.
-  **Segunda repetición de la frase ancla.**
-- **Bloquear**: para toda la organización, venga de Agent Builder, de Copilot Studio o de un tercero.
+11:22–11:24. Las acciones disponibles y el efecto dependen del tipo de agente. Copilot Studio y Agent Builder pueden bloquearse en hosts M365 compatibles; otros tipos tienen alcance diferente. Confirmar la experiencia del usuario tras la propagación. Owner de la ficha, owner de Entra y sponsor no son campos intercambiables.
 
-> *"Quién puede crear y compartir agentes se decide en la configuración de Copilot del admin center.
-> No lo cerréis: limitad con quién se comparte. Si cerráis el playground, la experimentación se va
-> fuera del tenant, donde no la veis."*
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-actions?view=o365-worldwide) · [Microsoft 2](https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-registry?view=o365-worldwide).
 
----
+### 18. DEMO 3
 
-# 🎬 DEMO 3 — «¿Quién decide?» · 11:27:30 → 11:31
+11:24–11:27. La Calculadora NO estaba bloqueada en el informe del 2 de octubre. Comprobar estado antes de la sesión. Si está disponible y autorizada para el ensayo, mostrar el bloqueo real y el estado administrativo; el efecto de usuario puede tardar. No prometer verificación instantánea. Requests del Asistente: abrir solo si se comprobó una solicitud pendiente; si no, explicar la decisión con PLAN B 33. Reasignación opcional, distinguiendo owner de Entra, propietario de la ficha y sponsor. PLAN B: 33; es un recorrido propuesto, no un bloqueo ya ejecutado. Volver a 19. CHECKPOINT 11:27.
 
-**3:30 · riesgo medio · plan B: slide 24 (oculta), capturas**
+### 19. SDK y observabilidad: piezas distintas
 
-**Beat 1 · 1:15" · Aprobar** *(admin center › Agents › Requests)*
-El Asistente de Devoluciones pide publicarse para toda la organización. Abres la solicitud: qué hace,
-qué conocimiento usa, quién lo pide. Lo apruebas o lo rechazas con motivo.
+11:27–11:29. El SDK actual separa identidad, tooling y notificaciones; la observabilidad se ofrece mediante Microsoft OpenTelemetry Distro. El repositorio ya declara microsoft-opentelemetry>=1.3 e importa microsoft.opentelemetry.a365.core: relacionar estos nombres con la Distro. observability.py es un módulo local, no el nombre del SDK de observabilidad deprecado. No cambiar framework ni afirmar que instalar el SDK basta para el gobierno.
 
-**Beat 2 · 1:15" · Bloquear** *(All agents)*
-«Calculadora de reembolsos (copia)», un duplicado de Agent Builder. **Bloquear.** Enseñas la captura
-de anoche: para el usuario, el agente ya no está.
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/agent-365-sdk) · [Microsoft 2](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/choose-integration-option).
 
-**Beat 3 · 1:00" · La política** *(admin center › Copilot › Settings)*
-Quién puede crear agentes y con quién se pueden compartir.
+### 20. Identidad del agente y responsabilidad
 
-> *"No os pido que lo cerréis. Os pido que decidáis desde aquí, y no agente a agente."*
+11:29–11:30. Blueprint: definición y configuración compartida desde la que se crean identidades de agente. Agent ID: identidad concreta que solicita tokens y se reconoce en el tenant. Owner: mantiene el recurso según el servicio. Sponsor: persona responsable asociada al agente. Responsable de negocio: decisión organizativa que debe quedar documentada; no confundirla automáticamente con un campo del portal. En este laboratorio Dev Admin creó los recursos y es sponsor; las personas del escenario son ficticias.
 
-`⏱ CHECKPOINT 3 — 11:31.` Si vas por encima de 11:32:30: salta la slide 25 y explícalo en la demo 4.
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/agent-365-sdk).
 
----
+### 21. Consentimiento: aprobar solo lo necesario
 
-# BLOQUE 7 — El agente que no es de Microsoft · 11:31 → 11:33:30
+11:30–11:31. La captura de consentimiento muestra lectura/escritura de correo, envío, chats y archivos. Preguntar qué capacidad del caso justifica cada permiso. Este consentimiento amplio sirve para explicar mínimo privilegio; no pedir a la audiencia que acepte todo. La presentación no ha modificado permisos del tenant.
 
-### Slide 25 · el Agent 365 SDK
-> *"Ninguna organización va a construir el cien por cien de sus agentes con herramientas de Microsoft.
-> La pregunta no es cómo evitar que existan: es cómo entran en el mismo control plane."*
+### 22. Tres rutas de incorporación
 
-Qué es: conecta un agente que ya tienes con Agent 365 —identidad en Entra, observabilidad con
-OpenTelemetry, tooling con los MCP de Work IQ, notificaciones—. Python, JavaScript y .NET.
-Register → Extend → Validate → Operate.
+11:31–11:33. Registry Sync para Anthropic se aplica a Managed Agents hospedados, no descubre este proceso Python local. Su integración y observabilidad tienen condiciones de preview/Frontier; la sincronización es manual. Las acciones de gobierno dependen de lo que expone cada plataforma. Para código propio hay opciones SDK y OpenTelemetry: no decir que el SDK es la única puerta universal. No conectar una plataforma en directo.
 
-> *"Lo que no es: no construye agentes, no los hospeda, no orquesta pasos. Vosotros seguís siendo
-> dueños del modelo, el framework y el host."*
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/choose-integration-option) · [Microsoft 2](https://learn.microsoft.com/en-us/microsoft-agent-365/admin/connected-platforms-anthropic-claude) · [Microsoft 3](https://learn.microsoft.com/en-us/microsoft-agent-365/admin/third-party-agent-observability).
 
-### Slide 26 · el blueprint
-> *"Una definición aprobada por IT de la que heredan todos los agentes creados a partir de ella.
-> Gobiernas la plantilla, no la instancia."*
+### 23. DEMO 4
 
-> *"Un agente externo puede llegar a Producción. Pero solo con blueprint, identidad, telemetría
-> y propietario. No hay atajo."*
+11:33–11:38. Antes/después del trabajo ya hecho. 1) Abrir un resumen previamente generado y demo-configuracion-segura.txt, nunca .env. 2) Mostrar el diff real 8242e3f..a7f5f47 de src/agent.py; cambios ya integrados en main, no ejecutar skills ni resetear el repositorio. 3) Abrir búsqueda terminada de Audit: AIInvokeAgent, localizar Atajo (DeclarativeAgent), Asistente (CopilotStudio) y fs-triage (CustomBuiltAgentsUsingSDK); revisar únicamente filas de la demo. Resultado documentado: 2 InvokeAgent, 46 ExecuteToolBySDK y 2 InferenceCall. No presentar los recuentos como consulta recién ejecutada si se usa el respaldo. 4) Work IQ: explicación, no demo funcional. Requiere permisos delegados; con S2S la skill se detiene con mensaje; Python + Claude necesita integración específica y no hay adaptador publicado comprobado. No afirmar que se sustituyó el cliente de buzón por Mail/Word ni que Work IQ está validado de extremo a extremo. Cierre: distintos orígenes, una evidencia de actividad comparable. PLAN B: 34. Volver a 24. CHECKPOINT 11:38.
 
----
+Fuentes: [Microsoft 1](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/agent-365-sdk) · [Microsoft 2](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/choose-integration-option).
 
-# 🎬 DEMO 4 — «El agente que no es de Microsoft» · 11:33:30 → 11:38
+### 24. Gobernar también es reaccionar
 
-**4:30 · riesgo medio · es el cierre · plan B: slide 28 (oculta), terminal grabado**
+11:38–11:40. Esta cadencia es una propuesta organizativa, no un calendario impuesto por Microsoft. Definir un responsable de cada revisión. Incidentes, nuevos permisos o bajas disparan revisión inmediata según severidad; la reunión periódica no sustituye la respuesta operativa.
 
-### La precondición, que es media demo
-El repo de `fs-triage-devoluciones` en VS Code. Enseñas el resumen del triaje de anoche: reparto por
-motivo y el patrón de `hectorvidal@example.com`, cuatro devoluciones en una semana. Y el `.env`.
+### 25. Mañana: empieza con diez agentes
 
-> *"Esto lo escribió David, de e-commerce, con el Agent SDK de Claude. Funciona. Y no aparece en
-> All agents, ni en DSPM, ni en la factura de nadie. Esto es lo que antes llamábamos Shadow AI."*
+11:40–11:41. Volver a la pregunta inicial. No se trata de acumular filas: escoger diez agentes y poder responder quién los mantiene, qué pueden hacer, qué han hecho y cómo se retiran. El número diez es una propuesta de alcance inicial, no un requisito.
 
-**Beat 1 · 1:15" · Observabilidad** *(Claude Code)*
+### 26. Tu checklist de 30 / 60 / 90 días
+
+11:41–11:42. El QR contiene la checklist en texto plano; no abre un servicio externo. Copia ampliada en 01_trabajo/checklist-30-60-90.md. Acordar entregables y responsables, no solo fechas.
+
+### 27. Para llevarte y profundizar
+
+11:42–11:43. Enlaces oficiales de apoyo. Las notas contienen fuentes por tema. Licencias y preview pueden cambiar; confirmar los requisitos del tenant antes de desplegar. No dedicar este minuto a abrir documentación.
+
+### 28. Preguntas
+
+11:43–11:50. Reservar siete minutos. Licencias: apéndice 36. Carriles de gobierno: 35. Agentes externos: nativa, Registry Sync o código instrumentado, según plataforma. E5 no equivale por sí solo a todas las funciones de Agent 365. DLP: especificar ubicación y acción. Bloqueo: explicar alcance y propagación. Work IQ: delegado y no validado extremo a extremo en esta demo.
+
+### 29. Gracias
+
+Cierre a las 11:50. Mostrar el QR de valoración original de la organización; distinto del QR de checklist de la diapositiva 26.
+
+### 30. Contacto
+
+Contacto institucional original. Fin del recorrido visible. Las seis diapositivas siguientes permanecen ocultas y son material de respaldo.
+
+### 31. Plan B · inventario del laboratorio · respaldo oculto
+
+Respaldo de demo 1. Mostrar solo si falla el portal. Estos datos proceden del informe del ensayo; la presencia actual en All agents se comprueba aparte. Dev Admin creó los recursos de FraSoHome. Volver a la diapositiva 14.
+
+### 32. Plan B · qué está demostrado · respaldo oculto
+
+Respaldo de demo 2. No hay prueba de bloqueo de IBAN. No usar el estado Enabled de una política como evidencia de enforcement. Revisar condición, nivel de confianza, ubicación compatible y propagación antes de repetir un caso controlado. Volver a 17.
+
+### 33. Plan B · una decisión verificable · respaldo oculto
+
+Respaldo de demo 3. No representa una captura ni una acción ya ejecutada. La solicitud del Asistente tampoco se ha confirmado. Explicar qué decidiríamos y qué prueba aceptaríamos como éxito. Volver a 19.
+
+### 34. Plan B · Claude ya deja evidencia · respaldo oculto
+
+Respaldo de demo 4. Los recuentos provienen del informe local; no de una consulta realizada durante esta edición. Mostrar demo4-diff-agent.patch como evidencia del cambio de código. Comparar el tipo de agente con DeclarativeAgent y CopilotStudio solo si la búsqueda guardada aporta esas filas. Work IQ se explica como capacidad pendiente de validar. Volver a 24.
+
+### 35. Cuatro carriles de gobierno · respaldo oculto
+
+Apéndice. Ajustar controles a impacto, autonomía y sensibilidad del dato. La plataforma de creación no determina por sí sola el nivel de riesgo. Un agente externo puede requerir controles adicionales sin que todos los externos tengan el mismo riesgo.
+
+### 36. Licencias: validar por capacidad · respaldo oculto
+
+Apéndice de licencias. Agent 365 tiene requisitos de suite y asignación; E7 incluye capacidades según el plan. La documentación consultada contiene formulaciones de requisitos no totalmente uniformes: antes de comprar, confirmar la función concreta con documentación y condiciones del contrato. El laboratorio tiene E5 Developer para 16 usuarios y Copilot + Agent 365 solo asignados al administrador según instrucciones.md. No confundir gobierno con consumo o licencia de ejecución del agente. No dar precios sin revisión.
+
+Fuentes: [Microsoft 1](https://www.microsoft.com/licensing/faqs/122) · [Microsoft 2](https://learn.microsoft.com/en-us/office365/servicedescriptions/microsoft-agent-365/microsoft-agent-365).
+
+## Demo 4 · 11:33–11:38 · diapositiva 23
+
+**0:00–0:45 · El trabajo útil.** Abrir el resumen de devoluciones ya generado. «Este agente está hecho con Claude Agent SDK y corre fuera de Microsoft. El antes y el después que vais a ver ya están implementados». Usar `demo-configuracion-segura.txt`; nunca abrir `.env`.
+
+**0:45–2:15 · El cambio real.** Abrir `demo4-diff-agent.patch` junto a `src/agent.py`. Es el diff entre 8242e3f y a7f5f47, ya en main. Mostrar identidad/configuración y spans de invocación, herramienta e inferencia. No describirlo como exclusivamente aditivo: el diff también modifica código. No ejecutar skills, no reinstalar dependencias y no hacer reset. El código actual usa microsoft-opentelemetry>=1.3 y microsoft.opentelemetry.a365.core; relacionarlo con Microsoft OpenTelemetry Distro. El módulo local observability.py no es el SDK de observabilidad anterior.
+
+Para volver a obtener el diff, desde la raíz del repositorio, operación de solo lectura:
+
+```powershell
+git diff 8242e3f a7f5f47 -- BizzSummit/2026/01_trabajo/demos/agente-externo/fs-triage-devoluciones/src/agent.py
 ```
-añade observabilidad con OpenTelemetry a este agente, sin cambiar su lógica
-```
-Enseña el diff: *"Ha añadido. No ha reescrito el agente ni ha cambiado el framework."*
 
-**Beat 2 · 1:15" · Registro** — **solo si el tenant tiene Agent 365**
-Registro con su blueprint y tooling por los MCP de Work IQ.
+**2:15–4:15 · La evidencia.** Abrir los resultados guardados de Audit. Mostrar una invocación de Atajo, una de Asistente y una de fs-triage, si las tres están verificadas. Relacionar identidad, actor, tipo de agente, operación y hora. «El origen cambia; podemos reunir evidencias de actividad de los tres». No deducir idénticos controles para todos a partir de una lista común.
 
-> *"Work IQ requiere permisos delegados. Con autenticación S2S la skill se salta sola y no os dice
-> por qué. Es una decisión de antes de escribir el agente."*
+**4:15–5:00 · El límite y el cierre.** «Work IQ permite conectar herramientas con permisos delegados. En este agente la integración requiere trabajo específico; no la estoy presentando como probada». Con S2S la skill se detiene con un mensaje. Registry Sync es una ruta para Managed Agents hospedados en Anthropic, no para descubrir este proceso local. Código propio puede incorporarse mediante las opciones SDK / OpenTelemetry documentadas.
 
-Si no hay Agent 365, vuelve a la slide 26 y cuéntalo sobre el blueprint.
+**Plan B: diapositiva 34**, recuentos del informe del 2 de octubre, y diff local. No son una consulta en directo ni una captura de portal. Volver a 24. A las 11:38 cerrar la demo.
 
-**Beat 3 · 1:00" · Los tres juntos** — **solo si el beat 2 funcionó**
-All agents con los tres agentes de FraSoHome. Silencio.
+## Si vas tarde
 
-**Beat 4 · 30" · Remate de la sesión**
-> *"El control plane no pregunta con qué lo construiste. Pregunta quién eres, qué tocas y quién
-> responde por ti."*
+- A las 11:14 terminar demo 1. Reducir Power Platform a la frase de cierre.
+- A las 11:22 terminar demo 2. No perseguir IBAN ni informes vacíos.
+- A las 11:27 terminar demo 3. Omitir reasignación opcional y no esperar propagación.
+- A las 11:38 terminar demo 4. Si faltan filas, enseñar 34 y cerrar.
+- A las 11:43 abrir preguntas. Mantener los siete minutos; no compensar alargando el slot.
 
----
+## Frases que deben desaparecer del relato
 
-# BLOQUE 8 — Cadencia y cierre · 11:38 → 11:42
-
-### Slide 29 · la cadencia
-| Cadencia | Quién | Qué mira |
-|---|---|---|
-| Semanal | Admin de plataforma | Nuevos y sin propietario en All agents |
-| Mensual | Admin y negocio | Uso por agente y agentes que nadie abre |
-| Trimestral | Seguridad | Interacciones con datos sensibles en DSPM |
-| Anual | Owners de negocio | Revalidar propietario y quién lo usa |
-
-> *"Sin esto, el inventario es una foto de un día."*
-
-**Tercera repetición de la frase ancla.**
-
-### Slide 30 · volved y contad
-> *"Volved a vuestro tenant el lunes. Abrid All agents. Y contad. La cifra os va a sorprender,
-> y es una buena noticia: el inventario ya lo tenéis. Lo que falta es decidir quién lo mira cada semana."*
-
----
-
-# RECURSOS · 11:42 → 11:43
-Slide 31 con el QR a la checklist 30/60/90. Documentación del admin center de agentes, Agent Builder,
-DSPM for AI, la guía de gobierno de Copilot Studio, Agent 365, el SDK y Entra Agent ID.
-
----
-
-# Q&A · 11:43 → 11:50
-
-`⏱ CHECKPOINT 4 — a las 11:43 estás en Q&A, hayas terminado o no.`
-
-| Pregunta | Respuesta |
-|---|---|
-| *"Estamos en E3 + Copilot, ¿podemos usar Agent 365?"* | No sois elegibles. Pero el inventario y el control de agentes del admin center ya los tenéis |
-| *"¿Los agentes de Agent Builder salen sin Agent 365?"* | Sí, en el admin center. Agent 365 añade la identidad, la observabilidad y los externos |
-| *"¿Esto sustituye al CoE Starter Kit?"* | Para inventariar agentes, sí. Y además ve lo que el CoE no ve |
-| *"¿Y los agentes de terceros y de otros clouds?"* | Registry Sync multicloud en preview, o el SDK. Lo no registrado solo se ve como Shadow AI |
-| *"¿El SDK me obliga a cambiar de framework?"* | No. No construye ni hospeda: se acopla al que ya tienes |
-| *"¿Cuánto cuesta?"* | Gobierno por usuario y ejecución por créditos. Dos facturas |
-| *"¿Podemos bloquear que la gente cree agentes?"* | Podéis, y es el error más caro. Limitad con quién se comparten |
-
-**Si nadie pregunta:**
-> *"¿Por dónde empiezo el lunes si solo tengo una hora? Abrís All agents y filtráis por sin propietario
-> y por compartidos con toda la organización. Esa lista es vuestro backlog."*
-
----
-
-# Anexos
-
-## A. Mapa de slides
-
-34 slides, **28 visibles**. Las ocultas se muestran con `Ctrl` + clic derecho › *Ir a la diapositiva*.
-
-| # | Contenido | Bloque |
-|---|---|---|
-| 1–2 | Título y sponsors (intacta) | 0 |
-| 3–6 | Gancho, millones, lo que te llevas, FraSoHome | 0 |
-| 7 | No es Shadow IT de siempre | 1 |
-| *8* | *Cuatro riesgos — oculta* | 1 |
-| 9–10 | Cinco síntomas · Visibilidad antes que control | 1 |
-| 11–12 | **Tres capas** · Tres mensajes y licenciamiento | 2 |
-| 13 | El inventario ya existe | 3 |
-| 14 | **DEMO 1 — ¿Cuántos hay?** | 3 |
-| *15* | *Plan B demo 1 — oculta* | |
-| 16 | **Lo que ya teníais** (Power Platform) | 4 |
-| 17 | Los cuatro carriles (tabla) | 4 |
-| *18* | *Carriles, no comités — oculta* | 4 |
-| 19 | Qué hacen los usuarios | 5 |
-| 20 | **DEMO 2 — ¿Qué hacen?** | 5 |
-| *21* | *Plan B demo 2 — oculta* | |
-| 22 | Control central | 6 |
-| 23 | **DEMO 3 — ¿Quién decide?** | 6 |
-| *24* | *Plan B demo 3 — oculta* | |
-| 25–26 | Agent 365 SDK · Blueprint | 7 |
-| 27 | **DEMO 4 — El otro agente** | 7 |
-| *28* | *Plan B demo 4 — oculta* | |
-| 29–30 | Cadencia · Volved y contad | 8 |
-| 31–34 | Recursos, Q&A, gracias, contacto | |
-
-**Pendiente sobre el deck:** el QR de la checklist en la slide 31, y las capturas y vídeos reales
-en las cuatro slides de plan B, incrustados y no enlazados.
-
-## B. Ventanas, en este orden
-1. PowerPoint en modo presentador
-2. Copilot Chat · Atajo Devoluciones MAD01 (demo 1)
-3. Admin center de M365 · Agents › All agents, ya filtrado (demos 1 y 3)
-4. Purview · DSPM for AI › Activity explorer, ya filtrado (demo 2)
-5. Admin center de M365 · Agents › Requests (demo 3)
-6. Admin center de M365 · Copilot › Settings (demo 3)
-7. Terminal y Claude Code en `fs-triage-devoluciones` (demo 4)
-
-Zoom al 125%, terminal a 18 pt, notificaciones silenciadas.
-
-## C. Qué recortar si vas tarde, en orden
-1. Slide 7 → una frase
-2. Slide 16 → una frase, y directo a la tabla
-3. Slide 25 → se explica dentro de la demo 4
-4. Demo 3, beat 3 (la configuración de Copilot) → una frase
-5. Demo 2, beat 2 (el informe de uso) → una frase
-
-**Nunca se recortan:** la demo 1, la demo 4 y el cierre.
+- «Todos nacen con Entra Agent ID», «E5 incluye todo» o «todos requieren SDK».
+- «La política del IBAN lo bloqueó»: no hay evidencia que lo sostenga.
+- «Marta creó este agente en marzo»: el tenant muestra Dev Admin y creación del 2 de octubre.
+- «Claude funciona y nadie lo ve»: ya está registrado y tiene telemetría documentada.
+- «La skill se salta en silencio» o «Work IQ ya sustituye el buzón»: no está demostrado.
+- «Bloquearlo detiene cualquier ejecución»: explicar tipo, canal y propagación.

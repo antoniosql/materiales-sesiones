@@ -1,0 +1,155 @@
+diff --git a/BizzSummit/2026/01_trabajo/demos/agente-externo/fs-triage-devoluciones/src/agent.py b/BizzSummit/2026/01_trabajo/demos/agente-externo/fs-triage-devoluciones/src/agent.py
+index 073f61b..17a94a6 100644
+--- a/BizzSummit/2026/01_trabajo/demos/agente-externo/fs-triage-devoluciones/src/agent.py
++++ b/BizzSummit/2026/01_trabajo/demos/agente-externo/fs-triage-devoluciones/src/agent.py
+@@ -23,13 +23,29 @@ import argparse
+ import asyncio
+ import os
+ import sys
++import uuid
+ from collections import defaultdict
+ from datetime import datetime, timedelta, timezone
+ from pathlib import Path
+ 
++# A365 Observability — best-effort instrumentation (verify against official sample)
++# Va antes que claude_agent_sdk: configura OpenTelemetry antes de crear spans.
++import observability as obs
++from microsoft.opentelemetry.a365.core import (
++    InferenceCallDetails,
++    InferenceOperationType,
++    InferenceScope,
++    InvokeAgentScope,
++    InvokeAgentScopeDetails,
++    ServiceEndpoint,
++)
++from microsoft.opentelemetry.a365.core.middleware.baggage_builder import BaggageBuilder
++
+ from claude_agent_sdk import (
++    AssistantMessage,
+     ClaudeAgentOptions,
+     ClaudeSDKClient,
++    ResultMessage,
+     create_sdk_mcp_server,
+     tool,
+ )
+@@ -37,6 +53,7 @@ from claude_agent_sdk import (
+ from dotenv import load_dotenv
+ 
+ from buzon import Mensaje, crear_buzon
++from workiq import servidores_workiq  # A365 WorkIQ — best-effort wiring (verify against SDK source before production)
+ 
+ load_dotenv()
+ 
+@@ -59,6 +76,7 @@ _cache: dict[str, Mensaje] = {}
+     "Lista los mensajes recientes del buzón de devoluciones con su id, remitente y asunto.",
+     {"limite": int},
+ )
++@obs.trazar_herramienta("listar_bandeja")  # A365 Observability — ExecuteToolScope
+ async def listar_bandeja(args: dict) -> dict:
+     limite = int(args.get("limite") or 25)
+     mensajes = _buzon.listar(limite=limite)
+@@ -77,6 +95,7 @@ async def listar_bandeja(args: dict) -> dict:
+     "Devuelve el cuerpo completo de un mensaje del buzón a partir de su id.",
+     {"mensaje_id": str},
+ )
++@obs.trazar_herramienta("leer_mensaje")  # A365 Observability — ExecuteToolScope
+ async def leer_mensaje(args: dict) -> dict:
+     mensaje_id = args["mensaje_id"]
+     mensaje = _cache.get(mensaje_id) or _buzon.leer(mensaje_id)
+@@ -95,6 +114,7 @@ async def leer_mensaje(args: dict) -> dict:
+     "Busca remitentes con varias devoluciones en pocos días, que es lo que interesa a Prevención de Pérdidas.",
+     {"dias": int},
+ )
++@obs.trazar_herramienta("detectar_patrones")  # A365 Observability — ExecuteToolScope
+ async def detectar_patrones(args: dict) -> dict:
+     dias = int(args.get("dias") or 14)
+     corte = datetime.now(timezone.utc) - timedelta(days=dias)
+@@ -129,6 +149,7 @@ async def detectar_patrones(args: dict) -> dict:
+     "Guarda el resumen diario en disco para el Store Manager.",
+     {"contenido": str},
+ )
++@obs.trazar_herramienta("guardar_resumen")  # A365 Observability — ExecuteToolScope
+ async def guardar_resumen(args: dict) -> dict:
+     destino = Path("salida") / f"resumen-{datetime.now():%Y-%m-%d}.md"
+     destino.parent.mkdir(parents=True, exist_ok=True)
+@@ -171,29 +192,70 @@ Reglas:
+ 
+ 
+ async def ejecutar(prompt: str, verbose: bool = False) -> int:
++    # A365 WorkIQ — best-effort wiring (verify against SDK source before production)
++    workiq_servidores, workiq_herramientas = servidores_workiq()
+     opciones = ClaudeAgentOptions(
+         system_prompt=INSTRUCCIONES,
+-        mcp_servers={"devoluciones": herramientas},
++        mcp_servers={"devoluciones": herramientas, **workiq_servidores},
+         allowed_tools=[
+             "mcp__devoluciones__listar_bandeja",
+             "mcp__devoluciones__leer_mensaje",
+             "mcp__devoluciones__detectar_patrones",
+             "mcp__devoluciones__guardar_resumen",
++            *workiq_herramientas,
+         ],
+         max_turns=30,
+         # En Windows el SDK necesita un claude.exe nativo; el de la extensión de VS Code sirve.
+         cli_path=os.environ.get("CLAUDE_CLI_PATH") or None,
+     )
+ 
+-    async with ClaudeSDKClient(options=opciones) as cliente:
+-        await cliente.query(prompt)
+-        async for mensaje in cliente.receive_response():
+-            for bloque in getattr(mensaje, "content", []) or []:
+-                texto = getattr(bloque, "text", None)
+-                if texto:
+-                    print(texto, end="", flush=True)
+-                elif verbose and getattr(bloque, "name", None):
+-                    print(f"\n  [tool] {bloque.name}", file=sys.stderr)
++    # A365 Observability — best-effort instrumentation (verify against official sample)
++    # A365 auth mode: obo — telemetry uses an app-only token on the S2S route
++    await obs.preparar_token()
++    sesion = str(uuid.uuid4())
++    obs.SESION.set(sesion)
++    peticion = obs.peticion(prompt, sesion)
++    salida: list[str] = []
++
++    with BaggageBuilder().tenant_id(obs.TENANT_ID).agent_id(obs.AGENT_ID).session_id(sesion).build(), \
++            InvokeAgentScope.start(
++                peticion,
++                InvokeAgentScopeDetails(endpoint=ServiceEndpoint(hostname=f"{obs.BLUEPRINT_ID or 'agent'}.agent.invalid")),
++                obs.agent_details,
++                obs.caller_details,
++            ) as invocacion:
++        invocacion.record_input_messages([prompt])
++
++        async with ClaudeSDKClient(options=opciones) as cliente:
++            with InferenceScope.start(
++                peticion,
++                InferenceCallDetails(
++                    operationName=InferenceOperationType.CHAT,
++                    model=os.environ.get("ANTHROPIC_MODEL", "claude"),
++                    providerName="anthropic",
++                ),
++                obs.agent_details,
++                obs.user_details,
++            ) as inferencia:
++                await cliente.query(prompt)
++                async for mensaje in cliente.receive_response():
++                    if isinstance(mensaje, AssistantMessage) and mensaje.model:
++                        inferencia.record_attributes({"gen_ai.response.model": mensaje.model})
++                    if isinstance(mensaje, ResultMessage) and mensaje.usage:
++                        inferencia.record_input_tokens(int(mensaje.usage.get("input_tokens", 0)))
++                        inferencia.record_output_tokens(int(mensaje.usage.get("output_tokens", 0)))
++                        if mensaje.stop_reason:
++                            inferencia.record_finish_reasons([mensaje.stop_reason])
++                    for bloque in getattr(mensaje, "content", []) or []:
++                        texto = getattr(bloque, "text", None)
++                        if texto:
++                            salida.append(texto)
++                            print(texto, end="", flush=True)
++                        elif verbose and getattr(bloque, "name", None):
++                            print(f"\n  [tool] {bloque.name}", file=sys.stderr)
++                inferencia.record_output_messages(["".join(salida)])
++
++        invocacion.record_output_messages(["".join(salida)])
+     print()
+     return 0
+ 
