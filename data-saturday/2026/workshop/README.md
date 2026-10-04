@@ -16,3 +16,26 @@ Poco PowerPoint y muchas historias abuelo cebolleta.
 Miguel.egea@gmail.com
 eladio.rincon@gmail.com 
 antoniosotorodriguez@gmail.com 
+
+## Enlaces de interés
+Apache Ossie: https://github.com/apache/ossie 
+Plantilla de Proyecto: https://github.com/polmarza/project-template
+De skill a pluging: https://x.com/startupideaspod/article/2090177246179045536 
+compartir Skills: https://x.com/KSimback/status/2092565062850318824
+sistema de varios agentes: https://gist.github.com/antoniolg/4a38aba6f4e4d7447cdd986b71a5ee1b 
+Matar los procesos: ![alt text](image.png)
+
+https://medium.com/@dr.jarkko.moilanen/from-odps-to-mcp-how-dawiso-brings-data-product-context-to-ai-agents-in-databricks-c4e9bb944a9d 
+
+https://github.com/resources/insights/agentic-engineering-system
+
+https://medium.com/illumination/microsoft-blocked-a-databricks-integration-the-real-battle-is-over-enterprise-ai-176305dac956
+
+![alt text](image-1.png)
+
+https://github.com/pawarbi/fabric-rlm-core
+
+https://learn.microsoft.com/es-es/fabric/data-factory/connector-clickhouse
+https://clickhouse.com/blog/clickhouse-for-microsoft-fabric
+
+Slim CI: https://snowpack-data.com/blog/slim-ci-for-dbt 
