@@ -39,3 +39,6 @@ https://learn.microsoft.com/es-es/fabric/data-factory/connector-clickhouse
 https://clickhouse.com/blog/clickhouse-for-microsoft-fabric
 
 Slim CI: https://snowpack-data.com/blog/slim-ci-for-dbt 
+
+https://imfabric.dev/build/04-pyspark-notebooks/01-custom-environment/
+https://radacad.com/pbip-pbir-and-making-power-bi-ai-addressable-a-conversation-with-rui-romano-fabric-insider-ep-14/
