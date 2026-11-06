@@ -1,0 +1,8 @@
+file_path,column_list,has_bom,description
+marketing_precision/raw_csv/catalogo_datasets_marketing_precision.csv,"dataset,descripcion,granularidad,clave_principal,campos_clave,casos_relacionados",True,Catálogo de datasets de marketing de precisión
+marketing_precision/raw_csv/diccionario_columnas_marketing_precision.csv,"dataset,columna,tipo_dato,ejemplo_valor",True,Diccionario de columnas de marketing de precisión
+marketing_precision/raw_csv/mapeo_casos_marketing_precision.csv,"caso_id,caso,datasets_principales,pregunta_negocio,output_esperado",True,Casos de uso de marketing de precisión y sus datasets
+people_analytics/raw_csv/diccionario_fuentes_brutas.csv,"archivo,campo_o_grupo,descripcion,uso_analitico",True,Diccionario de las fuentes brutas de RR. HH.
+people_analytics/raw_csv/frasohome_diccionario_datos.csv,"dataset,columna,descripcion",True,Diccionario de datos de people analytics
+people_analytics/raw_csv/plantilla_backlog_indicadores.csv,"pregunta_alumnos,indicador,datos_origen,formula_negocio,visual_sugerido",True,Plantilla de backlog de indicadores de RR. HH.
+relaciones/marketing_precision_operational_links.csv,"dataset,column,business_entity,canonical_reference,notes",False,Enlaces entre marketing de precisión y retail

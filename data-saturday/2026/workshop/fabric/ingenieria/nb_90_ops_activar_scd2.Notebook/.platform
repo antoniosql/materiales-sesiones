@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_90_ops_activar_scd2"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "45721bd9-ed13-4576-aaab-7698d0020cff"
+  }
+}

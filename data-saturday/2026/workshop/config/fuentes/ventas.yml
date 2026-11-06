@@ -1,0 +1,20 @@
+# Fuentes del dominio 'ventas'. Un fichero por dominio.
+# Añadir una fuente es añadir una entrada aquí + su contrato. No se escribe código.
+dominio: ventas
+fuentes:
+  pedidos:
+    formato: csv
+    ruta_landing: landing/ventas/pedidos/
+    opciones_lectura:
+      header: true
+      delimiter: ";"
+    clave_negocio: [id_pedido]
+    modo_carga: merge            # append | overwrite | merge
+    contrato: contracts/silver/pedidos.yml
+
+  clientes:
+    formato: parquet
+    ruta_landing: landing/ventas/clientes/
+    clave_negocio: [id_cliente]
+    modo_carga: merge
+    contrato: contracts/silver/clientes.yml

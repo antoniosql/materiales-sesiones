@@ -1,0 +1,37 @@
+department_raw,department_std,hr_area,business_channel,critical_turnover_default
+Administración financiera,Finanzas,Servicios corporativos,Corporativo,False
+ATC,Atención al Cliente,Operaciones y cliente,Retail/Operaciones,True
+Atención al Cliente,Atención al Cliente,Operaciones y cliente,Retail/Operaciones,True
+Atencion Cliente,Atención al Cliente,Operaciones y cliente,Retail/Operaciones,True
+Centro logístico,Logística,Operaciones y cliente,Retail/Operaciones,True
+Compras,Compras,Servicios corporativos,Corporativo,False
+Contact Center,Atención al Cliente,Operaciones y cliente,Retail/Operaciones,True
+Customer Service,Atención al Cliente,Operaciones y cliente,Retail/Operaciones,True
+DATA/IT,IT y Datos,Digital y soporte,Soporte,False
+E COMMERCE,E-commerce,Digital,Online,False
+ecommerce,E-commerce,Digital,Online,False
+E-commerce,E-commerce,Digital,Online,False
+Finance,Finanzas,Servicios corporativos,Corporativo,False
+Finanzas,Finanzas,Servicios corporativos,Corporativo,False
+HR,RRHH,Servicios corporativos,Corporativo,False
+IT,IT y Datos,Digital y soporte,Soporte,False
+IT & Data,IT y Datos,Digital y soporte,Soporte,False
+IT y Datos,IT y Datos,Digital y soporte,Soporte,False
+Logistica,Logística,Operaciones y cliente,Retail/Operaciones,True
+Logística,Logística,Operaciones y cliente,Retail/Operaciones,True
+Marketing,Marketing,Digital y soporte,Soporte,False
+Marketing Digital,Marketing,Digital y soporte,Soporte,False
+MKT,Marketing,Digital y soporte,Soporte,False
+No informado,Sin clasificar,Sin clasificar,Sin clasificar,False
+Online,E-commerce,Digital,Online,False
+Operaciones logística,Logística,Operaciones y cliente,Retail/Operaciones,True
+People,RRHH,Servicios corporativos,Corporativo,False
+Personas,RRHH,Servicios corporativos,Corporativo,False
+Procurement,Compras,Servicios corporativos,Corporativo,False
+Recursos Humanos,RRHH,Servicios corporativos,Corporativo,False
+Retail store,Tienda física,Operaciones y cliente,Retail/Operaciones,True
+RRHH,RRHH,Servicios corporativos,Corporativo,False
+Sistemas y datos,IT y Datos,Digital y soporte,Soporte,False
+Tienda Fisica,Tienda física,Operaciones y cliente,Retail/Operaciones,True
+Tienda física,Tienda física,Operaciones y cliente,Retail/Operaciones,True
+Tiendas,Tienda física,Operaciones y cliente,Retail/Operaciones,True

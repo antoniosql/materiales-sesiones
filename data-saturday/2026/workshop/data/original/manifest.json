@@ -1,0 +1,1457 @@
+{
+  "inicio_utc": "2026-11-02T07:28:38.763076+00:00",
+  "null": "\\N",
+  "exclusiones_sql": [
+    "app.* (autenticación y sesiones)",
+    "lab.identity_ground_truth (solución)"
+  ],
+  "sql_database": "frasohome-oltp",
+  "cosmos_database": "frasohome",
+  "sql": {
+    "catalog.product": {
+      "columnas": [
+        "product_id",
+        "product_name",
+        "category",
+        "subcategory",
+        "brand",
+        "supplier",
+        "material",
+        "color",
+        "sale_price",
+        "unit_cost",
+        "vat_pct",
+        "weight_kg",
+        "length_cm",
+        "width_cm",
+        "height_cm",
+        "catalog_start_date",
+        "product_status",
+        "ean",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 101,
+      "partes": [
+        {
+          "ruta": "sql/catalog/product/part-0001.csv",
+          "filas": 101,
+          "sha256": "4ea0ef872a560a632805bca637ff8a5171caec0e2466866e9ece942e3217fc4b"
+        }
+      ]
+    },
+    "crm.customer": {
+      "columnas": [
+        "customer_id",
+        "first_name",
+        "last_name",
+        "email",
+        "email_is_valid",
+        "phone",
+        "loyalty_joined_at",
+        "loyalty_tier",
+        "loyalty_points",
+        "birth_date",
+        "gender",
+        "city",
+        "province",
+        "postal_code",
+        "country_code",
+        "marketing_consent",
+        "customer_status",
+        "churned_at",
+        "acquisition_source",
+        "preferred_channel",
+        "source_updated_at",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 100,
+      "partes": [
+        {
+          "ruta": "sql/crm/customer/part-0001.csv",
+          "filas": 100,
+          "sha256": "fb63808a907a9a96633289d7e75e8dc117b0a054d110bb11309eedb25b012a6b"
+        }
+      ]
+    },
+    "fin.transaction_cost": {
+      "columnas": [
+        "transaction_cost_id",
+        "document_type",
+        "order_id",
+        "ticket_id",
+        "customer_id",
+        "transaction_at",
+        "channel",
+        "store_id",
+        "main_category",
+        "gross_revenue_eur",
+        "discount_eur",
+        "product_cost_eur",
+        "logistics_cost_eur",
+        "packaging_cost_eur",
+        "last_mile_cost_eur",
+        "payment_cost_eur",
+        "service_cost_eur",
+        "expected_return_cost_eur",
+        "cac_eur",
+        "attributed_campaign_id",
+        "net_contribution_eur"
+      ],
+      "filas": 1831,
+      "partes": [
+        {
+          "ruta": "sql/fin/transaction_cost/part-0001.csv",
+          "filas": 1831,
+          "sha256": "ad52f6d3180dca730850579f028ddf86aa2ecdcda88f74f5104ca25e3e3c5050"
+        }
+      ]
+    },
+    "hr.absence": {
+      "columnas": [
+        "absence_id",
+        "employee_id",
+        "start_date",
+        "end_date",
+        "absence_type",
+        "working_days",
+        "justified",
+        "notes"
+      ],
+      "filas": 1522,
+      "partes": [
+        {
+          "ruta": "sql/hr/absence/part-0001.csv",
+          "filas": 1522,
+          "sha256": "e810e624dbebeeaea91db33df18b2764a8caa0a622c3b9b3a6e8b685571d1626"
+        }
+      ]
+    },
+    "hr.compensation": {
+      "columnas": [
+        "payroll_id",
+        "employee_id",
+        "period_month",
+        "base_salary_eur",
+        "variable_salary_eur",
+        "increase_pct",
+        "currency_code",
+        "source_system",
+        "loaded_at"
+      ],
+      "filas": 1642,
+      "partes": [
+        {
+          "ruta": "sql/hr/compensation/part-0001.csv",
+          "filas": 1642,
+          "sha256": "8b437607540c666eb5c6f45ff88048840dd8fe33256bec22e845d314e282f576"
+        }
+      ]
+    },
+    "hr.employee": {
+      "columnas": [
+        "employee_id",
+        "full_name",
+        "gender",
+        "birth_date",
+        "hired_at",
+        "left_at",
+        "employee_status",
+        "exit_type",
+        "exit_reason",
+        "department",
+        "location",
+        "role_name",
+        "level_name",
+        "contract_type",
+        "work_schedule",
+        "manager_id",
+        "remote_days_week",
+        "commute_km",
+        "source_row_id",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 821,
+      "partes": [
+        {
+          "ruta": "sql/hr/employee/part-0001.csv",
+          "filas": 821,
+          "sha256": "b762b979c25212ece6a4d2b0ccd79560fa6b708a083661e7bdb271039ce87088"
+        }
+      ]
+    },
+    "hr.employee_movement": {
+      "columnas": [
+        "movement_id",
+        "employee_id",
+        "moved_at",
+        "movement_type",
+        "department_from",
+        "department_to",
+        "level_from",
+        "level_to",
+        "reason",
+        "hr_comment",
+        "loaded_by",
+        "loaded_at"
+      ],
+      "filas": 1441,
+      "partes": [
+        {
+          "ruta": "sql/hr/employee_movement/part-0001.csv",
+          "filas": 1441,
+          "sha256": "d0b5d6a2836335749886f223596b23c05c48e1dd28461b4a53e1e50b152f30b6"
+        }
+      ]
+    },
+    "hr.overtime": {
+      "columnas": [
+        "overtime_id",
+        "employee_id",
+        "period_month",
+        "department_reported",
+        "hours",
+        "reason",
+        "approval_status",
+        "approver_id",
+        "requested_at",
+        "decided_at"
+      ],
+      "filas": 7823,
+      "partes": [
+        {
+          "ruta": "sql/hr/overtime/part-0001.csv",
+          "filas": 7823,
+          "sha256": "d98e96a15bd2af3752d78dd55e69c2def083bf422a6cf008f36e387bb9df513a"
+        }
+      ]
+    },
+    "hr.people_analytics_seed": {
+      "columnas": [
+        "employee_id",
+        "nombre_anonimizado",
+        "genero",
+        "edad",
+        "departamento",
+        "ubicacion",
+        "rol",
+        "nivel",
+        "tipo_contrato",
+        "jornada",
+        "fecha_alta",
+        "fecha_salida",
+        "estado_actual",
+        "tipo_salida",
+        "motivo_salida",
+        "abandono_voluntario_24m",
+        "salida_24m",
+        "activo_actual",
+        "antiguedad_meses",
+        "evaluacion_desempeno_1_5",
+        "promociones_24m",
+        "incremento_salarial_12m_pct",
+        "salario_anual_eur",
+        "horas_formacion_12m",
+        "satisfaccion_1_10",
+        "engagement_1_10",
+        "enps",
+        "calidad_manager_1_5",
+        "desarrollo_carrera_1_5",
+        "reconocimiento_1_5",
+        "percepcion_salario_1_5",
+        "balance_vida_trabajo_1_5",
+        "carga_trabajo_1_5",
+        "absentismo_dias_12m",
+        "horas_extra_media_mes",
+        "teletrabajo_dias_semana",
+        "distancia_casa_trabajo_km",
+        "probabilidad_abandono",
+        "riesgo_abandono",
+        "alto_riesgo_flag",
+        "talento_clave_flag",
+        "prioridad_retencion",
+        "conteo_empleado",
+        "comentario_salida",
+        "comentario_clima"
+      ],
+      "filas": 820,
+      "partes": [
+        {
+          "ruta": "sql/hr/people_analytics_seed/part-0001.csv",
+          "filas": 820,
+          "sha256": "e24342e7910239f3dd3dbb683e533badd25b3362a15ce54cdf305444763b0328"
+        }
+      ]
+    },
+    "hr.performance_review": {
+      "columnas": [
+        "review_id",
+        "employee_id",
+        "review_cycle",
+        "reviewed_at",
+        "overall_score",
+        "objectives_pct",
+        "competencies_score",
+        "potential",
+        "reviewer_id",
+        "manager_comment",
+        "source_system"
+      ],
+      "filas": 1134,
+      "partes": [
+        {
+          "ruta": "sql/hr/performance_review/part-0001.csv",
+          "filas": 1134,
+          "sha256": "72fdf35bdd4884a21a537e3c1394efb83c40a810b293fe42f79ed9bea8a9a818"
+        }
+      ]
+    },
+    "hr.training": {
+      "columnas": [
+        "training_id",
+        "employee_id",
+        "course_id",
+        "course_name",
+        "category",
+        "start_date",
+        "end_date",
+        "planned_hours",
+        "completed_hours",
+        "training_status",
+        "cost_eur",
+        "provider"
+      ],
+      "filas": 3035,
+      "partes": [
+        {
+          "ruta": "sql/hr/training/part-0001.csv",
+          "filas": 3035,
+          "sha256": "f5713f7bdea1a573c08f9ac63cbfe8d5fbd098cee4c784174a8738c5a9264c03"
+        }
+      ]
+    },
+    "hr.turnover_monthly_seed": {
+      "columnas": [
+        "periodo_mes",
+        "departamento",
+        "headcount_inicio_mes",
+        "altas_mes",
+        "bajas_voluntarias_mes",
+        "bajas_no_voluntarias_mes",
+        "bajas_totales_mes",
+        "headcount_fin_mes",
+        "tasa_rotacion_voluntaria_pct",
+        "tasa_rotacion_total_pct",
+        "empleados_alto_riesgo_fin_mes",
+        "talento_clave_alto_riesgo_fin_mes",
+        "salario_medio_activos_mes_eur",
+        "satisfaccion_media_activos_mes",
+        "engagement_medio_activos_mes",
+        "area_critica_rotacion_flag"
+      ],
+      "filas": 280,
+      "partes": [
+        {
+          "ruta": "sql/hr/turnover_monthly_seed/part-0001.csv",
+          "filas": 280,
+          "sha256": "58bd76949eabfad34c51259b7aca1b8f797c353f25b05504d8cc16825eb4fcc6"
+        }
+      ]
+    },
+    "inventory.stock_level": {
+      "columnas": [
+        "store_id",
+        "product_id",
+        "on_hand_qty",
+        "reserved_qty",
+        "in_transit_qty",
+        "minimum_qty",
+        "updated_at"
+      ],
+      "filas": 567,
+      "partes": [
+        {
+          "ruta": "sql/inventory/stock_level/part-0001.csv",
+          "filas": 567,
+          "sha256": "03e6a4ececdad8a02dfa6a40d9b555c0b2ffcf8c0ccb76897e241ccc2abac8f3"
+        }
+      ]
+    },
+    "inventory.stock_movement": {
+      "columnas": [
+        "movement_id",
+        "moved_at",
+        "store_id",
+        "product_id",
+        "movement_type",
+        "on_hand_delta",
+        "reserved_delta",
+        "in_transit_delta",
+        "document_type",
+        "document_id",
+        "user_login",
+        "notes"
+      ],
+      "filas": 5,
+      "partes": [
+        {
+          "ruta": "sql/inventory/stock_movement/part-0001.csv",
+          "filas": 5,
+          "sha256": "39464340cd3a57ff8b44638c0337f551bcbb0035d88a970f808089aef8d2ccb2"
+        }
+      ]
+    },
+    "inventory.stock_snapshot": {
+      "columnas": [
+        "snapshot_date",
+        "store_id",
+        "product_id",
+        "closing_stock_qty",
+        "reserved_stock_qty",
+        "in_transit_stock_qty",
+        "minimum_stock_qty",
+        "source_system",
+        "notes",
+        "created_at"
+      ],
+      "filas": 1892,
+      "partes": [
+        {
+          "ruta": "sql/inventory/stock_snapshot/part-0001.csv",
+          "filas": 1892,
+          "sha256": "eb01bab6ea5f5d8322d8dcad4584c28ce98e5d8948958952bc941b1fe302a4d1"
+        }
+      ]
+    },
+    "lab.prompt_sample": {
+      "columnas": [
+        "employee_id",
+        "departamento",
+        "ubicacion",
+        "rol",
+        "nivel",
+        "fecha_salida",
+        "tipo_salida",
+        "motivo_salida_sistema",
+        "comentario_salida",
+        "satisfaccion_1_10",
+        "probabilidad_abandono"
+      ],
+      "filas": 40,
+      "partes": [
+        {
+          "ruta": "sql/lab/prompt_sample/part-0001.csv",
+          "filas": 40,
+          "sha256": "803b5b898d87898cc50348cec3bb1686392a99e16e5521e77c91f38591691b8a"
+        }
+      ]
+    },
+    "lab.rag_test_case": {
+      "columnas": [
+        "test_set",
+        "row_num",
+        "question",
+        "expected_response",
+        "updated_by",
+        "updated_at"
+      ],
+      "filas": 16,
+      "partes": [
+        {
+          "ruta": "sql/lab/rag_test_case/part-0001.csv",
+          "filas": 16,
+          "sha256": "f243add29ca1ad34954c0f480b31c57b269eb4c4c52467c7b4d373c35fec0716"
+        }
+      ]
+    },
+    "meta.reference_file": {
+      "columnas": [
+        "file_path",
+        "column_list",
+        "has_bom",
+        "description"
+      ],
+      "filas": 7,
+      "partes": [
+        {
+          "ruta": "sql/meta/reference_file/part-0001.csv",
+          "filas": 7,
+          "sha256": "2fde37b9c522155e8812f0024bd85b28c08864d514159a11df0bbecc3f0f3549"
+        }
+      ]
+    },
+    "meta.reference_row": {
+      "columnas": [
+        "file_path",
+        "row_num",
+        "row_json"
+      ],
+      "filas": 415,
+      "partes": [
+        {
+          "ruta": "sql/meta/reference_row/part-0001.csv",
+          "filas": 415,
+          "sha256": "ac35c47cf345fc422b29fa8874b36c781f76562ff6646ac1d28d8d1175d57daf"
+        }
+      ]
+    },
+    "mkt.campaign": {
+      "columnas": [
+        "campaign_id",
+        "campaign_name",
+        "objective",
+        "channel",
+        "starts_at",
+        "ends_at",
+        "target_segment",
+        "target_category",
+        "target_subcategory",
+        "target_store_id",
+        "offer_type",
+        "discount_pct",
+        "budget_eur",
+        "control_group_pct",
+        "primary_kpi",
+        "campaign_status",
+        "copy_axis",
+        "created_by",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 27,
+      "partes": [
+        {
+          "ruta": "sql/mkt/campaign/part-0001.csv",
+          "filas": 27,
+          "sha256": "a7a15720ca3f2a2ed722192ac91931ed2ed40e5fb0a2d3443c0d76f9b25a8eaa"
+        }
+      ]
+    },
+    "mkt.campaign_contact": {
+      "columnas": [
+        "contact_id",
+        "campaign_id",
+        "customer_id",
+        "contacted_at",
+        "contact_channel",
+        "experiment_group",
+        "is_control",
+        "assigned_segment",
+        "offer_code",
+        "coupon_instance_id",
+        "delivery_status",
+        "contact_cost_eur",
+        "contact_priority",
+        "personalized_store_id",
+        "recommended_product_1",
+        "recommended_product_2",
+        "app_user_id",
+        "conversion_30d",
+        "conversion_order_id",
+        "conversion_ticket_id",
+        "revenue_30d_eur",
+        "margin_30d_eur",
+        "converted_at"
+      ],
+      "filas": 492,
+      "partes": [
+        {
+          "ruta": "sql/mkt/campaign_contact/part-0001.csv",
+          "filas": 492,
+          "sha256": "42b16b7fac8f76ea26a30782ef757a30fa893bfc695bff640c788ebc1b77d984"
+        }
+      ]
+    },
+    "mkt.coupon": {
+      "columnas": [
+        "coupon_instance_id",
+        "coupon_code",
+        "campaign_id",
+        "customer_id",
+        "issued_at",
+        "valid_from",
+        "valid_to",
+        "coupon_type",
+        "discount_pct",
+        "discount_eur",
+        "min_spend_eur",
+        "restricted_category",
+        "restricted_store_id",
+        "issue_channel",
+        "coupon_status",
+        "redeemed_at",
+        "order_id",
+        "ticket_id",
+        "basket_eur",
+        "discount_applied_eur",
+        "margin_after_discount_eur"
+      ],
+      "filas": 380,
+      "partes": [
+        {
+          "ruta": "sql/mkt/coupon/part-0001.csv",
+          "filas": 380,
+          "sha256": "17861c6a14b6e28654668991ac8676b9cdc87d996edc6f2a4cf5ff53e50954ab"
+        }
+      ]
+    },
+    "mkt.customer_store_affinity": {
+      "columnas": [
+        "customer_id",
+        "preferred_store_id",
+        "nearest_store_id",
+        "nearest_store_km",
+        "store_visits_12m",
+        "store_spend_12m_eur",
+        "online_spend_12m_eur",
+        "click_collect_propensity",
+        "visit_probability_30d",
+        "local_cluster",
+        "locally_capturable",
+        "home_city",
+        "home_province",
+        "recalculated_at"
+      ],
+      "filas": 100,
+      "partes": [
+        {
+          "ruta": "sql/mkt/customer_store_affinity/part-0001.csv",
+          "filas": 100,
+          "sha256": "01f683a520d3cc1d91400fdd080a1d91e48aeee2d5c4aff719211d83107d61fd"
+        }
+      ]
+    },
+    "mkt.promotion": {
+      "columnas": [
+        "promo_id",
+        "promo_name",
+        "starts_at",
+        "ends_at",
+        "scope_type",
+        "scope_id",
+        "promo_type",
+        "discount_pct",
+        "discount_eur",
+        "channel",
+        "target_segment",
+        "store_id",
+        "combinable",
+        "basket_threshold_eur",
+        "min_margin_pct",
+        "related_campaign_id"
+      ],
+      "filas": 99,
+      "partes": [
+        {
+          "ruta": "sql/mkt/promotion/part-0001.csv",
+          "filas": 99,
+          "sha256": "095dd86957621b301245a972082b4176313eb3cbee4b780448d100e23f52a369"
+        }
+      ]
+    },
+    "quality.data_quality_issue": {
+      "columnas": [
+        "issue_id",
+        "source_database",
+        "source_schema",
+        "source_table",
+        "source_file",
+        "source_key",
+        "issue_type",
+        "issue_severity",
+        "issue_description",
+        "source_row",
+        "detected_at",
+        "resolved_at"
+      ],
+      "filas": 3282,
+      "partes": [
+        {
+          "ruta": "sql/quality/data_quality_issue/part-0001.csv",
+          "filas": 2793,
+          "sha256": "31181b961ee2cb5dbd9f85769e6d8512bba89cbf9fcb11856923073be4447671"
+        },
+        {
+          "ruta": "sql/quality/data_quality_issue/part-0002.csv",
+          "filas": 489,
+          "sha256": "b7f68cc450fb9faa20258bd9acb14c3670ebc8cca8d7c25f79219755ca0f0c7d"
+        }
+      ]
+    },
+    "rag.customer": {
+      "columnas": [
+        "CustomerID",
+        "Tier",
+        "JoinDate",
+        "City",
+        "ConsentMarketing"
+      ],
+      "filas": 60,
+      "partes": [
+        {
+          "ruta": "sql/rag/customer/part-0001.csv",
+          "filas": 60,
+          "sha256": "97330f5d122f250490f791753a2907ad080584c6228814e5439da89e6e82750f"
+        }
+      ]
+    },
+    "rag.product": {
+      "columnas": [
+        "ProductID",
+        "ProductName",
+        "CategoryFamily",
+        "CategoryCode",
+        "CategoryName",
+        "Material",
+        "Color",
+        "BulkyFlag",
+        "StandardCostEUR",
+        "ListPriceEUR",
+        "Status"
+      ],
+      "filas": 32,
+      "partes": [
+        {
+          "ruta": "sql/rag/product/part-0001.csv",
+          "filas": 32,
+          "sha256": "d282a1339e626f99ba2ae3b24d54bc8342effee3e9c36bf130cb68a9aa39ea08"
+        }
+      ]
+    },
+    "rag.return_fact": {
+      "columnas": [
+        "ReturnID",
+        "ReturnDate",
+        "Channel",
+        "StoreID",
+        "CustomerID",
+        "ProductID",
+        "Units",
+        "RefundAmountEUR",
+        "ReasonCode",
+        "ReasonDesc",
+        "Condition",
+        "Approved"
+      ],
+      "filas": 248,
+      "partes": [
+        {
+          "ruta": "sql/rag/return_fact/part-0001.csv",
+          "filas": 248,
+          "sha256": "8f6c52b82a75d0f32dacf4b0e088a2739402247f7f631162acc96d7be3c04f99"
+        }
+      ]
+    },
+    "rag.sales_daily": {
+      "columnas": [
+        "Date",
+        "Channel",
+        "StoreID",
+        "GrossSalesEUR",
+        "DiscountsEUR",
+        "PointsDiscountEUR",
+        "ReturnsEUR",
+        "NetSalesEUR",
+        "Orders"
+      ],
+      "filas": 204,
+      "partes": [
+        {
+          "ruta": "sql/rag/sales_daily/part-0001.csv",
+          "filas": 204,
+          "sha256": "5f1a0725c6df1c4da16ff2d4a7345bfcd4fcc39ba7d807fcaa13cae14a8a317f"
+        }
+      ]
+    },
+    "rag.stock_daily": {
+      "columnas": [
+        "Date",
+        "StoreID",
+        "ProductID",
+        "OnHandUnits",
+        "ReservedUnits",
+        "BlockedUnits",
+        "AvailableUnits"
+      ],
+      "filas": 2295,
+      "partes": [
+        {
+          "ruta": "sql/rag/stock_daily/part-0001.csv",
+          "filas": 2295,
+          "sha256": "1eed16e1404f31f2d200712e3ff19f6f21c045a340e59ce9dc2dc006ada540ab"
+        }
+      ]
+    },
+    "rag.stockout_alert": {
+      "columnas": [
+        "AlertDate",
+        "StoreID",
+        "ProductID",
+        "AvailableUnits",
+        "SalesUnitsLast7d",
+        "Priority"
+      ],
+      "filas": 15,
+      "partes": [
+        {
+          "ruta": "sql/rag/stockout_alert/part-0001.csv",
+          "filas": 15,
+          "sha256": "75bae957733ac9932be614c21c1acc913c1c5f7a82719be261a1af22ba4f0ed8"
+        }
+      ]
+    },
+    "rag.store": {
+      "columnas": [
+        "StoreID",
+        "StoreName",
+        "City",
+        "Region"
+      ],
+      "filas": 3,
+      "partes": [
+        {
+          "ruta": "sql/rag/store/part-0001.csv",
+          "filas": 3,
+          "sha256": "029ce3e828fe61b2b3947c8c9635b859fd29dc93a29abe438e3e92da9db7c6ef"
+        }
+      ]
+    },
+    "ref.brand_guardrail": {
+      "columnas": [
+        "rule_id",
+        "rule_category",
+        "rule_description",
+        "applies_to_channel",
+        "severity"
+      ],
+      "filas": 12,
+      "partes": [
+        {
+          "ruta": "sql/ref/brand_guardrail/part-0001.csv",
+          "filas": 12,
+          "sha256": "0acf13a0049245a5f915369daa2ca0c4264121aad450d3888fde70d134e05a44"
+        }
+      ]
+    },
+    "ref.calendar": {
+      "columnas": [
+        "date_key",
+        "year_num",
+        "month_num",
+        "month_name",
+        "quarter_name",
+        "period_month",
+        "month_end"
+      ],
+      "filas": 1096,
+      "partes": [
+        {
+          "ruta": "sql/ref/calendar/part-0001.csv",
+          "filas": 1096,
+          "sha256": "adbb141a2d78d0c4d2a5c79ad1deb15dc5132a1799db158a0b251f1343ef7e67"
+        }
+      ]
+    },
+    "ref.cost_rule": {
+      "columnas": [
+        "channel",
+        "logistics_eur",
+        "packaging_eur",
+        "last_mile_eur",
+        "payment_pct",
+        "service_eur",
+        "expected_return_pct",
+        "cac_pct"
+      ],
+      "filas": 2,
+      "partes": [
+        {
+          "ruta": "sql/ref/cost_rule/part-0001.csv",
+          "filas": 2,
+          "sha256": "73dd688771a1b7de405b29f1125fb8d10f318a645aed00f1080c87363296cfc4"
+        }
+      ]
+    },
+    "ref.department_map": {
+      "columnas": [
+        "department_raw",
+        "department_std",
+        "hr_area",
+        "business_channel",
+        "critical_turnover_default"
+      ],
+      "filas": 36,
+      "partes": [
+        {
+          "ruta": "sql/ref/department_map/part-0001.csv",
+          "filas": 36,
+          "sha256": "5994d881db3fd5a8ff5ee913afe750cad741b321a0b177aadfa822a4315be5db"
+        }
+      ]
+    },
+    "returns.return_header": {
+      "columnas": [
+        "return_id",
+        "returned_at",
+        "return_channel",
+        "store_id",
+        "customer_id",
+        "original_ticket_id",
+        "original_order_id",
+        "return_status",
+        "return_method",
+        "refund_method",
+        "currency_code",
+        "notes",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 391,
+      "partes": [
+        {
+          "ruta": "sql/returns/return_header/part-0001.csv",
+          "filas": 391,
+          "sha256": "d2f9bdedc961307b4a26d4c08203aa0abb43ac4db80dc14955eec9dcf626a7c3"
+        }
+      ]
+    },
+    "returns.return_line": {
+      "columnas": [
+        "return_line_id",
+        "return_id",
+        "product_id",
+        "original_ticket_line_id",
+        "original_order_line_id",
+        "returned_quantity",
+        "refund_amount",
+        "return_reason",
+        "original_sales_channel",
+        "created_at"
+      ],
+      "filas": 397,
+      "partes": [
+        {
+          "ruta": "sql/returns/return_line/part-0001.csv",
+          "filas": 397,
+          "sha256": "b0608ceb3e84d004f0b42222260339caa42e23a6c1819b14c1f63f0e3fe733fe"
+        }
+      ]
+    },
+    "sales.online_order": {
+      "columnas": [
+        "order_id",
+        "ordered_at",
+        "customer_id",
+        "online_user_id",
+        "order_total",
+        "currency_code",
+        "shipping_amount",
+        "shipping_address",
+        "shipping_postal_code",
+        "shipping_city",
+        "shipping_province",
+        "shipping_country_code",
+        "payment_method",
+        "order_status",
+        "order_origin",
+        "coupon_instance_id",
+        "source_updated_at",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 651,
+      "partes": [
+        {
+          "ruta": "sql/sales/online_order/part-0001.csv",
+          "filas": 651,
+          "sha256": "5d2ae1b85aeb88cea7a45991d407bda8a2ad86664065dd7ba8ca7884e9e0ff12"
+        }
+      ]
+    },
+    "sales.online_order_line": {
+      "columnas": [
+        "order_line_id",
+        "order_id",
+        "product_id",
+        "product_description",
+        "category",
+        "subcategory",
+        "quantity",
+        "unit_price",
+        "discount_pct",
+        "discount_amount",
+        "line_amount",
+        "vat_pct",
+        "promo_id",
+        "created_at"
+      ],
+      "filas": 1884,
+      "partes": [
+        {
+          "ruta": "sql/sales/online_order_line/part-0001.csv",
+          "filas": 1884,
+          "sha256": "6dcdf3ebe39e6037b6dfeaa07fff2df60b968abd41dc8f4d795a1a01dafd9e69"
+        }
+      ]
+    },
+    "sales.pos_ticket": {
+      "columnas": [
+        "ticket_id",
+        "ticket_at",
+        "store_id",
+        "till_id",
+        "cashier_id",
+        "cashier_employee_id",
+        "customer_id",
+        "currency_code",
+        "channel",
+        "ticket_gross_amount",
+        "ticket_discount_amount",
+        "ticket_net_amount",
+        "coupon_instance_id",
+        "till_session_id",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 1197,
+      "partes": [
+        {
+          "ruta": "sql/sales/pos_ticket/part-0001.csv",
+          "filas": 1197,
+          "sha256": "cb0f3c056e80d9539098974bb5d3dcc7d6d7008896df571b3c6f6ea6f680c70f"
+        }
+      ]
+    },
+    "sales.pos_ticket_line": {
+      "columnas": [
+        "ticket_line_id",
+        "ticket_id",
+        "product_id",
+        "product_description",
+        "category",
+        "subcategory",
+        "quantity",
+        "unit_price",
+        "discount_pct",
+        "discount_amount",
+        "line_amount",
+        "promo_id",
+        "notes",
+        "created_at"
+      ],
+      "filas": 2460,
+      "partes": [
+        {
+          "ruta": "sql/sales/pos_ticket_line/part-0001.csv",
+          "filas": 2460,
+          "sha256": "2165b9f2d17a1be20fd5a6d3c96a9dde4d48726c3d0362de548d65ee82b487a9"
+        }
+      ]
+    },
+    "sales.store_payment": {
+      "columnas": [
+        "payment_id",
+        "ticket_id",
+        "paid_at",
+        "store_id",
+        "till_id",
+        "cashier_id",
+        "cashier_employee_id",
+        "payment_method",
+        "paid_amount",
+        "currency_code",
+        "authorization_reference",
+        "payment_status",
+        "notes",
+        "created_at"
+      ],
+      "filas": 1591,
+      "partes": [
+        {
+          "ruta": "sql/sales/store_payment/part-0001.csv",
+          "filas": 1591,
+          "sha256": "17075a4a65bf697399d545aa78d0f874ff710573c03af2370ffcd0bf93ab1314"
+        }
+      ]
+    },
+    "store.store": {
+      "columnas": [
+        "store_id",
+        "store_name",
+        "location_type",
+        "channel",
+        "city",
+        "province",
+        "address_line",
+        "postal_code",
+        "country_code",
+        "opened_at",
+        "square_meters",
+        "phone",
+        "opening_hours",
+        "latitude",
+        "longitude",
+        "store_status",
+        "region",
+        "manager_name",
+        "notes",
+        "created_at",
+        "updated_at"
+      ],
+      "filas": 7,
+      "partes": [
+        {
+          "ruta": "sql/store/store/part-0001.csv",
+          "filas": 7,
+          "sha256": "a40b45a4548d77c7a9eb0144ea52c14a588c35d0849ab337014328e83617c653"
+        }
+      ]
+    },
+    "store.till_session": {
+      "columnas": [
+        "till_session_id",
+        "store_id",
+        "till_id",
+        "cashier_id",
+        "opened_at",
+        "opening_cash",
+        "closed_at",
+        "expected_cash",
+        "counted_cash",
+        "session_status"
+      ],
+      "filas": 2,
+      "partes": [
+        {
+          "ruta": "sql/store/till_session/part-0001.csv",
+          "filas": 2,
+          "sha256": "4bda297bdd3cf98c9c22f5d10b3680f71fdd9f69a37160572699f5646a29ac32"
+        }
+      ]
+    },
+    "xref.employee_alias": {
+      "columnas": [
+        "source_system",
+        "operational_employee_id",
+        "canonical_employee_id",
+        "canonical_employee_location",
+        "canonical_employee_department",
+        "match_method",
+        "confidence",
+        "note"
+      ],
+      "filas": 106,
+      "partes": [
+        {
+          "ruta": "sql/xref/employee_alias/part-0001.csv",
+          "filas": 106,
+          "sha256": "b07e60c97b9da6e2c33088810c72065dbe299630001f24474ca2ba1f717c6325"
+        }
+      ]
+    },
+    "xref.employee_store": {
+      "columnas": [
+        "employee_id",
+        "department",
+        "location",
+        "canonical_store_id",
+        "assignment_type",
+        "confidence"
+      ],
+      "filas": 820,
+      "partes": [
+        {
+          "ruta": "sql/xref/employee_store/part-0001.csv",
+          "filas": 820,
+          "sha256": "2990c1a7f1241c9fd8b543206fa120dde163599ef3c1f0bfe571f2b89a10ed80"
+        }
+      ]
+    },
+    "xref.product_alias": {
+      "columnas": [
+        "source_system",
+        "source_product_id",
+        "source_product_name",
+        "source_category_code",
+        "source_category_name",
+        "canonical_product_id",
+        "canonical_product_name",
+        "canonical_category",
+        "canonical_subcategory",
+        "match_method",
+        "confidence",
+        "note"
+      ],
+      "filas": 32,
+      "partes": [
+        {
+          "ruta": "sql/xref/product_alias/part-0001.csv",
+          "filas": 32,
+          "sha256": "5d3415c8f441817eb52d342f6d334191e99bcba3ef70f278f5fc88a98b14e2fd"
+        }
+      ]
+    },
+    "xref.store_alias": {
+      "columnas": [
+        "alias",
+        "canonical_store_id",
+        "source_context",
+        "confidence",
+        "note"
+      ],
+      "filas": 41,
+      "partes": [
+        {
+          "ruta": "sql/xref/store_alias/part-0001.csv",
+          "filas": 41,
+          "sha256": "38c3cb77519c2f4829a96e6a949f7ae3acaa09df0f0af01770a2ae674e896831"
+        }
+      ]
+    }
+  },
+  "cosmos": {
+    "creatividades": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 79,
+      "partes": [
+        {
+          "ruta": "cosmos/creatividades/part-0001.csv",
+          "filas": 79,
+          "sha256": "b1a153e73498909e009f7d894ddd42c4a48d67eb8edb1b010a42477a78f53683"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "carritos": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 0,
+      "partes": [
+        {
+          "ruta": "cosmos/carritos/part-0001.csv",
+          "filas": 0,
+          "sha256": "4f5b5643d0967c257df7a812cf4676799e7b5c02cb710e79245043aef91e8a34"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "encuesta_clima": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 6588,
+      "partes": [
+        {
+          "ruta": "cosmos/encuesta_clima/part-0001.csv",
+          "filas": 1314,
+          "sha256": "f14ea1eebfb8d9f00378be9b8aadd47d4693e79b4ce73df45ac76d4daec4b510"
+        },
+        {
+          "ruta": "cosmos/encuesta_clima/part-0002.csv",
+          "filas": 1316,
+          "sha256": "6598a7e5d19b25e9cd12af691f0ae12f09ff7cf407e3a69d11b1d8753f80c914"
+        },
+        {
+          "ruta": "cosmos/encuesta_clima/part-0003.csv",
+          "filas": 1315,
+          "sha256": "848ba19e239d26a8d1d02df9b7bd0fed0699ee204a46dca4df3ac2601da56d5b"
+        },
+        {
+          "ruta": "cosmos/encuesta_clima/part-0004.csv",
+          "filas": 1313,
+          "sha256": "366e10f9676450e8a0c5879f70f62924287730a9404a50c01d7009c21584ad48"
+        },
+        {
+          "ruta": "cosmos/encuesta_clima/part-0005.csv",
+          "filas": 1316,
+          "sha256": "a4fb4071c0e68f91477823652542e9ba96f3bdfc6f98054df11afc79c0812870"
+        },
+        {
+          "ruta": "cosmos/encuesta_clima/part-0006.csv",
+          "filas": 14,
+          "sha256": "9a121f084444341feb59d8fca5656526b4ec12a0d5660f5c3555e3fa026946f3"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "fase0": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 1,
+      "partes": [
+        {
+          "ruta": "cosmos/fase0/part-0001.csv",
+          "filas": 1,
+          "sha256": "13773ea29bce91d175de6fbe89c76111812c26c5a4924eac42ccc49a8f17f5c0"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "feedback": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 851,
+      "partes": [
+        {
+          "ruta": "cosmos/feedback/part-0001.csv",
+          "filas": 851,
+          "sha256": "ea273eea2e20a5f2f8219562902f62a72d6ef8668089e55e6b7503c7c502bbe1"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "entrevistas_salida": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 156,
+      "partes": [
+        {
+          "ruta": "cosmos/entrevistas_salida/part-0001.csv",
+          "filas": 156,
+          "sha256": "b975907caf7c541908428079af91883d90172f464c0b6e93b27bf4badeeaecee"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "eventos_web": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 9050,
+      "partes": [
+        {
+          "ruta": "cosmos/eventos_web/part-0001.csv",
+          "filas": 976,
+          "sha256": "1d263f014e898d834306c6b1f761f4b02e42f22040ceb43d8c2dae71e35765fe"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0002.csv",
+          "filas": 975,
+          "sha256": "2e48bf73bd470a07ff8eff3e4bc81ee1d0a2e608d8cecab7e5021cff0e168a0c"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0003.csv",
+          "filas": 976,
+          "sha256": "8293a3521a7fc207498fbd4cb838532e507e745a6116b6d071cdc56fff353349"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0004.csv",
+          "filas": 976,
+          "sha256": "6ccad0c5c0c2cfd495969067fd0b469722d667a840fb4672f13c5610dcb77cc9"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0005.csv",
+          "filas": 976,
+          "sha256": "991f6d2af280d459c99fbdc30474b1e1a51089ec24f4be2fccbd7e785a365ef6"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0006.csv",
+          "filas": 977,
+          "sha256": "05492d8802d100be22b00a81ae60ad1e5db718087ec234aa6f575284f998950a"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0007.csv",
+          "filas": 977,
+          "sha256": "bc06f7102723cefc7ff190d5cf8fd8e340e26f9a41e26ec3c985afd7ba0e17b0"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0008.csv",
+          "filas": 975,
+          "sha256": "7db7869db0094c80ca986e461d4c9e78e0fe971b5f7470e0fdc4b39e8b9805b4"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0009.csv",
+          "filas": 976,
+          "sha256": "858ba275ad45134d55d3706dc7653bc5a926d0cb401d16a6200d66c2e64b9016"
+        },
+        {
+          "ruta": "cosmos/eventos_web/part-0010.csv",
+          "filas": 266,
+          "sha256": "762c426313e2d3d80058ec8eff8f7d8641822319f7071d4ee570b5c36388021d"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "senales_identidad": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 413,
+      "partes": [
+        {
+          "ruta": "cosmos/senales_identidad/part-0001.csv",
+          "filas": 413,
+          "sha256": "7c429d10788a5db4f50837768807cf6d5b9cffe99f6e3f26b4b8ef3825a829a4"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "eventos_campana": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 966,
+      "partes": [
+        {
+          "ruta": "cosmos/eventos_campana/part-0001.csv",
+          "filas": 966,
+          "sha256": "e5b5e9d97ef268a8fe6aaf8367b2580cff39017a3658be57eebb36b923141f87"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    },
+    "atencion_cliente": {
+      "columnas": [
+        "id",
+        "documento_json"
+      ],
+      "filas": 561,
+      "partes": [
+        {
+          "ruta": "cosmos/atencion_cliente/part-0001.csv",
+          "filas": 561,
+          "sha256": "c443e94186d84d916a79d2b7cb488d12ba1b3618dd63f2f583698930c83241bb"
+        }
+      ],
+      "partition_key_paths": [
+        "/pk"
+      ]
+    }
+  },
+  "fin_utc": "2026-11-02T07:45:25.753627+00:00"
+}

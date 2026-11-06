@@ -1,0 +1,26 @@
+{
+  "name": "framework-datos-fabric",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": { "version": "17" },
+    "ghcr.io/devcontainers/features/terraform:1": { "version": "latest", "tflint": "latest" },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/powershell:1": {}
+  },
+  "postCreateCommand": "pip install -e '.[dev]' && pre-commit install && pre-commit install-hooks && tflint --init --config .tflint.hcl",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "redhat.vscode-yaml",
+        "dorzey.vscode-sqlfluff",
+        "hashicorp.terraform",
+        "github.vscode-github-actions",
+        "ms-vscode.powershell",
+        "GitHub.copilot-chat"
+      ]
+    }
+  }
+}

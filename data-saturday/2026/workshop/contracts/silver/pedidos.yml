@@ -1,0 +1,21 @@
+tabla: pedidos
+capa: silver
+dominio: ventas
+propietario: "@org/negocio-ventas"
+descripcion: Un pedido de cliente por fila, en cualquier canal de venta.
+clave: [id_pedido]
+politica_rechazo: cuarentena     # cuarentena | fallar
+columnas:
+  id_pedido:      {tipo: string, nulo: false, descripcion: Identificador del pedido en el sistema origen}
+  id_cliente:     {tipo: string, nulo: false, descripcion: Cliente que hace el pedido}
+  fecha_pedido:   {tipo: date, nulo: false, descripcion: Fecha en que se confirma el pedido}
+  canal:          {tipo: string, nulo: false, valores: [tienda, web, app], descripcion: Canal de venta}
+  importe_total:  {tipo: "decimal(12,2)", nulo: false, descripcion: "Importe con impuestos, en euros"}
+  estado:         {tipo: string, valores: [confirmado, enviado, entregado, cancelado], descripcion: Estado actual}
+reglas:
+  - nombre: importe_no_negativo
+    expresion: importe_total >= 0
+    descripcion: Un pedido no puede tener importe negativo; las devoluciones van en su propia tabla
+  - nombre: fecha_no_futura
+    expresion: fecha_pedido <= current_date()
+    descripcion: Ningún pedido puede estar fechado en el futuro

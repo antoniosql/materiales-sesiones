@@ -1,0 +1,17 @@
+tabla: fwk_cuarentena
+capa: silver
+dominio: framework
+descripcion: Evidencias de rechazo por fuente, observacion y version de contrato. Conserva el dato bruto.
+propietario: '@org/plataforma'
+version: 1
+clave: [id_rechazo]
+politica_rechazo: fallar
+columnas:
+  id_rechazo: {tipo: string, nulo: false, descripcion: Hash de identidad de la evidencia}
+  fuente: {tipo: string, nulo: false, descripcion: Dominio y fuente}
+  batch_id: {tipo: string, nulo: false, descripcion: Lote que produjo la observacion}
+  observado_en: {tipo: timestamp, nulo: false, descripcion: Instante de observacion UTC}
+  version_contrato: {tipo: int, nulo: false, descripcion: Version que rechazo la fila}
+  dato_bruto: {tipo: string, nulo: false, descripcion: JSON previo a conversiones de tipo}
+  motivos: {tipo: string, nulo: false, descripcion: Array JSON de motivos de rechazo}
+  resuelta_en: {tipo: timestamp, nulo: true, descripcion: Reservado para una resolucion explicita de la evidencia}

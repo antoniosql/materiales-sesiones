@@ -1,0 +1,13 @@
+tabla: clientes
+capa: silver
+dominio: ventas
+propietario: "@org/negocio-ventas"
+descripcion: Un cliente por fila, con su segmento comercial vigente.
+clave: [id_cliente]
+politica_rechazo: cuarentena
+columnas:
+  id_cliente:     {tipo: string, nulo: false, descripcion: Identificador único del cliente}
+  fecha_alta:     {tipo: date, nulo: false, descripcion: Fecha de alta como cliente}
+  segmento:       {tipo: string, valores: [particular, profesional, empresa], descripcion: Segmento comercial}
+  provincia:      {tipo: string, descripcion: Provincia de residencia o domicilio fiscal}
+  acepta_comunicaciones: {tipo: boolean, nulo: false, descripcion: Consentimiento de comunicaciones comerciales}

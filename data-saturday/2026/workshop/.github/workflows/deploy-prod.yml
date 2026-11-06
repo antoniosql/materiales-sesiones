@@ -1,0 +1,17 @@
+name: Despliegue a producción
+
+# Manual y con aprobación: el GitHub Environment 'prod' exige revisores.
+# Despliega el commit seleccionado al lanzarlo, que debe ser uno ya desplegado y probado en Test.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  prod:
+    uses: ./.github/workflows/_desplegar.yml
+    permissions:
+      id-token: write  # OIDC para azure/login dentro de _desplegar.yml
+      contents: read
+    with:
+      entorno: prod

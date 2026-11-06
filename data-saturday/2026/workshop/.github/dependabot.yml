@@ -1,0 +1,22 @@
+# Dependabot: mantiene al día las versiones fijadas (actions por SHA y dependencias de Python).
+# Las versiones de los hooks de pre-commit se actualizan con 'pre-commit autoupdate' (README).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7      # no adoptar una versión hasta que lleve una semana publicada
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      python:
+        patterns: ["*"]

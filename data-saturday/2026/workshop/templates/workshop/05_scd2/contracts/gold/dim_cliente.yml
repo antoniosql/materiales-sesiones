@@ -1,0 +1,45 @@
+tabla: dim_cliente
+capa: gold
+dominio: crm
+propietario: '@org/datos-workshop'
+descripcion: Versiones observadas de ciudad desde la activacion SCD2; no reconstruye historia anterior.
+clave:
+- id_version
+politica_rechazo: fallar
+columnas:
+  id_cliente:
+    tipo: string
+    nulo: false
+    descripcion: Identificador CRM customer_id
+  ciudad:
+    tipo: string
+    nulo: true
+    descripcion: Ciudad declarada en CRM
+  id_version:
+    tipo: string
+    nulo: false
+    descripcion: Identificador determinista de la version observada
+  vigente_desde:
+    tipo: timestamp
+    nulo: false
+    descripcion: Inicio incluido de vigencia por observacion UTC
+  vigente_hasta:
+    tipo: timestamp
+    nulo: true
+    descripcion: Fin excluido; NULL identifica la version actual
+  es_actual:
+    tipo: boolean
+    nulo: false
+    descripcion: Indica la unica version vigente por cliente
+  _hash_scd2:
+    tipo: string
+    nulo: false
+    descripcion: Hash null-safe de los atributos historificados
+  _batch_id:
+    tipo: string
+    nulo: false
+    descripcion: Lote de apertura de la version
+reglas: []
+version: 2
+clave_negocio:
+- id_cliente

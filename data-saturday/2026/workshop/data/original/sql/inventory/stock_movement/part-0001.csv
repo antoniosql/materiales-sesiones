@@ -1,0 +1,6 @@
+movement_id,moved_at,store_id,product_id,movement_type,on_hand_delta,reserved_delta,in_transit_delta,document_type,document_id,user_login,notes
+1,2026-10-31T07:04:22,ONLINE,P1020,VENTA,-1,0,0,ORDER,O-202600001,test.cliente,\N
+2,2026-10-31T07:04:28,ONLINE,P1020,DEVOLUCION,1,0,0,RETURN,RO-2026-00001,test.atencion,\N
+3,2026-10-31T07:06:04,S001,P1051,AJUSTE,1,0,0,AJUSTE,\N,test.tienda,Prueba e2e
+4,2026-10-31T07:06:53,S001,P1020,VENTA,-1,0,0,TICKET,T-501200,test.cajero,\N
+5,2026-10-31T07:06:54,S001,P1020,DEVOLUCION,1,0,0,RETURN,RT-2026-00001,test.cajero,\N

@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linters:
+    name: Linters (pre-commit)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.11"
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e  # v4.0.1
+        with:
+          terraform_wrapper: false
+      - uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337  # v6.3.2
+      - name: Plugins de tflint
+        run: tflint --init --config "$GITHUB_WORKSPACE/.tflint.hcl"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pip install pre-commit
+      - name: Todos los linters sobre todo el repositorio
+        run: pre-commit run --all-files --show-diff-on-failure --color always
+        env:
+          SKIP: gitleaks  # los secretos se revisan en su propio job, sobre todo el historial
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad  # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - run: pip install -e ".[dev]"
+      - run: pytest --delta
+
+  secretos:
+    name: Secretos (gitleaks, historial completo)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 \
+            git /repo --config /repo/.gitleaks.toml --redact --verbose
+
+  detectar:
+    name: Detectar modelos e informes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      modelos: ${{ steps.buscar.outputs.modelos }}
+      informes: ${{ steps.buscar.outputs.informes }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - id: buscar
+        run: |
+          hay() { [ -n "$(find fabric -type d -name "$1" -print -quit)" ] && echo true || echo false; }
+          echo "modelos=$(hay '*.SemanticModel')" >> "$GITHUB_OUTPUT"
+          echo "informes=$(hay '*.Report')" >> "$GITHUB_OUTPUT"
+
+  modelos-semanticos:
+    name: Modelos semánticos (Best Practice Analyzer)
+    needs: detectar
+    if: needs.detectar.outputs.modelos == 'true'
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Best Practice Analyzer
+        shell: pwsh
+        run: ./scripts/analizar_modelos.ps1
+
+  informes:
+    name: Informes (Fab Inspector)
+    needs: detectar
+    if: needs.detectar.outputs.informes == 'true'
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Fab Inspector
+        shell: pwsh
+        run: ./scripts/inspeccionar_informes.ps1
+        env:
+          GH_TOKEN: ${{ github.token }}  # para descargar la release con gh

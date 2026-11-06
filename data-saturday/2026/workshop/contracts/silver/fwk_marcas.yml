@@ -1,0 +1,11 @@
+tabla: fwk_marcas
+capa: silver
+dominio: framework
+propietario: "@org/plataforma"
+descripcion: Último límite de extracción confirmado por fuente dentro del entorno.
+clave: [fuente]
+politica_rechazo: fallar
+columnas:
+  fuente: {tipo: string, nulo: false, descripcion: Dominio y fuente de la carga}
+  hasta: {tipo: timestamp, nulo: false, descripcion: Límite confirmado sin retrocesos}
+  batch_id: {tipo: string, nulo: false, descripcion: Lote que confirmó la marca}

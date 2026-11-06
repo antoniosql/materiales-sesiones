@@ -1,0 +1,23 @@
+dominio: crm
+fuentes:
+  clientes_crm:
+    clave_negocio:
+    - id_cliente
+    contrato: contracts/silver/clientes_crm.yml
+    tabla_bronze: clientes_crm
+    tabla_silver: clientes_crm
+    modo_carga: merge
+    origen_sql:
+      conexion: oltp_workshop
+      esquema: crm
+      tabla: customer
+      columnas:
+        customer_id: id_cliente
+        city: ciudad
+        updated_at: fecha_cambio
+    extraccion:
+      modo: completa
+      columna_marca: updated_at
+      solape_segundos: 5
+      estabilizacion_segundos: 5
+      borrados: no_detectar

@@ -1,0 +1,30 @@
+tabla: fwk_modelos
+capa: silver
+dominio: framework
+propietario: "@org/plataforma"
+descripcion: Última publicación de un modelo y su fase pendiente recuperable.
+clave: [modelo]
+politica_rechazo: fallar
+columnas:
+  firma_historia:
+    tipo: string
+    nulo: false
+    descripcion: Firma de claves y atributos SCD2; vacia en tipo1, impide reclasificar historia sin migracion
+  firma_config:
+    tipo: string
+    nulo: false
+    descripcion: Hash de la configuracion y contratos usados; impide cambiarlos durante un reintento
+  migracion:
+    tipo: boolean
+    nulo: false
+    descripcion: Activacion explicita de SCD2 sobre una dimension tipo 1
+  version_previa:
+    tipo: bigint
+    nulo: true
+    descripcion: Version gold anterior a este lote para recuperar y auditar la migracion
+  modelo: {tipo: string, nulo: false, descripcion: Nombre del modelo gold}
+  batch_id: {tipo: string, nulo: false, descripcion: Lote origen o identificador de migración}
+  observado_en: {tipo: timestamp, nulo: false, descripcion: Instante UTC estable de publicación}
+  estado: {tipo: string, nulo: false, descripcion: Pendiente o confirmado}
+  version_silver: {tipo: bigint, nulo: false, descripcion: Versión fijada de entrada}
+  version_gold: {tipo: bigint, descripcion: Versión histórica publicada}

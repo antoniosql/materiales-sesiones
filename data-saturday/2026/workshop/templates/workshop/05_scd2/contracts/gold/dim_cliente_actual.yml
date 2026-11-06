@@ -1,0 +1,19 @@
+tabla: dim_cliente_actual
+capa: gold
+dominio: crm
+propietario: '@org/datos-workshop'
+descripcion: Una fila por cliente con su ciudad vigente para relaciones de consumo.
+clave:
+- id_cliente
+politica_rechazo: fallar
+columnas:
+  id_cliente:
+    tipo: string
+    nulo: false
+    descripcion: Identificador CRM customer_id
+  ciudad:
+    tipo: string
+    nulo: true
+    descripcion: Ciudad declarada en CRM
+reglas: []
+version: 1

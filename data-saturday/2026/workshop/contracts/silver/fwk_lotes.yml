@@ -1,0 +1,18 @@
+tabla: fwk_lotes
+capa: silver
+dominio: framework
+propietario: "@org/plataforma"
+descripcion: Estado recuperable de un lote de extracción y publicación silver.
+clave: [fuente, batch_id]
+politica_rechazo: fallar
+columnas:
+  fuente: {tipo: string, nulo: false, descripcion: Dominio y fuente de la carga}
+  batch_id: {tipo: string, nulo: false, descripcion: Identificador estable del lote}
+  estado: {tipo: string, nulo: false, descripcion: Fase persistida de la carga}
+  observado_en: {tipo: timestamp, nulo: false, descripcion: Instante UTC fijado al planificar}
+  desde: {tipo: timestamp, descripcion: Límite inferior inclusivo si es incremental}
+  hasta: {tipo: timestamp, nulo: false, descripcion: Límite superior inclusivo de la extracción}
+  modo: {tipo: string, nulo: false, descripcion: Estrategia completa o incremental}
+  version_bronze: {tipo: bigint, descripcion: Versión Delta con la imagen de entrada}
+  version_silver: {tipo: bigint, descripcion: Versión Delta publicada para consumidores}
+  version_contrato: {tipo: int, nulo: false, descripcion: Revisión del contrato aplicado}

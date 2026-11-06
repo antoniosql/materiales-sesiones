@@ -1,0 +1,17 @@
+# Copiar a contracts/<capa>/<tabla>.yml. El nombre del fichero debe coincidir con 'tabla'.
+tabla: <tabla>
+capa: silver                     # silver | gold
+dominio: <dominio>
+propietario: "@org/<equipo-negocio>"
+descripcion: <Qué representa una fila, en una frase que entienda negocio>
+clave: [<columna_clave>]
+politica_rechazo: cuarentena     # cuarentena: aparta las filas malas y sigue | fallar: para la carga
+columnas:
+  <columna_clave>: {tipo: string, nulo: false, descripcion: <...>}
+  <fecha_algo>:    {tipo: date, nulo: false, descripcion: <...>}
+  <importe_algo>:  {tipo: "decimal(12,2)", descripcion: <...>}
+  <categoria>:     {tipo: string, valores: [<valor1>, <valor2>], descripcion: <...>}
+reglas:
+  - nombre: <regla_en_snake_case>
+    expresion: <expresión SQL que debe ser verdadera, p. ej. importe_algo >= 0>
+    descripcion: <Por qué existe esta regla>

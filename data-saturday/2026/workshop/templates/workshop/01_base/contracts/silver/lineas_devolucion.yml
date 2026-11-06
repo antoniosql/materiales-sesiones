@@ -1,0 +1,26 @@
+tabla: lineas_devolucion
+capa: silver
+dominio: devoluciones
+propietario: '@org/datos-workshop'
+descripcion: Una linea devuelta observada en SQL; contrato docente Q1 del workshop.
+clave:
+- id_linea_devolucion
+politica_rechazo: cuarentena
+columnas:
+  id_linea_devolucion:
+    tipo: string
+    nulo: false
+    descripcion: return_line_id del origen
+  importe_reembolso:
+    tipo: decimal(18,2)
+    nulo: false
+    descripcion: refund_amount del origen; regla docente de no negatividad
+  motivo:
+    tipo: string
+    nulo: true
+    descripcion: return_reason del origen
+reglas:
+- nombre: reembolso_no_negativo
+  expresion: importe_reembolso >= 0
+  descripcion: Regla de calidad acordada para la demo del workshop
+version: 1

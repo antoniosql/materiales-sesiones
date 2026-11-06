@@ -1,0 +1,17 @@
+test_set,row_num,question,expected_response,updated_by,updated_at
+Documental,1,¿Cuál es el plazo de devolución para compras online?,45 días naturales; devoluciones voluntarias; desde la entrega,\N,\N
+Documental,2,¿Qué productos no admiten devolución voluntaria?,a medida; OUTLET; tarjetas regalo; servicios,\N,\N
+Documental,3,¿Cómo se reembolsa un pago mixto tarjeta + efectivo?,primero a tarjeta; resto en efectivo,\N,\N
+Documental,4,¿Qué significa ventas netas y cómo se calcula?,Ventas brutas - descuentos - descuento por puntos - devoluciones,\N,\N
+Documental,5,¿Qué es stock disponible?,stock en mano - reservado - bloqueado,\N,\N
+Documental,6,¿Qué plazo tengo para reportar un daño en transporte?,72 horas,\N,\N
+Documental,7,¿Qué hago si el cliente no tiene ticket?,buscar por fidelización; aprobación del Store Manager,\N,\N
+Documental,8,¿En qué casos se debe escalar una devolución por sospecha de fraude?,patrones anómalos; prevención de pérdidas,\N,\N
+Documental,9,¿Qué información debe incluir una respuesta del asistente sobre un KPI?,citar fuente; fórmula; periodo; canal,\N,\N
+Documental,10,¿Qué tier tiene derecho a una excepción de devolución por semestre?,Oro; Platino,\N,\N
+Metrico_Mixto,1,Dame las ventas netas online entre 2026-02-01 y 2026-02-15,NetSalesEUR; periodo 2026-02-01 a 2026-02-15; Online,\N,\N
+Metrico_Mixto,2,¿Cuál fue la tienda con más ventas netas el 2026-02-10?,MAD01 o BCN01 o VLC01; NetSalesEUR; 2026-02-10,\N,\N
+Metrico_Mixto,3,Calcula la tasa de devolución en importe para febrero 2026 (online),Importe_devoluciones / Ventas netas; febrero 2026; Online,\N,\N
+Metrico_Mixto,4,Lista 5 devoluciones aprobadas con motivo R04 (daño transporte) en enero 2026,ReasonCode R04; Approved Sí; enero 2026,\N,\N
+Metrico_Mixto,5,¿Cuántos pedidos (orders) hubo en tienda en la semana del 2026-02-01?,Orders; Tienda; semana,\N,\N
+Metrico_Mixto,6,¿Qué SKUs tienen alerta de quiebra de stock hoy?,FS_Alertas_Stockout; AvailableUnits 0; Priority,\N,\N

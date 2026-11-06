@@ -1,0 +1,15 @@
+tabla: fact_ventas_diarias
+capa: gold
+dominio: ventas
+propietario: "@org/negocio-ventas"
+descripcion: Ventas agregadas por día y canal. Base de los informes de ventas.
+clave: [fecha, canal]
+politica_rechazo: fallar         # en gold un dato inválido para la carga: llegaría a una decisión de negocio
+columnas:
+  fecha:            {tipo: date, nulo: false, descripcion: Día natural}
+  canal:            {tipo: string, nulo: false, valores: [tienda, web, app], descripcion: Canal de venta}
+  num_pedidos:      {tipo: int, nulo: false, descripcion: Pedidos no cancelados del día}
+  importe_ventas:   {tipo: "decimal(14,2)", nulo: false, descripcion: Ver 'Ventas netas' en docs/glosario.md}
+reglas:
+  - nombre: pedidos_positivos
+    expresion: num_pedidos > 0

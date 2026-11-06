@@ -1,0 +1,23 @@
+tabla: clientes_crm
+capa: silver
+dominio: crm
+propietario: '@org/datos-workshop'
+descripcion: Estado actual de un cliente del CRM observado en la base SQL.
+clave:
+- id_cliente
+politica_rechazo: cuarentena
+columnas:
+  id_cliente:
+    tipo: string
+    nulo: false
+    descripcion: Identificador CRM customer_id
+  ciudad:
+    tipo: string
+    nulo: true
+    descripcion: Ciudad declarada en CRM
+  fecha_cambio:
+    tipo: timestamp
+    nulo: false
+    descripcion: updated_at del origen en UTC
+reglas: []
+version: 1

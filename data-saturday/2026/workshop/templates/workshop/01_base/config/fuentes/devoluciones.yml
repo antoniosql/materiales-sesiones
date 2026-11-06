@@ -1,0 +1,17 @@
+dominio: devoluciones
+fuentes:
+  lineas_devolucion:
+    clave_negocio:
+    - id_linea_devolucion
+    contrato: contracts/silver/lineas_devolucion.yml
+    modo_carga: merge
+    origen_sql:
+      conexion: oltp_workshop
+      esquema: returns
+      tabla: return_line
+      columnas:
+        return_line_id: id_linea_devolucion
+        refund_amount: importe_reembolso
+        return_reason: motivo
+    extraccion:
+      modo: completa

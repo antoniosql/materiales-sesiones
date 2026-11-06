@@ -1,0 +1,20 @@
+# Quién aprueba qué. Sustituir los equipos @org/... por los reales.
+*                         @org/ingenieria-datos
+
+# Lo que significa un dato lo aprueba negocio, no ingeniería
+/contracts/               @org/ingenieria-datos @org/negocio-ventas
+/docs/glosario.md         @org/negocio-ventas
+
+# Modelos e informes
+/fabric/analitica/        @org/analitica
+
+# Lo que afecta a todos los entornos
+/infra/                   @org/plataforma
+/.github/workflows/       @org/plataforma
+/fabric/*/parameter.yml   @org/plataforma
+
+# Linters y reglas de calidad: cambiarlos cambia lo que se exige a todo el equipo
+/.pre-commit-config.yaml  @org/plataforma
+/scripts/lint_framework.py @org/plataforma
+/schemas/                 @org/plataforma
+/calidad/                 @org/plataforma @org/analitica

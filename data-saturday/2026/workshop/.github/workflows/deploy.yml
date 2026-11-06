@@ -1,0 +1,26 @@
+name: Despliegue continuo
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "*.md"]
+
+permissions: {}
+
+# dev → test. Tras 'test' van los tests de integración contra Test (tests/integration/README.md)
+jobs:
+  dev:
+    uses: ./.github/workflows/_desplegar.yml
+    permissions:
+      id-token: write  # OIDC para azure/login dentro de _desplegar.yml
+      contents: read
+    with:
+      entorno: dev
+  test:
+    needs: dev
+    uses: ./.github/workflows/_desplegar.yml
+    permissions:
+      id-token: write  # OIDC para azure/login dentro de _desplegar.yml
+      contents: read
+    with:
+      entorno: test

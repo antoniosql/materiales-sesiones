@@ -1,0 +1,3 @@
+till_session_id,store_id,till_id,cashier_id,opened_at,opening_cash,closed_at,expected_cash,counted_cash,session_status
+1,S001,CAJ01,FSH0031,2026-10-31T07:04:32,100.00,2026-10-31T07:06:03,100.00,100.00,Cerrada
+2,S001,CAJ01,FSH0031,2026-10-31T07:06:52,100.00,2026-10-31T07:06:56,100.00,100.00,Cerrada

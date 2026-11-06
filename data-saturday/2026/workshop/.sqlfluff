@@ -1,0 +1,29 @@
+# SQLFluff: estilo y errores de las consultas SQL del repositorio (sql/).
+# Dialecto Spark SQL, que es el que ejecutan los notebooks y spark.sql().
+# Si se añade un Warehouse, crear sql/warehouse/.sqlfluff con 'dialect = tsql': SQLFluff aplica la
+# configuración más cercana al fichero.
+[sqlfluff]
+dialect = sparksql
+templater = placeholder
+max_line_length = 120
+
+# Parámetros con nombre de spark.sql(consulta, args={...}): WHERE _batch_id = :batch_id
+[sqlfluff:templater:placeholder]
+param_style = colon
+batch_id = '20260101T000000-0000abcd'
+
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 4
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = upper
