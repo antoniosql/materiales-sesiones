@@ -1,0 +1,52 @@
+[
+  {
+    "ID": "FWK_MEDIDA_SIN_DESCRIPCION",
+    "Name": "[Framework] Toda medida tiene descripción",
+    "Category": "Framework",
+    "Description": "La descripción es lo que ven negocio y Copilot. Debe coincidir con la definición de docs/glosario.md.",
+    "Severity": 3,
+    "Scope": "Measure",
+    "Expression": "string.IsNullOrWhitespace(Description)",
+    "CompatibilityLevel": 1200
+  },
+  {
+    "ID": "FWK_COLUMNA_TECNICA_VISIBLE",
+    "Name": "[Framework] Las columnas técnicas (_ingested_at, _batch_id...) están ocultas",
+    "Category": "Framework",
+    "Description": "Las columnas con prefijo '_' son de trazabilidad del framework, no de análisis.",
+    "Severity": 3,
+    "Scope": "DataColumn",
+    "Expression": "Name.StartsWith(\"_\") and not IsHidden",
+    "CompatibilityLevel": 1200
+  },
+  {
+    "ID": "FWK_RESUMEN_IMPLICITO",
+    "Name": "[Framework] Las columnas numéricas no se resumen por defecto",
+    "Category": "Framework",
+    "Description": "Evita medidas implícitas: todo cálculo es una medida explícita, documentada y alineada con el glosario.",
+    "Severity": 2,
+    "Scope": "DataColumn, CalculatedColumn",
+    "Expression": "(DataType = \"Int64\" or DataType = \"Decimal\" or DataType = \"Double\") and SummarizeBy <> \"None\"",
+    "CompatibilityLevel": 1200
+  },
+  {
+    "ID": "FWK_MEDIDA_FUERA_DE_TABLA_MEDIDAS",
+    "Name": "[Framework] Las medidas viven en la tabla _Medidas",
+    "Category": "Framework",
+    "Description": "Una única tabla de medidas, organizada en carpetas de visualización por área de negocio.",
+    "Severity": 2,
+    "Scope": "Measure",
+    "Expression": "Table.Name <> \"_Medidas\"",
+    "CompatibilityLevel": 1200
+  },
+  {
+    "ID": "FWK_MEDIDA_SIN_CARPETA",
+    "Name": "[Framework] Toda medida está en una carpeta de visualización",
+    "Category": "Framework",
+    "Description": "Las carpetas agrupan las medidas por área de negocio.",
+    "Severity": 1,
+    "Scope": "Measure",
+    "Expression": "string.IsNullOrWhitespace(DisplayFolder)",
+    "CompatibilityLevel": 1200
+  }
+]

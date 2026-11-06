@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "ms-python.mypy-type-checker",
+    "redhat.vscode-yaml",
+    "dorzey.vscode-sqlfluff",
+    "hashicorp.terraform",
+    "github.vscode-github-actions",
+    "ms-vscode.powershell",
+    "GitHub.copilot-chat"
+  ]
+}

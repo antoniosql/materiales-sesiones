@@ -1,0 +1,22 @@
+tabla: fwk_ejecuciones
+capa: silver
+dominio: framework
+descripcion: Intentos de ejecucion y reconciliacion de filas; escritas cuenta claves aceptadas, incluso sin cambios.
+propietario: '@org/plataforma'
+version: 1
+clave: [batch_id, capa, fuente, inicio]
+politica_rechazo: fallar
+columnas:
+  batch_id: {tipo: string, nulo: false, descripcion: Identificador reutilizado en reintentos}
+  entorno: {tipo: string, nulo: false, descripcion: Entorno configurado}
+  capa: {tipo: string, nulo: false, descripcion: Etapa ejecutada}
+  fuente: {tipo: string, nulo: false, descripcion: Fuente o modelo procesado}
+  tabla: {tipo: string, nulo: false, descripcion: Tabla destino}
+  inicio: {tipo: timestamp, nulo: false, descripcion: Inicio del intento UTC}
+  fin: {tipo: timestamp, nulo: true, descripcion: Fin del intento UTC}
+  filas_leidas: {tipo: bigint, nulo: false, descripcion: Filas evaluadas}
+  filas_escritas: {tipo: bigint, nulo: false, descripcion: Claves aceptadas incluidas las que ya existian sin cambios}
+  filas_rechazadas: {tipo: bigint, nulo: false, descripcion: Filas que incumplen el contrato}
+  filas_consolidadas: {tipo: bigint, nulo: false, descripcion: Observaciones anteriores o duplicadas descartadas}
+  estado: {tipo: string, nulo: false, descripcion: Resultado del intento}
+  mensaje: {tipo: string, nulo: false, descripcion: Diagnostico operativo sin secretos}

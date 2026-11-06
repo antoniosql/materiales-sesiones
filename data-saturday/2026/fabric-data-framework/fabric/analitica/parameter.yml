@@ -1,0 +1,15 @@
+# Sustituciones de fabric-cicd para el workspace de analítica.
+# Los modelos Direct Lake apuntan al lakehouse de gold por ID (definition/expressions.tmdl).
+# Rellenar los <id-...> con los GUID reales tras crear los workspaces (salen de `terraform output`).
+# Verificar el formato contra la versión de fabric-cicd que fije el pipeline.
+find_replace:
+  - find_value: "<id-workspace-datos-dev>"
+    replace_value:
+      TEST: "<id-workspace-datos-test>"
+      PROD: "<id-workspace-datos-prod>"
+    item_type: "SemanticModel"
+  - find_value: "<id-lh_gold-dev>"
+    replace_value:
+      TEST: "<id-lh_gold-test>"
+      PROD: "<id-lh_gold-prod>"
+    item_type: "SemanticModel"

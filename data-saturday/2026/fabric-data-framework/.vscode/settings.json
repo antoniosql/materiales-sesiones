@@ -1,0 +1,23 @@
+{
+  "yaml.schemas": {
+    "./schemas/contrato.schema.json": "contracts/**/*.yml",
+    "./schemas/fuentes.schema.json": "config/fuentes/*.yml",
+    "./schemas/entorno.schema.json": "config/entornos/*.yml",
+    "./schemas/modelo.schema.json": "config/modelos/*.yml"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "mypy-type-checker.importStrategy": "fromEnvironment",
+  "sqlfluff.executablePath": "sqlfluff",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}

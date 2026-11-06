@@ -1,0 +1,21 @@
+# Copiar a contracts/gold/<dimension>.yml. Contrato histórico: una fila por versión observada.
+# Si sustituye a un contrato tipo1, incrementa 'version' y avisa a quien consume la tabla: cambia el grano.
+tabla: <dimension>
+capa: gold
+dominio: <dominio>
+propietario: "@org/<equipo-negocio>"
+descripcion: <Qué versiones conserva y desde cuándo, en una frase que entienda negocio>
+clave: [id_version]
+clave_negocio: [<columna_clave>]
+politica_rechazo: fallar
+version: 1
+columnas:
+  <columna_clave>: {tipo: string, nulo: false, descripcion: <...>}
+  <atributo>:      {tipo: string, nulo: true, descripcion: <...>}
+  id_version:      {tipo: string, nulo: false, descripcion: Identificador determinista de la versión observada}
+  vigente_desde:   {tipo: timestamp, nulo: false, descripcion: Inicio incluido de vigencia por observación UTC}
+  vigente_hasta:   {tipo: timestamp, nulo: true, descripcion: Fin excluido; NULL identifica la versión actual}
+  es_actual:       {tipo: boolean, nulo: false, descripcion: Indica la única versión vigente por entidad}
+  _hash_scd2:      {tipo: string, nulo: false, descripcion: Hash null-safe de los atributos historificados}
+  _batch_id:       {tipo: string, nulo: false, descripcion: Lote de apertura de la versión}
+reglas: []

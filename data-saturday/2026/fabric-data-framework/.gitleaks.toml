@@ -1,0 +1,23 @@
+# gitleaks: secretos (claves, tokens, cadenas de conexión) en el código y en el historial de Git.
+title = "Secretos del proyecto de datos"
+
+[extend]
+useDefault = true  # las más de 150 reglas estándar de gitleaks
+
+# Cadenas de conexión con contraseña, típicas en notebooks (JDBC, SQL Server, Storage)
+[[rules]]
+id = "cadena-conexion-con-password"
+description = "Cadena de conexión con contraseña embebida"
+regex = '''(?i)(?:password|pwd)\s*=\s*[^;'"\s]{6,}'''
+keywords = ["password", "pwd"]
+
+[[rules]]
+id = "storage-account-key"
+description = "Clave de cuenta de Azure Storage"
+regex = '''(?i)AccountKey=[A-Za-z0-9+/=]{40,}'''
+keywords = ["accountkey"]
+
+[[allowlists]]
+description = "Marcadores de plantilla <...> y ejemplos sin valores reales"
+regexes = ['''<[a-z0-9-]+>''']
+paths = ['''^templates/''', '''^infra/ejemplo\.tfvars$''']

@@ -1,0 +1,16 @@
+# Copiar a config/modelos/<dimension>.yml. Antes, crear sus contratos: templates/contrato/dimension-scd2.yml
+# y dimension-actual.yml. Todo atributo que no sea clave se clasifica en 'columnas' o en 'columnas_tipo1'.
+# Para activar SCD2 sobre una dimensión tipo1 existente: docs/runbooks/evolucion-de-cargas.md.
+modelo: <dimension>
+dominio: <dominio>
+origen: <fuente>                 # tabla silver declarada como fuente del dominio
+contrato: contracts/gold/<dimension>.yml
+clave_negocio: [<columna_clave>]
+columnas: [<columna_clave>, <atributo>]
+historificacion:
+  tipo: scd2
+  columnas: [<atributo>]         # abren una versión nueva cuando cambian
+  columnas_tipo1: []             # actualizan la versión vigente sin abrir otra
+  vigencia: observacion
+tabla_actual: <dimension>_actual
+contrato_actual: contracts/gold/<dimension>_actual.yml

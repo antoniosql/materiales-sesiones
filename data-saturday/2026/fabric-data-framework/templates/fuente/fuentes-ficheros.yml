@@ -1,0 +1,13 @@
+# Copiar a config/fuentes/<dominio>.yml, o añadir la entrada al fichero del dominio. Un fichero por dominio.
+# El contrato se crea antes que la fuente: templates/contrato/contrato.yml.
+dominio: <dominio>
+fuentes:
+  <fuente>:
+    formato: csv                 # csv | parquet | json | delta | avro | orc
+    ruta_landing: landing/<dominio>/<fuente>/
+    opciones_lectura:
+      header: true
+      delimiter: ";"
+    clave_negocio: [<columna_clave>]
+    modo_carga: merge            # append | overwrite | merge
+    contrato: contracts/silver/<fuente>.yml

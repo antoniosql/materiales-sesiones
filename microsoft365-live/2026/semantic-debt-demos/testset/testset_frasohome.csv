@@ -1,0 +1,21 @@
+id,estado,pregunta,respuesta_esperada,palabras_clave,fuente_canonica,dueno,espera_abstencion
+C1,Canonica,¿Cuál es el plazo de devolución en tienda física?,30 días naturales (FS-KB-01),30 dias,FS-KB-01,Operaciones,no
+C2,Canonica,¿Cuál es el plazo objetivo de reembolso en e-commerce?,7-10 días laborables desde la recepción en almacén (FS-KB-01),7;10;laborables,FS-KB-01,Operaciones,no
+C3,Canonica,¿Se reembolsan los gastos de envío en una devolución voluntaria?,"No, salvo error de preparación o incidencia (FS-KB-01)",no se reembolsa|no se devuelve|no son reembolsables|salvo,FS-KB-01,Operaciones,no
+C4,Canonica,¿Cuántos puntos por euro gana cada tier de fidelización?,"Bronce 1 · Plata 1,25 · Oro 1,5 · Platino 2 (FS-KB-07)","1,25|1.25;1,5|1.5",FS-KB-07,CRM,no
+C5,Canonica,¿Cómo se calcula el stock disponible?,Stock en mano − reservado − bloqueado (FS-KB-03),reservado;bloqueado,FS-KB-03,Finanzas,no
+C6,Canonica,¿Qué formato tiene el SKU de un producto de FraSoHome?,FSH-FFF-CCC-NNNN (FS-KB-06),FSH,FS-KB-06,Producto,no
+C7,Canonica,¿Antes de qué hora debe estar completada la conciliación diaria de pagos del e-commerce?,Antes de las 12:00 del día D+1 (FS-KB-05),12:00|12 h|12h|mediodia,FS-KB-05,Finanzas,no
+C8,Canonica,¿Quién aprueba la excepción de devolución de un cliente VIP y cada cuánto se puede conceder?,"El Store Manager, una vez por semestre (FS-KB-01 y FS-KB-07)",store manager;semestre,FS-KB-01|FS-KB-07,Operaciones,no
+D1,Duplicada,¿Cómo se reembolsa un ticket pagado con tarjeta y efectivo?,"Primero a tarjeta hasta su importe, el resto en efectivo (FS-KB-04)",tarjeta;efectivo,FS-KB-04|FS-KB-01,Operaciones Retail,no
+D2,Duplicada,¿Cómo se reembolsa un ticket pagado con tarjeta y tarjeta regalo?,"Primero a la tarjeta regalo hasta su importe, el resto a tarjeta (FS-KB-04)",tarjeta regalo;resto,FS-KB-04,Operaciones Retail,no
+D3,Duplicada,¿Cómo se define el ticket medio?,Ventas netas / nº de pedidos (FS-KB-03),ventas netas;pedidos|tickets,FS-KB-03,Finanzas,no
+X1,Contradictoria,¿Cuál es el plazo de devolución para compras online?,45 días naturales (FS-KB-01 v1.3),45 dias,FS-KB-01,Operaciones,no
+X2,Contradictoria,¿Cuántos clientes activos tenía FraSoHome al cierre de 2025?,100 (FS-KB-03),100,FS-KB-03|KPI_Cierre_2025_Oficial,Dirección Comercial,no
+X3,Contradictoria,¿Cómo evolucionaron las ventas netas en el Q4 de 2025 respecto al Q3?,"+2,5 % (FS-KB-03)","2,5|2.5",FS-KB-03|KPI_Cierre_2025_Oficial,Finanzas,no
+X4,Contradictoria,¿Cómo se calcula la tasa de devolución?,Unidades devueltas / vendidas o importe devuelto / ventas netas (FS-KB-03),unidades|importe,FS-KB-03,Finanzas,no
+T1,Tacita,Un cliente devuelve en tienda un pedido online que pagó con tarjeta y con puntos. ¿Cómo hago el reembolso de los puntos canjeados?,No documentado → Jorge T. (Atención al cliente),jorge|atencion al cliente,,Atención al cliente,si
+T2,Tacita,Si un cliente devuelve en tienda un pedido online: ¿a qué canal se imputa la devolución en el reporting?,No documentado → Paco R. (Finanzas),paco|finanzas,,Finanzas,si
+T3,Tacita,¿Cómo se registra en el informe Z de caja un reembolso en tienda de un pedido online?,No documentado → Lucía M. (Caja),lucia|operaciones retail,,Operaciones Retail,si
+N1,Inexistente,¿Qué es un cliente omnicanal en FraSoHome?,Nadie lo ha definido (Dirección Comercial),direccion comercial|laura,,Dirección Comercial,si
+N2,Inexistente,¿Cuál es el objetivo de tasa de devolución para 2026?,No está decidido (Dirección Comercial),direccion comercial|laura,,Dirección Comercial,si

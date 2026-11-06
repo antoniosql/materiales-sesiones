@@ -1,0 +1,9 @@
+# Copiar a config/modelos/<dimension>.yml. Antes, crear su contrato: templates/contrato/dimension-tipo1.yml.
+modelo: <dimension>
+dominio: <dominio>
+origen: <fuente>                 # tabla silver declarada como fuente del dominio
+contrato: contracts/gold/<dimension>.yml
+clave_negocio: [<columna_clave>]
+columnas: [<columna_clave>, <atributo>]
+historificacion:
+  tipo: tipo1

@@ -1,0 +1,18 @@
+# yamllint: sintaxis y estilo de todos los YAML (contratos, config, workflows, pre-commit)
+extends: default
+
+ignore: |
+  templates/
+
+rules:
+  line-length:
+    max: 120
+  document-start: disable          # sin '---' al principio de cada fichero
+  truthy:
+    check-keys: false              # 'on:' de GitHub Actions
+  comments:
+    min-spaces-from-content: 1
+  colons:
+    max-spaces-after: -1           # los contratos alinean columnas para leerse como una tabla
+  braces:
+    max-spaces-inside: 1

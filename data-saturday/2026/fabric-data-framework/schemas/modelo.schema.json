@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Modelo gold",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "modelo",
+    "dominio",
+    "origen",
+    "contrato",
+    "clave_negocio",
+    "columnas"
+  ],
+  "properties": {
+    "modelo": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "dominio": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "origen": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "tabla_actual": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "contrato": {
+      "type": "string",
+      "pattern": "^contracts/gold/[a-z0-9_]+\\.yml$"
+    },
+    "contrato_actual": {
+      "type": "string",
+      "pattern": "^contracts/gold/[a-z0-9_]+\\.yml$"
+    },
+    "clave_negocio": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "columnas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "historificacion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipo"
+      ],
+      "properties": {
+        "tipo": {
+          "enum": [
+            "tipo1",
+            "scd2"
+          ]
+        },
+        "columnas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "columnas_tipo1": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        },
+        "vigencia": {
+          "const": "observacion"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+# Copiar a contracts/gold/<dimension>_actual.yml. Proyección vigente de una dimensión SCD2: una fila por entidad.
+tabla: <dimension>_actual
+capa: gold
+dominio: <dominio>
+propietario: "@org/<equipo-negocio>"
+descripcion: <Qué representa una fila, en una frase que entienda negocio>
+clave: [<columna_clave>]
+politica_rechazo: fallar
+version: 1
+columnas:
+  <columna_clave>: {tipo: string, nulo: false, descripcion: <...>}
+  <atributo>:      {tipo: string, nulo: true, descripcion: <...>}
+reglas: []

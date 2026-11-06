@@ -1,0 +1,123 @@
+# Linters que se ejecutan en cada commit (solo sobre los ficheros modificados) y en CI (sobre todo el repo).
+# Instalar una vez: pre-commit install          Ejecutar todo: pre-commit run --all-files
+# Actualizar versiones: pre-commit autoupdate  (revisar el diff antes de hacer commit)
+default_language_version:
+  python: python3
+
+repos:
+  # --- Higiene general -------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]          # los datos van a OneLake, no al repositorio
+      - id: end-of-file-fixer
+        exclude: ^fabric/             # Fabric escribe los items a su manera al sincronizar
+      - id: trailing-whitespace
+        exclude: ^fabric/
+
+  # --- Secretos --------------------------------------------------------------------------------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  # --- Python ----------------------------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.4.1
+    hooks:
+      - id: mypy
+        files: ^src/
+        additional_dependencies: [types-PyYAML]
+
+  # --- Reglas del framework, contratos y catálogo ----------------------------------------------
+  - repo: local
+    hooks:
+      - id: lint-framework
+        name: Reglas del framework (FW001-FW010)
+        entry: python scripts/lint_framework.py
+        language: python
+        files: ^(fabric|src|scripts)/
+      - id: validar-contratos
+        name: Contratos y fuentes (referencias cruzadas)
+        entry: python scripts/validar_contratos.py
+        language: python
+        additional_dependencies: [pyyaml]
+        files: ^(contracts|config)/
+        pass_filenames: false
+      - id: catalogo-actualizado
+        name: Catálogo al día
+        entry: python scripts/generar_catalogo.py --comprobar
+        language: python
+        additional_dependencies: [pyyaml]
+        files: ^(contracts/|docs/catalogo\.md$)
+        pass_filenames: false
+      - id: agents-sincronizado
+        name: AGENTS.md al día con los linters
+        entry: python scripts/sincronizar_agents.py --comprobar
+        language: python
+        files: ^(AGENTS\.md|scripts/(lint_framework|sincronizar_agents)\.py)$
+        pass_filenames: false
+
+  # --- YAML y esquemas -------------------------------------------------------------------------
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: [--strict]
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.39.0
+    hooks:
+      - id: check-jsonschema
+        name: Esquema de contratos
+        files: ^contracts/.*\.yml$
+        args: [--schemafile, schemas/contrato.schema.json]
+      - id: check-jsonschema
+        name: Esquema de fuentes
+        files: ^config/fuentes/.*\.yml$
+        args: [--schemafile, schemas/fuentes.schema.json]
+      - id: check-jsonschema
+        name: Esquema de entornos
+        files: ^config/entornos/.*\.yml$
+        args: [--schemafile, schemas/entorno.schema.json]
+      - id: check-jsonschema
+        name: Esquema de modelos
+        files: ^config/modelos/.*\.yml$
+        args: [--schemafile, schemas/modelo.schema.json]
+
+  # --- SQL -------------------------------------------------------------------------------------
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 4.5.0
+    hooks:
+      - id: sqlfluff-lint
+      - id: sqlfluff-fix
+
+  # --- GitHub Actions --------------------------------------------------------------------------
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.31.1
+    hooks:
+      - id: zizmor
+        args: [--offline]   # sin token de GitHub; la auditoría online se lanza a mano (ver README)
+
+  # --- Terraform (necesita terraform y tflint instalados: vienen en el devcontainer) -----------
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.109.4
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+        args: [--hook-config=--retry-once-with-cleanup=true]
+      - id: terraform_tflint
+        args: [--args=--config=__GIT_WORKING_DIR__/.tflint.hcl]

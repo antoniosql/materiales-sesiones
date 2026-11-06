@@ -1,0 +1,14 @@
+# Sustituciones de fabric-cicd al desplegar este workspace en cada entorno.
+# Los valores de la izquierda son los de DEV, que es lo que hay en el repositorio.
+# Verificar el formato contra la versión de fabric-cicd que fije el pipeline.
+find_replace:
+  - find_value: 'entorno = "dev"'
+    replace_value:
+      TEST: 'entorno = "test"'
+      PROD: 'entorno = "prod"'
+    item_type: "Notebook"
+  - find_value: "proyecto-datos-dev"
+    replace_value:
+      TEST: "proyecto-datos-test"
+      PROD: "proyecto-datos-prod"
+    item_type: "Notebook"

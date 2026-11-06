@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contrato.schema.json",
+  "title": "Contrato de datos",
+  "description": "Contrato de una tabla de silver o gold. Lo validan pre-commit, CI y el editor (VS Code).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tabla",
+    "capa",
+    "dominio",
+    "propietario",
+    "descripcion",
+    "clave",
+    "columnas"
+  ],
+  "properties": {
+    "tabla": {
+      "$ref": "#/$defs/nombre",
+      "description": "Nombre de la tabla. Debe coincidir con el nombre del fichero"
+    },
+    "capa": {
+      "enum": [
+        "silver",
+        "gold"
+      ],
+      "description": "Capa del medallón. Debe coincidir con la carpeta"
+    },
+    "dominio": {
+      "$ref": "#/$defs/nombre"
+    },
+    "propietario": {
+      "type": "string",
+      "pattern": "^@",
+      "description": "Equipo de negocio responsable, como @org/equipo"
+    },
+    "descripcion": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Qué representa una fila, en lenguaje de negocio"
+    },
+    "clave": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nombre"
+      },
+      "description": "Columnas que identifican una fila de forma única"
+    },
+    "politica_rechazo": {
+      "enum": [
+        "cuarentena",
+        "fallar"
+      ],
+      "default": "cuarentena",
+      "description": "cuarentena: aparta las filas inválidas y sigue. fallar: detiene la carga"
+    },
+    "columnas": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^_?[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/columna"
+      }
+    },
+    "reglas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/regla"
+      }
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "clave_negocio": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nombre"
+      }
+    }
+  },
+  "$defs": {
+    "nombre": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "snake_case, sin tildes ni ñ (docs/convenciones.md)"
+    },
+    "tipo": {
+      "type": "string",
+      "pattern": "^(string|boolean|tinyint|smallint|int|bigint|float|double|date|timestamp|timestamp_ntz|binary|decimal\\(\\d{1,2},\\s?\\d{1,2}\\))$",
+      "description": "Tipo de Spark SQL. Para importes: decimal(p,s)"
+    },
+    "columna": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipo",
+        "descripcion"
+      ],
+      "properties": {
+        "tipo": {
+          "$ref": "#/$defs/tipo"
+        },
+        "nulo": {
+          "type": "boolean",
+          "default": true,
+          "description": "false = la columna es obligatoria"
+        },
+        "valores": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Valores permitidos"
+        },
+        "descripcion": {
+          "type": "string",
+          "minLength": 3
+        }
+      }
+    },
+    "regla": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nombre",
+        "expresion"
+      ],
+      "properties": {
+        "nombre": {
+          "$ref": "#/$defs/nombre"
+        },
+        "expresion": {
+          "type": "string",
+          "description": "Expresión Spark SQL que debe ser verdadera para cada fila"
+        },
+        "descripcion": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

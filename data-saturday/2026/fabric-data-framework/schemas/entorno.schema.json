@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entorno.schema.json",
+  "title": "Entorno",
+  "description": "config/entornos/<entorno>.yml: nombres de workspace y lakehouses de un entorno.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nombre",
+    "workspace_datos",
+    "lakehouses"
+  ],
+  "properties": {
+    "nombre": {
+      "enum": [
+        "dev",
+        "test",
+        "prod"
+      ]
+    },
+    "workspace_datos": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+-datos-(dev|test|prod)$"
+    },
+    "lakehouses": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bronze",
+        "silver",
+        "gold"
+      ],
+      "properties": {
+        "bronze": {
+          "type": "string",
+          "pattern": "^lh_[a-z0-9_]+$"
+        },
+        "silver": {
+          "type": "string",
+          "pattern": "^lh_[a-z0-9_]+$"
+        },
+        "gold": {
+          "type": "string",
+          "pattern": "^lh_[a-z0-9_]+$"
+        }
+      }
+    },
+    "esquema": {
+      "type": "string"
+    },
+    "ruta_config": {
+      "type": "string"
+    },
+    "conexiones_sql": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "servidor",
+          "base"
+        ],
+        "properties": {
+          "servidor": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9.-]+$"
+          },
+          "base": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+# zizmor: auditoría de seguridad de los workflows de GitHub Actions.
+rules:
+  # zizmor propone la sintaxis '$/...' para workflows reutilizables del propio repositorio,
+  # pero actionlint todavía no la reconoce. Se mantiene './...' hasta que ambos coincidan.
+  self-repository:
+    disable: true

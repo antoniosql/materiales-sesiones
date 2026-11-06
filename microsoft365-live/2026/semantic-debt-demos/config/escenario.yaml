@@ -1,0 +1,129 @@
+# Escenario FraSoHome de la sesión "Semantic Debt" (Microsoft 365 Live 2026).
+# Todo lo que se despliega sale de aquí. Los parámetros del tenant están en .env.
+
+# Cifras que enseñan las slides. `semdebt figures` las recalcula con los datos del caso
+# y avisa si no coinciden (en ese caso, cambia las slides, no el código).
+expected_figures:
+  clientes_activos:
+    crm_estado_activo: 47
+    marketing_socios_sin_baja: 49
+    ecommerce_compradores: 89
+    oficial_kb03: 100
+    tiendas_compradores: 132
+    kb03_literal_cualquier_id: 135
+  ventas_netas:          # euros; var_pct = Q4 vs Q3 2025
+    marketing: {q3: 323396, q4: 315112, var_pct: -2.6}
+    oficial:   {q3: 273514, q4: 280441, var_pct: 2.5}
+    tiendas:   {q3: 179097, q4: 186990, var_pct: 4.4}
+    finanzas:  {q3: 209750, q4: 224128, var_pct: 6.9}
+
+personas:
+  laura:
+    upn_env: LAURA_UPN
+    name_env: LAURA_DISPLAY_NAME
+    password_env: LAURA_PASSWORD
+    licenses_env: LAURA_LICENSE_SKUS
+    job_title: Directora comercial
+    department: Comercial
+  paco:
+    upn_env: PACO_UPN
+    name_env: PACO_DISPLAY_NAME
+    password_env: PACO_PASSWORD
+    licenses_env: PACO_LICENSE_SKUS
+    job_title: Conciliación
+    department: Finanzas
+
+groups:
+  finanzas:
+    alias_env: FINANZAS_GROUP_ALIAS
+    display_name: FS Finanzas
+    description: Grupo de Finanzas de FraSoHome. Único con derechos sobre «Altamente confidencial – Finanzas».
+    members: [paco]
+
+sites:
+  # Estado "ANTES" (demos 0–3): sin columnas, carpetas como única taxonomía.
+  # Las demos 0–3 se hacen con el Copilot del propio sitio (agente del sitio), no con Copilot Chat general:
+  # Laura también tiene acceso a la KB oficial y Copilot Chat mezclaría el "antes" con el "después".
+  comercial:
+    alias: FraSoHome-Comercial
+    display_name: FraSoHome Comercial
+    description: Sitio del área comercial. Nadie lo ordena desde 2021.
+    members: [laura, paco]
+    # Orden de subida = orden de "Modificado": la v1.2 obsoleta se sube la última y parece la más reciente.
+    # `as:` sube el fichero con otro nombre (en el sitio comercial la v1.3 no lleva "_Vigente" en el nombre).
+    folders:
+      Definitivos:
+        - {file: FS-KB-01_Politica_Devoluciones_v1.3_Vigente.docx, as: FS-KB-01_Politica_Devoluciones_v1.3.docx}
+        - FS-KB-03_Diccionario_KPI_v1.0.docx
+        - FS-KB-04_Manual_Tienda_Caja_y_Pagos_Mixtos_v2.1.docx
+        - FS-KB-05_Guia_Conciliacion_Pagos_Ecommerce_v1.4.docx
+        - FS-KB-06_Taxonomia_Catalogo_y_Reglas_SKU_v1.2.docx
+        - FS-KB-07_Guia_Fidelizacion_CRM_v1.1.docx
+      Comité:
+        - Informe_Comercial_Q4_2025_FINAL.pptx
+        - Cierre_mensual_2025-12_Finanzas.xlsx
+      Varios:
+        - Cuadro_mando_tiendas_v3_bueno.xlsx
+        - Manual_caja_2023.docx
+      Antiguo:
+        - FS-KB-02_Politica_Devoluciones_v1.2.docx
+    labels:
+      FS-KB-03_Diccionario_KPI_v1.0.docx: alta_confidencial_finanzas
+
+  # Estado "DESPUÉS" (demo 4): biblioteca curada con metadatos.
+  kb_oficial:
+    alias: FraSoHome-KB-Oficial
+    display_name: FraSoHome KB Oficial
+    description: Base de conocimiento oficial de FraSoHome, con estado, dominio y dueño.
+    members: [laura, paco]
+    files:
+      - {file: FS-KB-01_Politica_Devoluciones_v1.3_Vigente.docx, estado: Vigente,  dominio: Devoluciones, propietario: Operaciones,            vigente_desde: 2026-01-15}
+      - {file: FS-KB-02_Politica_Devoluciones_v1.2.docx,         estado: Obsoleta, dominio: Devoluciones, propietario: Operaciones}
+      - {file: FS-KB-03_Diccionario_KPI_v1.0.docx,               estado: Vigente,  dominio: KPI,          propietario: Equipo de Datos + Finanzas, vigente_desde: 2026-02-01}
+      - {file: FS-KB-04_Manual_Tienda_Caja_y_Pagos_Mixtos_v2.1.docx, estado: Vigente, dominio: Tienda,    propietario: Operaciones de Tienda}
+      - {file: FS-KB-05_Guia_Conciliacion_Pagos_Ecommerce_v1.4.docx, estado: Vigente, dominio: Pagos,     propietario: Finanzas}
+      - {file: FS-KB-06_Taxonomia_Catalogo_y_Reglas_SKU_v1.2.docx,   estado: Vigente, dominio: Catálogo,  propietario: Producto}
+      - {file: FS-KB-07_Guia_Fidelizacion_CRM_v1.1.docx,             estado: Vigente, dominio: Fidelización, propietario: CRM}
+      - {file: KPI_Cierre_2025_Oficial.docx,                         estado: Vigente, dominio: KPI,       propietario: Finanzas, vigente_desde: 2026-01-31}
+      - {file: FS-KB-00_Mapa_Dominios_y_Responsables_v1.0.docx,      estado: Vigente, dominio: Gobierno,  propietario: Dirección General, vigente_desde: 2026-11-01}
+    labels:
+      FS-KB-03_Diccionario_KPI_v1.0.docx: interno_definiciones
+
+# Columnas de la biblioteca oficial (Graph). "Dominio" depende de DOMINIO_COLUMN_MODE.
+columns:
+  estado:       {name: Estado,       display: Estado,        type: choice, choices: [Vigente, Borrador, Obsoleta]}
+  propietario:  {name: Propietario,  display: Propietario,   type: text}
+  vigente_desde: {name: VigenteDesde, display: Vigente desde, type: date}
+  dominio:      {name: Dominio,      display: Dominio,       type: taxonomy_or_choice}
+
+termstore:
+  group: FraSoHome
+  sets:
+    estado_documental:
+      name: Estado documental
+      terms: [Vigente, Borrador, Obsoleta]
+    dominio:
+      name: Dominio
+      terms: [Devoluciones, KPI, Fidelización, Tienda, Catálogo, Pagos, Gobierno]
+
+labels:
+  alta_confidencial_finanzas:
+    name: FS-Demo-AltConf-Finanzas
+    display_name: Altamente confidencial – Finanzas
+    tooltip: Solo Finanzas. Cifrado.
+    encrypt_for_group: finanzas
+  interno_definiciones:
+    name: FS-Demo-Interno-Definiciones
+    display_name: Interno – Definiciones oficiales
+    tooltip: Definiciones oficiales de uso interno. Sin cifrado.
+  policy_name: FS-Demo-Etiquetas
+
+glossary:
+  term: Cliente activo
+  borrador:
+    description: Cliente con actividad reciente.
+    owner: admin
+  publicado:
+    description: Cliente del CRM con al menos una compra en los últimos 12 meses, en cualquier canal (FS-KB-03).
+    owner: laura
+    resource_name: FS-KB-03 · Diccionario de KPI

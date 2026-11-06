@@ -1,0 +1,25 @@
+# Copiar a config/fuentes/<dominio>.yml, o añadir la entrada al fichero del dominio. Un fichero por dominio.
+# El contrato se crea antes que la fuente: templates/contrato/contrato.yml.
+# La conexión se declara en config/entornos/<entorno>.yml, en conexiones_sql: solo servidor y base, nunca credenciales.
+dominio: <dominio>
+fuentes:
+  <fuente>:
+    clave_negocio: [<columna_clave>]
+    contrato: contracts/silver/<fuente>.yml
+    modo_carga: merge            # append | overwrite | merge
+    origen_sql:
+      conexion: <conexion>
+      esquema: <esquema_origen>
+      tabla: <tabla_origen>
+      columnas:                  # columna del origen: columna del contrato
+        <columna_origen_clave>: <columna_clave>
+        <columna_origen_fecha>: <fecha_algo>
+        <columna_origen_importe>: <importe_algo>
+        <columna_origen_categoria>: <categoria>
+        <columna_origen_marca>: <fecha_cambio>   # la marca debe proyectarse y estar también en el contrato
+    extraccion:
+      modo: completa             # empieza en completa; para pasar a incremental, ver docs/runbooks/evolucion-de-cargas.md
+      columna_marca: <columna_origen_marca>   # UTC, mantenida por el origen en INSERT y UPDATE; omitir si no existe
+      solape_segundos: 5
+      estabilizacion_segundos: 5
+      borrados: no_detectar

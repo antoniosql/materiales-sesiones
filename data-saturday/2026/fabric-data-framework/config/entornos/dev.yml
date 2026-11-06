@@ -1,0 +1,9 @@
+# Entorno dev. Los nombres siguen docs/convenciones.md: <proyecto>-<capa funcional>-<entorno>
+nombre: dev
+workspace_datos: proyecto-datos-dev
+lakehouses:
+  bronze: lh_bronze
+  silver: lh_silver
+  gold: lh_gold
+# esquema: dbo            # descomentar si los lakehouses tienen esquemas habilitados
+ruta_config: _framework   # carpeta de lh_bronze/Files donde el despliegue publica config/ y contracts/
