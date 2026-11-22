@@ -200,7 +200,8 @@ FS-KB-03 en Comercial con «Altamente confidencial – Finanzas» y FS-KB-03 en 
 ### Día −2: el agente (primera vez, a mano)
 
 Sigue [copilot-studio/README.md](copilot-studio/README.md): la fuente de conocimiento es **solo** la biblioteca
-de FraSoHome-KB-Oficial, con filtrado por metadatos **Estado = Vigente** e instrucciones de
+de FraSoHome-KB-Oficial, con el filtro de la fuente **Nombre de archivo no contiene `FS-KB-02`** (Copilot Studio
+solo filtra por propiedades estándar, no por la columna `Estado`), orquestación generativa e instrucciones de
 [`copilot-studio/instrucciones.md`](copilot-studio/instrucciones.md). Publícalo y exporta la plantilla:
 
 ```powershell
@@ -277,7 +278,10 @@ en el estado), la limpieza se la devuelve al admin al borrar a Laura.
 | `assignSensitivityLabel` devuelve 402 o 403 | API medidas sin habilitar | `LABEL_APPLY_METHOD=manual` y etiquétalo a mano |
 | `New-Label` falla con el correo de FS-Finanzas | El grupo aún no tiene buzón | Espera 10 min tras `identities` y repite |
 | El Copilot del sitio responde 45 días siempre | El índice ya prefiere la v1.3 | Es el comportamiento correcto del producto: usa el vídeo y cuenta que la respuesta varía |
-| El agente cita FS-KB-02 | El filtrado por metadatos no está activo o la columna aún no se ha sincronizado | Revisa la fuente en Copilot Studio y espera a la sincronización (4–6 h) |
+| El agente cita FS-KB-02 | El filtro de la fuente no está guardado | Conocimiento › FraSoHome-KB-Oficial › Configuración avanzada |
+| El agente responde «No se encontró información» | Sitio recién creado y aún sin indexar | Configuración del sitio › Búsqueda y disponibilidad sin conexión › *Reindex site* y espera unas horas |
+| Conocimiento bloqueado en Copilot Studio («Actualice su licencia») | La cuenta no tiene licencia de Copilot Studio | *Iniciar una prueba* o *Ampliar prueba* (30 días) |
+| Las etiquetas nuevas no salen en SharePoint | Propagación de la directiva | Hasta 24 h; normalmente 1–2 h |
 | `Set-DominioTaxonomy.ps1` no conecta | PnP necesita el PFX o el certificado en el almacén | Revisa `CERT_PFX_PATH` y `CERT_PFX_PASSWORD` |
 | `evaluate` dice que no se hace como admin | Has iniciado sesión con `ADMIN_UPN` | Borra `state/msal_user_cache.bin` y entra como Laura |
 | Glosario: 400 al publicar | El dominio de gobierno no está publicado | Publica el dominio en Unified Catalog |
