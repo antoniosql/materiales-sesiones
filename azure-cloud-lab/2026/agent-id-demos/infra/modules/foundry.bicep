@@ -47,6 +47,8 @@ resource project 'Microsoft.CognitiveServices/accounts/projects@2025-06-01' = {
   location: location
   tags: tags
   identity: { type: 'SystemAssigned' }
+  // La cuenta no admite dos operaciones a la vez (RequestConflict): primero el modelo, después el proyecto
+  dependsOn: [ model ]
   properties: {
     displayName: 'FraSoHome · agentes'
     description: 'Proyecto de la demo 2 de Azure Cloud Lab 2026 (Entra Agent ID)'

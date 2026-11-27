@@ -17,6 +17,16 @@ class GraphError(RuntimeError):
         super().__init__(f"Graph {status} {codigo}: {mensaje} ({url})")
         self.status, self.codigo, self.mensaje = status, codigo, mensaje
 
+    @property
+    def sin_licencia(self) -> bool:
+        m = self.mensaje.lower()
+        return self.status == 403 and ("not licensed" in m or "insufficient license" in m)
+
+
+AYUDA_LICENCIA = ("    El tenant no tiene la licencia: acceso condicional para agentes → Entra ID P1 + Agent 365 (o M365 E7);\n"
+                  "    Lifecycle Workflows de sponsors → Agent 365 o Entra ID Governance; riesgo de agentes → ID Protection\n"
+                  "    (Entra ID P2) + Agent 365. Ver DESPLIEGUE.md §1.")
+
 
 class Graph:
     def __init__(self, credencial: Credencial, scopes: list[str]) -> None:

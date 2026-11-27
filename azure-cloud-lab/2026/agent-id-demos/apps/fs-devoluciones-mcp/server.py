@@ -141,6 +141,11 @@ def devoluciones_online(ctx: Context, categoria: str = "", desde: str = "", hast
     return resumir(devoluciones, productos, categoria, desde, hasta)
 
 
+def _euros(x: float) -> str:
+    """8750.07 → «8.750,07 €» (formato español, sin depender del locale del contenedor)."""
+    return f"{x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".") + " €"
+
+
 def resumir(devoluciones: list[dict], productos: dict[str, dict], categoria: str = "", desde: str = "",
             hasta: str = "") -> str:
     """Recuento por motivo. Función pura para poder probarla sin Storage."""
@@ -162,7 +167,7 @@ def resumir(devoluciones: list[dict], productos: dict[str, dict], categoria: str
 
     detalle = "\n".join(f"- {m}: {n}" for m, n in motivos.most_common())
     return (f"Devoluciones online{' de ' + categoria if categoria else ''}: {total}\n"
-            f"Importe reembolsado: {reembolsado:,.2f} EUR\nPor motivo:\n{detalle or '- (ninguna)'}")
+            f"Importe reembolsado: {_euros(reembolsado)}\nPor motivo:\n{detalle or '- (ninguna)'}")
 
 
 if __name__ == "__main__":

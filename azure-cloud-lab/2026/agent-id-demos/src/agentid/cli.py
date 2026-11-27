@@ -7,6 +7,7 @@ import sys
 
 from agentid import acceso, agentes, atributos, check, ciclo, config, demos, foundry, infra, personas
 from agentid.contexto import Ctx
+from agentid.graph import AYUDA_LICENCIA, GraphError
 
 
 def _desplegar(ctx: Ctx) -> None:
@@ -40,8 +41,16 @@ def _cleanup(ctx: Ctx, args) -> None:
         print("Esto borra todo lo que crearon estos scripts (usuarios, grupos, blueprint, políticas, grupo de recursos).\n"
               "Repite con --si para confirmar.")
         return
-    for paso in (acceso.eliminar, ciclo.eliminar, agentes.eliminar, personas.eliminar, infra.eliminar):
-        paso(ctx)
+    fallos = 0
+    for paso in (acceso.eliminar, ciclo.eliminar, foundry.eliminar, agentes.eliminar, personas.eliminar, infra.eliminar):
+        try:
+            paso(ctx)
+        except Exception as e:  # noqa: BLE001 — sigue con el resto: cada paso solo borra lo suyo
+            fallos += 1
+            ayuda = f"\n{AYUDA_LICENCIA}" if isinstance(e, GraphError) and e.sin_licencia else ""
+            print(f"  ✘ {paso.__module__.split('.')[-1]}: {e}{ayuda}")
+    if fallos:
+        print(f"\n⚠ {fallos} paso(s) con error. Repite `agentid cleanup --si`: lo ya borrado se salta.")
     print("\nEl atributo FraSoHome.Carril no se puede borrar (Entra solo permite desactivarlo) y el agente de Copilot "
           "Studio y el de Foundry se borran desde sus portales.")
 
@@ -122,4 +131,6 @@ def main(argv: list[str] | None = None) -> None:
             acciones[args.cmd]()
     except RuntimeError as e:
         print(f"\n✘ {e}", file=sys.stderr)
+        if isinstance(e, GraphError) and e.sin_licencia:
+            print(AYUDA_LICENCIA, file=sys.stderr)
         sys.exit(1)

@@ -25,7 +25,6 @@ if [ "$SIN_GIT" -eq 0 ] && [ ! -d .git ] && command -v git >/dev/null; then
 fi
 
 command -v az >/dev/null && echo "✔ Azure CLI" || echo "⚠ instala Azure CLI"
-command -v azd >/dev/null && echo "✔ azd" || echo "⚠ azd no instalado (solo para la conexión MCP de Foundry)"
 
 [ "$SIN_PRUEBAS" -eq 1 ] || .venv/bin/python -m pytest -q
 echo -e "\nSiguiente: source .venv/bin/activate && agentid check"

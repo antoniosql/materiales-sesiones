@@ -20,8 +20,6 @@ def comprobar(ctx: Ctx, graph: bool = True) -> bool:
     ok &= _ok(3 <= len(s.name_suffix) <= 8 and s.name_suffix.islower(), f"NAME_SUFFIX válido ({s.name_suffix!r})",
               "3–8 caracteres en minúsculas")
     ok &= _ok(bool(shutil.which("az") or shutil.which("az.cmd")), "Azure CLI instalada", "https://aka.ms/installazurecli")
-    _ok(bool(shutil.which("azd") or shutil.which("azd.cmd")), "Azure Developer CLI (solo para la conexión de Foundry)",
-        "winget install microsoft.azd · si no, la conexión se crea en el portal")
     try:
         cuenta = az("account", "show")
         ok &= _ok(cuenta.get("tenantId") == s.tenant_id, f"az conectado al tenant {cuenta.get('tenantId')}",

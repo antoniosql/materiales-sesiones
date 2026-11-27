@@ -131,6 +131,8 @@ def logs_triage(ctx: Ctx) -> None:
 def eliminar(ctx: Ctx) -> None:
     rg = ctx.estado.get("resource_group")
     if rg and rg.get("creado"):
+        if ctx.s.subscription_id:
+            az("account", "set", "--subscription", ctx.s.subscription_id, salida_json=False)
         az("group", "delete", "--name", rg["id"], "--yes", "--no-wait", salida_json=False)
         print(f"  − grupo de recursos {rg['id']} (borrado en segundo plano)")
     for k in ("resource_group", "infra", "imagenes", "apps", "foundry_conexion", "foundry_agente"):

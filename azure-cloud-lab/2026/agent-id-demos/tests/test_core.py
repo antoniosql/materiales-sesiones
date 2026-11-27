@@ -98,7 +98,7 @@ def test_resumen_mcp(monkeypatch):
     prods = {"P1": {"categoria": "Iluminación", "subcategoria": "Bombillas"},
              "P2": {"categoria": "Muebles", "subcategoria": "Sofás"}}
     assert "Devoluciones online de Iluminación: 1" in server.resumir(devs, prods, "Iluminación")
-    assert "1,337.50 EUR" in server.resumir(devs, prods)
+    assert "1.337,50 €" in server.resumir(devs, prods)
     assert "- (ninguna)" in server.resumir(devs, prods, "", "2026-01-01")
 
 

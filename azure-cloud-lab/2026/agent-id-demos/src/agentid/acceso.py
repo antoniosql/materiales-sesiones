@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from agentid import atributos
 from agentid.contexto import Ctx
-from agentid.graph import GraphError
+from agentid.graph import AYUDA_LICENCIA, GraphError
 
 SCOPES = ("Policy.Read.All", "Policy.ReadWrite.ConditionalAccess", "Application.Read.All")
 
@@ -40,8 +40,10 @@ def desplegar(ctx: Ctx) -> None:
                 pid = g.post("identity/conditionalAccess/policies", c, version="beta")["id"]
                 creado = True
         except GraphError as e:
-            print(f"  ⚠ {clave}: {e}\n    Créala en el portal (Entra → Conditional Access → New policy → Agents) "
-                  "con los valores de config/escenario.yaml.")
+            ayuda = AYUDA_LICENCIA if e.sin_licencia else (
+                "    Créala en el portal (Entra → Conditional Access → New policy → Agents) "
+                "con los valores de config/escenario.yaml.")
+            print(f"  ⚠ {clave}: {e}\n{ayuda}")
             continue
         ctx.estado.registrar(f"ca:{clave}", pid, creado=creado, nombre=c["displayName"])
         print(f"  {'+' if creado else '='} {c['displayName']} · {c['state']}")

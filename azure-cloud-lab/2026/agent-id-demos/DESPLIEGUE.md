@@ -12,7 +12,6 @@ Guía de principio a fin: requisitos, despliegue, pasos manuales, ensayo, día d
 |---|---|
 | Python 3.10+ | CLI `agentid` |
 | Azure CLI (`az`) 2.67+ con Bicep | Infraestructura, imágenes (`az acr build`), RBAC, Storage, Container Apps |
-| Azure Developer CLI (`azd`) con la extensión de IA | Solo para crear la conexión MCP de Foundry. Si falla, se crea en el portal |
 | Navegador con tres perfiles | *Nuria (admin)*, *Lucía* y *Jorge*, para las demos |
 
 No hace falta Docker local: las imágenes se construyen en ACR.
@@ -90,7 +89,7 @@ Sin el script: `python -m venv .venv`, `.\.venv\Scripts\Activate.ps1` y `pip ins
 | 7 | `agentid rbac` | *Storage Blob Data Reader* en `buzon-devoluciones` y *Contributor* en `triage-resultados`, **a la identidad de agente** | Nunca a la MI |
 | 8 | `agentid imagenes` | `az acr build` de las dos apps | 2–4 min |
 | 9 | `agentid apps` | `infra/apps.bicep`: `ca-fs-devoluciones-mcp` (ingress público, `/mcp`) y `ca-fs-triage` (sin ingress) | Guarda la URL del MCP en el estado |
-| 10 | `agentid foundry conexion` | Conexión **fs-devoluciones-mcp**: *remote tool*, auth **identidad de agente**, audience `https://storage.azure.com` | Si `azd` falla, imprime los valores para el portal |
+| 10 | `agentid foundry conexion` | Conexión **fs-devoluciones-mcp**: *remote tool*, auth **identidad de agente**, audience `https://storage.azure.com` | Va por ARM (`az rest`): no necesita azd. Si falla, imprime los valores para el portal |
 | 11 | `agentid foundry agente` | Agente **frasohome-returns** con la herramienta MCP | Nace con identidad propia (modelo actual de Foundry) |
 | 12 | `agentid acceso` | **CA-AG-01** (activa) y **CA-AG-02** (report-only) | Estados en `.env` |
 | 13 | `agentid ciclo` | **LW-Mover-Sponsors**: mover por cambio de *department*, avisa al manager (cc Jorge) y a los co-sponsors | No transfiere: es la recomendación de la slide 28 |
@@ -170,16 +169,40 @@ Foundry (se borran en sus portales; al borrar el de Copilot Studio se borra su A
 | CA-AG-01 no bloquea | El token anterior sigue vivo, o el riesgo no ha propagado | `agentid demo4 reiniciar` fuerza un token nuevo. Graba el clip con margen |
 | `confirmCompromised` devuelve error | API beta de riesgo de agentes | Entra → ID Protection → Risky agents → Confirm compromised |
 | Sponsors: 403 al añadir | La API de sponsors para identidades de agente pide Agent ID Administrator | Comprueba el rol de Nuria o hazlo en el portal |
-| `azd ai connection create` no existe | Falta la extensión de IA de azd | Crea la conexión en el portal con los valores que imprime el comando |
+| `403 … not licensed` / `Insufficient license` en `acceso`, `ciclo` o `demo4` | Faltan licencias (ver §1) | El CLI lo dice y sigue; activa la trial y repite el comando |
+| `python: can't open file '/app/main.py': Permission denied` en `ca-fs-triage` | Imagen construida desde un disco que deja los ficheros en modo 700 | Corregido: los Dockerfile hacen `chmod -R a+rX /app` |
+| `RequestConflict` en `aif-…/fs-agentes-prj` al desplegar | Modelo y proyecto a la vez sobre la misma cuenta | Corregido: el proyecto depende del modelo en `foundry.bicep` |
+| `agentid foundry …` encuentra 2 identidades | Hay otro agente con el mismo nombre en otro proyecto del tenant | Corregido: filtra por `<cuenta>-<proyecto>-`; si no, `FOUNDRY_AGENT_IDENTITY_ID` |
 | `invalid_scope` en el login | El tenant no conoce algún permiso de Agent ID | El CLI reintenta con los mínimos; revisa la licencia de Agent 365 |
 
 ---
 
-## 8 · Por verificar en el tenant
+## 8 · Verificado en un tenant real (27/11/2026)
 
-- Nombres de los permisos de Graph de Agent ID y que la API de sponsors admite llamadas delegadas.
-- Que el filtro `CustomSecurityAttribute.FraSoHome_Carril -eq "Produccion"` y `agentIdRiskLevels` se aceptan en beta
-  (vienen de los ejemplos de *Create conditionalAccessPolicy*).
+Prueba completa con `agentid` en un tenant de demo con solo licencias gratuitas, suscripción Visual Studio, `swedencentral`.
+
+| Pieza | Resultado |
+|---|---|
+| Login de Graph con *Microsoft Graph Command Line Tools* y los 17 permisos de Agent ID, CA, LCW y riesgo | ✅ Consentimiento de una vez; el token trae todos los `scp` |
+| `infra/main.bicep` (base + Foundry) | ✅ Tras corregir la carrera modelo/proyecto |
+| `personas` · `atributos` · `datos` | ✅ Atributos con los roles de atributos asignados al admin (un Global Admin no los tiene) |
+| `blueprint` (v1.0 `POST /applications` + principal + federated credential) | ✅ |
+| `identidad` (beta `POST servicePrincipals/microsoft.graph.agentIdentity`) · owners · atributo `Carril` en la identidad | ✅ El `appId` de la identidad es su propio `id` |
+| Sponsors delegados: añadir usuario y grupo y quitar (`…/microsoft.graph.agentIdentity/sponsors/$ref`) | ✅ |
+| RBAC a la identidad de agente con `--assignee-object-id` + `ServicePrincipal` | ✅ |
+| **Demo 3**: MI → T1 (`fmi_path`) → token del agente → Storage | ✅ El contenedor procesa los 18 correos sin ningún secreto |
+| Conexión de Foundry *remote tool* con `authType: AgenticIdentityToken` y `audience` | ✅ Por ARM (`2025-06-01`), sin azd |
+| **Demo 2**: con el rol en la identidad del proyecto → `403 AuthorizationPermissionMismatch`; con el rol en la del agente → datos | ✅ El cambio se nota en ~60 s |
+| Foundry crea **dos** identidades: `<cuenta>-<proyecto>-AgentIdentity` (proyecto) y `<cuenta>-<proyecto>-<agente>-AgentIdentity`, cada una con **su propio blueprint** | ✅ La identidad compartida existe en el modelo actual: aparece al crear el primer agente |
+| `ensayo reiniciar` | ✅ Salvo la puerta 1 (falta el agente de Copilot Studio) y el riesgo (licencia) |
+| Acceso condicional para agentes (CA-AG-01/02) | ⛔ `403 Your tenant is not licensed for this feature` sin Entra ID P1 |
+| Lifecycle Workflows (LW-Mover-Sponsors) | ⛔ `403 … Agent-related workflows require a Microsoft Agent 365 or Microsoft 365 E7 license` |
+| `riskyAgents/confirmCompromised` | ⛔ `403 Your tenant is not licensed for this feature` |
+
+### Sigue por verificar (necesita licencias o el agente de Copilot Studio)
+
+- Que el filtro `CustomSecurityAttribute.FraSoHome_Carril -eq "Produccion"` y `agentIdRiskLevels` se aceptan en beta.
 - `riskyAgents/confirmSafe` o `dismiss` para limpiar el riesgo (el CLI prueba los dos).
 - El disparador `attributeChangeTrigger` sobre `department` para workflows de mover y el `locale` `es-es`.
 - Que el registro de Agent 365 muestra la identidad `fs-triage-devoluciones` sin onboarding adicional.
+- Puerta 1: identidad automática del agente de Copilot Studio y cambio de sponsor.

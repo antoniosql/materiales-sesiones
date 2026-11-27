@@ -81,8 +81,6 @@ if (Get-Command az -ErrorAction SilentlyContinue) {
     az bicep version 2>$null | Out-Null
     if ($LASTEXITCODE -eq 0) { Ok 'Bicep' } else { Aviso 'Bicep no instalado: az bicep install' }
 } else { Aviso 'Azure CLI no instalada: winget install Microsoft.AzureCLI' }
-if (Get-Command azd -ErrorAction SilentlyContinue) { Ok 'Azure Developer CLI' }
-else { Aviso 'azd no instalado (solo para la conexión MCP de Foundry): winget install Microsoft.Azd' }
 
 # --- 6 · Pruebas ------------------------------------------------------------------------------------
 if (-not $SinPruebas) {

@@ -35,10 +35,10 @@ entra-agent-id-demos/
 
 ## Puesta en marcha
 
-Requisitos: Windows con PowerShell, Python 3.10+, Azure CLI con Bicep y, opcionalmente, Azure Developer CLI.
+Requisitos: Windows con PowerShell, Python 3.10+ y Azure CLI con Bicep.
 
 ```powershell
-cd C:\repos\entra-agent-id-demos
+cd C:\repos\materiales-sesiones\azure-cloud-lab\2026\agent-id-demos
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
 .\.venv\Scripts\Activate.ps1
 notepad .env                       # rellena lo marcado con «←»: TENANT_ID, SUBSCRIPTION_ID, NAME_SUFFIX

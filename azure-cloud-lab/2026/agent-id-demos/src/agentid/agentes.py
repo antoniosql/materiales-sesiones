@@ -169,9 +169,10 @@ def preparar_copilot(ctx: Ctx) -> None:
 
 def eliminar(ctx: Ctx) -> None:
     g = _g(ctx)
+    # Borrar el blueprint se lleva su principal (borrar el principal directamente da 403 con estos permisos).
     pasos = [("identidad:triage", f"servicePrincipals/{{id}}/{CAST}", "beta"),
-             ("blueprint_principal", "servicePrincipals/{id}", "v1.0"),
-             ("blueprint", "applications/{id}", "v1.0")]
+             ("blueprint", "applications/{id}", "v1.0"),
+             ("blueprint_principal", "servicePrincipals/{id}", "v1.0")]
     for clave, ruta, version in pasos:
         dato = ctx.estado.get(clave)
         if not dato or not ruta or not dato.get("creado"):

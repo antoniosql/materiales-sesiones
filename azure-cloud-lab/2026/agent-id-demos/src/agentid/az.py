@@ -1,4 +1,4 @@
-"""Llamadas a Azure CLI y azd (ARM, ACR, Container Apps, RBAC, Storage)."""
+"""Llamadas a Azure CLI (ARM, ACR, Container Apps, RBAC, Storage)."""
 
 from __future__ import annotations
 
@@ -31,13 +31,6 @@ def az(*args: str, salida_json: bool = True, comprobar: bool = True) -> Any:
     if not salida_json or not r.stdout.strip():
         return r.stdout.strip()
     return json.loads(r.stdout)
-
-
-def azd(*args: str) -> str:
-    r = subprocess.run([_exe("azd"), *args], capture_output=True, text=True, encoding="utf-8")
-    if r.returncode != 0:
-        raise AzError(f"azd {' '.join(args[:4])}… → {(r.stderr or r.stdout).strip()[:800]}")
-    return r.stdout.strip()
 
 
 def ambito_contenedor(storage_id: str, contenedor: str) -> str:
