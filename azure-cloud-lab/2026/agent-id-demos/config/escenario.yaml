@@ -1,0 +1,102 @@
+# Escenario FraSoHome · Azure Cloud Lab 2026 · Entra Agent ID
+# Los alias se convierten en UPN con TENANT_DOMAIN. Nuria es ADMIN_UPN (ya existe, no se crea).
+
+empresa: FraSoHome
+
+personas:
+  jorge:
+    alias: jorge.p
+    nombre: Jorge P.
+    puesto: Director de Operaciones de Tienda
+    departamento: Tiendas
+  alvaro:
+    alias: alvaro.g
+    nombre: Álvaro G.
+    puesto: Store Manager MAD01 Gran Vía
+    departamento: Tiendas
+    manager: jorge
+  lucia:
+    alias: lucia.m
+    nombre: Lucía M.
+    puesto: Responsable de Atención al Cliente e-commerce
+    departamento: E-commerce
+  marta:
+    alias: marta.r
+    nombre: Marta R.
+    puesto: Analista de e-commerce
+    # Pasó de Tiendas a E-commerce en julio de 2026: es el «mover» de la demo 4.
+    departamento: E-commerce
+    departamento_anterior: Tiendas
+    manager: lucia
+  david:
+    alias: david.l
+    nombre: David L.
+    puesto: Desarrollador de e-commerce
+    departamento: E-commerce
+    manager: lucia
+
+# Grupos de Microsoft 365: los únicos (junto a los dinámicos) que pueden ser sponsors.
+grupos:
+  plataforma:
+    nombre: "FraSoHome · Plataforma de agentes"
+    alias: fs-plataforma-agentes
+    miembros: [admin, david]
+  tiendas:
+    nombre: "FraSoHome · Responsables de tienda"
+    alias: fs-responsables-tienda
+    miembros: [jorge, alvaro]
+
+atributo:
+  conjunto: FraSoHome
+  nombre: Carril
+  descripcion: Carril de gobierno del agente (Bizz Summit 2026)
+  valores: [Playground, Equipo, Produccion, Enterprise]
+
+agentes:
+  copilot:
+    nombre: Asistente de Devoluciones FraSoHome     # nombre visible del agente en Copilot Studio
+    sponsor_inicial: marta                            # estado de partida de la demo 1
+    sponsors_arreglo: [jorge, grupo:tiendas]          # demo 4, beat 3
+    carril: Produccion
+  foundry:
+    nombre: frasohome-returns
+    carril: Produccion
+    sponsors: [grupo:plataforma]
+  triage:
+    blueprint: "FraSoHome · Agentes de operaciones"
+    blueprint_sponsors: [grupo:plataforma]
+    blueprint_owners: [admin, david]
+    nombre: fs-triage-devoluciones
+    sponsors: [lucia]
+    owners: [david]
+    carril: Produccion
+    roles:
+      - { rol: Storage Blob Data Reader, contenedor: buzon-devoluciones }
+      - { rol: Storage Blob Data Contributor, contenedor: triage-resultados }
+
+acceso_condicional:
+  CA-AG-01:
+    nombre: "CA-AG-01 · Agentes de Producción con riesgo alto → bloquear"
+    carril: Produccion
+    riesgo: high
+    recursos: [All]
+  CA-AG-02:
+    nombre: "CA-AG-02 · Agentes de Playground → sin recursos de producción"
+    carril: Playground
+    # Azure Storage (aplicación de primera parte). Añade aquí otros recursos de producción.
+    recursos: [e406a681-f3d4-42a8-90b6-c2b029497af1]
+
+workflow:
+  nombre: LW-Mover-Sponsors
+  descripcion: "Cambio de departamento de un sponsor: avisa al manager (con copia a Tiendas) y a los co-sponsors. No transfiere."
+  copia_a: [jorge]
+
+foundry:
+  conexion: fs-devoluciones-mcp
+  server_label: fs-devoluciones
+  instrucciones: >-
+    Eres el asistente de devoluciones online de FraSoHome. Para cualquier pregunta con cifras de
+    devoluciones usa la herramienta devoluciones_online. Los datos cubren 2024 y 2025: si el usuario
+    no da fechas, usa todo el histórico y dilo. Si la herramienta devuelve un error, muéstralo tal
+    cual, sin inventar cifras.
+  pregunta_demo: ¿Cuántas devoluciones online de iluminación tenemos registradas y por qué motivo?

@@ -5,4 +5,4 @@ Sesiones de unos 50 minutos con demos y preguntas incluidas. Web: azurecloudlab.
 
 | Edición | Carpeta | Sesión |
 |---|---|---|
-| 2026 | [2026/](2026/) | 5 propuestas en preparación para Sessionize |
+| 2026 | [2026/](2026/) | Identidad, acceso y ciclo de vida de agentes con Microsoft Entra Agent ID |

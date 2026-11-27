@@ -1,0 +1,8 @@
+# Dependencias del CLI `agentid` (equivale a: pip install -e ".[foundry]")
+msal>=1.31
+requests>=2.32
+python-dotenv>=1.0
+pyyaml>=6.0
+azure-ai-projects>=2.0.0
+azure-identity>=1.19
+openai>=1.68

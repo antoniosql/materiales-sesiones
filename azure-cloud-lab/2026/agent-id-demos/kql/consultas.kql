@@ -1,0 +1,39 @@
+// Consultas de apoyo para la slide 29 (rastro) y para preparar las demos.
+// Requisito: diagnostic settings de Entra enviando SignInLogs, ServicePrincipalSignInLogs y AuditLogs
+// a un Log Analytics workspace.
+// ⚠ Por verificar (Anexo C, punto 9): que los campos de agente (agentType, blueprintId…) lleguen a
+// estas tablas con estos nombres. Si no aparecen, usa Graph (`auditLogs/signIns` con el filtro
+// Agent type del portal) y ajusta las columnas.
+
+// 1 · Inicios de sesión de fs-triage-devoluciones (autónomo): éxito, fallo y política aplicada
+ServicePrincipalSignInLogs
+| where TimeGenerated > ago(1d)
+| where ServicePrincipalName has "fs-triage-devoluciones"
+| project TimeGenerated, ServicePrincipalName, ResourceDisplayName, ResultType, ResultDescription,
+          ConditionalAccessStatus, IPAddress
+| order by TimeGenerated desc
+
+// 2 · Bloqueos por acceso condicional a agentes en las últimas 24 h
+ServicePrincipalSignInLogs
+| where TimeGenerated > ago(1d)
+| where ConditionalAccessStatus == "failure"
+| summarize intentos = count(), ultimo = max(TimeGenerated) by ServicePrincipalName, ResourceDisplayName
+| order by intentos desc
+
+// 3 · Altas, bajas y cambios de blueprints e identidades de agente (auditoría)
+AuditLogs
+| where TimeGenerated > ago(7d)
+| where OperationName in ("Add application", "Update application", "Delete application",
+                          "Add service principal", "Update service principal", "Delete service principal")
+| extend objetivo = tostring(TargetResources[0].displayName), tipo = tostring(TargetResources[0].type)
+| where objetivo has_any ("FraSoHome", "fs-triage", "frasohome-returns", "Asistente de Devoluciones")
+| project TimeGenerated, OperationName, objetivo, tipo, quien = tostring(InitiatedBy.user.userPrincipalName)
+| order by TimeGenerated desc
+
+// 4 · Cambios de sponsor (demo 4): quién quitó o añadió sponsors y cuándo
+AuditLogs
+| where TimeGenerated > ago(7d)
+| where OperationName has "sponsor"
+| project TimeGenerated, OperationName, objetivo = tostring(TargetResources[0].displayName),
+          quien = tostring(InitiatedBy.user.userPrincipalName), Result
+| order by TimeGenerated desc

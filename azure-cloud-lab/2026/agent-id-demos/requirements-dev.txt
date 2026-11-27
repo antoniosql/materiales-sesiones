@@ -1,0 +1,6 @@
+# Pruebas y ejecución local de las apps (equivale a: pip install -e ".[foundry,dev]")
+-r requirements.txt
+pytest>=8
+azure-storage-blob>=12.24
+mcp>=1.12,<2
+uvicorn>=0.30

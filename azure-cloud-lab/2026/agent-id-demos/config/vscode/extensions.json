@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-azuretools.vscode-bicep",
+    "ms-azuretools.vscode-azurecontainerapps",
+    "hediet.vscode-drawio"
+  ]
+}

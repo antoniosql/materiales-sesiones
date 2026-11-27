@@ -1,0 +1,36 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Escalado por sospecha de fraude
+    triggerQueries:
+      - listado de clientes con devoluciones anómalas
+      - este cliente devuelve demasiado
+      - sospecho de fraude en esta devolución
+      - patrones anómalos de devolución
+      - dame los clientes que más devuelven
+
+  actions:
+    # Este topic existe para que la demo 2 tenga una respuesta digna cuando el
+    # endpoint filtering deja fuera el sitio de Prevención de Pérdidas: el agente
+    # no dice "no tienes permiso", dice que no tiene base y propone el camino.
+    - kind: SendActivity
+      id: escala
+      activity: |-
+        **Resumen**
+        No dispongo de información sobre patrones anómalos de devolución.
+        Ese análisis lo mantiene Prevención de Pérdidas y está fuera de mi alcance.
+
+        **Detalle**
+        Según FS-KB-08, la detección de fraude en devoluciones no se resuelve en
+        el punto de atención: se escala. No puedo devolver listados de clientes
+        ni datos personales asociados a devoluciones.
+
+        **Siguiente paso**
+        Abre un caso a Prevención de Pérdidas con el número de devolución y el
+        motivo de la sospecha. Si necesitas el procedimiento, pregúntame por
+        "escalado de devoluciones" y te lo detallo.
+
+        **Fuentes**
+        FS-KB-08 · Política de Datos y Permisos del Asistente v1.0

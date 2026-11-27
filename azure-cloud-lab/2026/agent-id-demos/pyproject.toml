@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentid-demos"
+version = "1.0.0"
+description = "Demos reproducibles de la sesión «Identidad, acceso y ciclo de vida de agentes con Microsoft Entra Agent ID» (Azure Cloud Lab 2026) sobre el caso FraSoHome"
+requires-python = ">=3.10"
+dependencies = ["msal>=1.31", "requests>=2.32", "python-dotenv>=1.0", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+foundry = ["azure-ai-projects>=2.0.0", "azure-identity>=1.19", "openai>=1.68"]
+dev = ["pytest>=8", "azure-storage-blob>=12.24", "azure-identity>=1.19", "mcp>=1.12,<2", "uvicorn>=0.30"]
+
+[project.scripts]
+agentid = "agentid.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "apps/fs-triage-devoluciones/src", "apps/fs-devoluciones-mcp"]
