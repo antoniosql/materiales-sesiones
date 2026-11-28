@@ -25,8 +25,7 @@
 - `generado/diagramas/` — D1–D5 en `.drawio` editable y `.png` de referencia; `oscuro/` con las variantes que usa el deck
 - `generado/05_presentacion-entra-agent-id.pptx` — el deck (36 + 4 de plan B ocultas), con notas del orador. Copia en OneDrive: `Presentaciones\Eventos\Azure Cloud Lab\2026\AzureCloudLab2026-EntraAgentID.pptx`
 
-- `C:\repos\entra-agent-id-demos` — **repositorio publicable de las demos** (autocontenido: datos del caso, agente de Copilot Studio, `setup.ps1` y `.env.example`). Es la versión que se mantiene
-- `agent-id-demos/` — primera versión de los scripts de las demos: Bicep, CLI `agentid` (Graph + az), servidor MCP, agente `fs-triage-devoluciones`, pruebas. Guía en `agent-id-demos/DESPLIEGUE.md`
+- `agent-id-demos/` — **scripts de las demos** (autocontenido): Bicep, CLI `agentid` (Graph + az), servidor MCP, agente `fs-triage-devoluciones`, agente de Copilot Studio, datos del caso, `setup.ps1` y `.env.example`. Guía en `agent-id-demos/DESPLIEGUE.md`; probado en tenant real el 27/11/2026
 
 ## Estado
 
@@ -38,7 +37,8 @@
 - [ ] Confirmar plataforma y moderador
 - [ ] Revisar el Anexo C del guion (Foundry, sponsor tasks en mover, ID Protection, report-only…)
 - [x] Scripts de las demos (`agent-id-demos/`)
-- [ ] Montar el tenant con `agentid desplegar` + pasos manuales de DESPLIEGUE.md
+- [x] Prueba completa en tenant real (27/11/2026): las 4 demos funcionan; ver Anexo C del guion
+- [x] Montar el tenant (vernedev) con `agentid` — falta solo la política de inactividad, a mano
 - [ ] Grabar los dos clips (demo 2 y demo 4, beat 1) y las capturas de plan B
 - [x] Deck en PowerPoint v1
 - [ ] Capturas de plan B (slides 37–40) y QR apuntando al repositorio final

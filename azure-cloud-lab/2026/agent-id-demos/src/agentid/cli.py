@@ -90,6 +90,11 @@ def main(argv: list[str] | None = None) -> None:
     en = sub.add_parser("ensayo", help="estado y reinicio entre ensayos").add_subparsers(dest="accion", required=True)
     en.add_parser("estado")
     en.add_parser("reiniciar")
+    pa = sub.add_parser("pausa", help="para o arranca las Container Apps (sin coste entre ensayos)")
+    pa = pa.add_subparsers(dest="accion", required=True)
+    pa.add_parser("parar", help="detiene ca-fs-devoluciones-mcp y ca-fs-triage")
+    pa.add_parser("arrancar", help="las vuelve a arrancar")
+    pa.add_parser("estado", help="Running / Stopped")
     sub.add_parser("cleanup", help="borra lo creado por estos scripts").add_argument("--si", action="store_true")
 
     for flujo in (sys.stdout, sys.stderr):  # consolas de Windows sin UTF-8
@@ -123,6 +128,7 @@ def main(argv: list[str] | None = None) -> None:
                   "logs": infra.logs_triage, "mover": demos.demo4_mover, "sponsors": demos.demo4_arreglar_sponsors,
                   "descartar": demos.demo4_descartar},
         "ensayo": {"estado": demos.estado, "reiniciar": demos.reiniciar_ensayo},
+        "pausa": {"parar": infra.parar_apps, "arrancar": infra.arrancar_apps, "estado": infra.estado_apps},
     }
     try:
         if args.cmd in sub_acciones:

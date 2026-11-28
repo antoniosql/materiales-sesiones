@@ -22,6 +22,9 @@ param agentIdentityClientId string
 
 param pollSeconds int = 60
 
+@description('Vida máxima del token del agente en el contenedor (s). 120 en la sesión: un cambio de riesgo o de acceso condicional se nota sin reiniciar.')
+param tokenTtlSeconds int = 120
+
 var tags = { evento: 'azure-cloud-lab-2026', escenario: 'frasohome', demo: 'entra-agent-id' }
 
 resource mcp 'Microsoft.App/containerApps@2024-03-01' = {
@@ -94,6 +97,7 @@ resource triage 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'AGENT_IDENTITY_CLIENT_ID', value: agentIdentityClientId }
             { name: 'STORAGE_ACCOUNT', value: storageAccountName }
             { name: 'POLL_SECONDS', value: string(pollSeconds) }
+            { name: 'TOKEN_TTL_SECONDS', value: string(tokenTtlSeconds) }
           ]
         }
       ]

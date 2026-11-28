@@ -82,6 +82,7 @@ def estado(ctx: Ctx) -> None:
 def reiniciar_ensayo(ctx: Ctx) -> None:
     """Deja las cuatro demos como al principio, para ensayar o para la sesión. Sigue aunque un paso falle."""
     pasos = [
+        ("Container Apps en marcha", infra.arrancar_apps),
         ("Demo 1 · sponsor Marta R.", agentes.preparar_copilot),
         ("Demo 2 · rol solo en la identidad compartida", foundry.antes),
         ("Demo 4 · sin riesgo", demo4_descartar),

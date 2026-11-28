@@ -13,7 +13,9 @@ def cuerpo(ctx: Ctx, clave: str) -> dict:
     p = ctx.esc["acceso_condicional"][clave]
     condiciones = {
         "clientApplications": {
-            "includeAgentIdServicePrincipals": ["All"],
+            # Lista vacía a propósito: con ["All"] el filtro se SUMA a «todos» y la política alcanza a cualquier
+            # agente (comprobado en los sign-in logs). Vacía, solo entran los que cumplen la regla del atributo.
+            "includeAgentIdServicePrincipals": [],
             "excludeAgentIdServicePrincipals": [],
             "agentIdServicePrincipalFilter": {"mode": "include", "rule": atributos.regla_filtro(ctx, p["carril"])},
         },

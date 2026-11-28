@@ -57,7 +57,9 @@ def una_pasada(servicio: BlobServiceClient) -> int:
 
 
 def main() -> None:
-    servicio = BlobServiceClient(f"https://{CUENTA}.blob.core.windows.net", credential=TokenDelAgente())
+    # Sin reintentos del SDK: el reintento de Storage repite también la petición de token y taparía el
+    # bloqueo de Entra. El bucle ya reintenta cada POLL_SECONDS.
+    servicio = BlobServiceClient(f"https://{CUENTA}.blob.core.windows.net", credential=TokenDelAgente(), retry_total=0)
     log.info("fs-triage-devoluciones arrancado · cuenta=%s · cada %ss", CUENTA, ESPERA)
     while True:
         try:

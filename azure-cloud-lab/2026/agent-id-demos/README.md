@@ -67,6 +67,7 @@ licencias y política de inactividad por defecto), los permisos necesarios, el e
 | `agentid demo2 comando` · `arreglar` · `deshacer` | Demo 2 en directo |
 | `agentid demo4 comprometer` · `reiniciar` · `logs` · `mover` · `sponsors` · `descartar` | Demo 4 en directo |
 | `agentid ensayo estado` · `reiniciar` | Foto del escenario y vuelta al estado de partida |
+| `agentid pausa parar` · `arrancar` · `estado` | Para o arranca las dos Container Apps: sin coste de cómputo entre ensayos |
 | `agentid cleanup --si` | Borra solo lo que crearon estos scripts |
 
 > ⚠️ Varias APIs de Agent ID están en beta. Donde una llamada falla, el comando no se detiene: indica cómo

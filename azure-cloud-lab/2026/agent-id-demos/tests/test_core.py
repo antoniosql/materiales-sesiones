@@ -42,6 +42,7 @@ def test_ca_ag_01_bloquea_riesgo_alto_en_produccion(ctx):
     c = acceso.cuerpo(ctx, "CA-AG-01")
     assert c["grantControls"]["builtInControls"] == ["block"]
     assert c["conditions"]["agentIdRiskLevels"] == "high"
+    assert c["conditions"]["clientApplications"]["includeAgentIdServicePrincipals"] == []  # si no, el filtro no filtra
     filtro = c["conditions"]["clientApplications"]["agentIdServicePrincipalFilter"]
     assert filtro["mode"] == "include" and "Produccion" in filtro["rule"]
     assert c["state"] == "enabled"

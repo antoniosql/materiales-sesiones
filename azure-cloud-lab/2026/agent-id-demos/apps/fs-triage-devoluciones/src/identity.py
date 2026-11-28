@@ -32,6 +32,8 @@ class TokenDelAgente:
         self.agente = os.environ["AGENT_IDENTITY_CLIENT_ID"]    # client id de la identidad de agente
         self.mi = ManagedIdentityCredential(client_id=os.environ["AZURE_CLIENT_ID"])
         self._cache: dict[str, AccessToken] = {}
+        # En la demo el token se renueva cada pocos minutos para que el bloqueo de CA-AG-01 se vea sin reiniciar.
+        self.ttl = int(os.environ.get("TOKEN_TTL_SECONDS", "0")) or None
 
     def _token(self, datos: dict) -> dict:
         url = f"https://login.microsoftonline.com/{self.tenant}/oauth2/v2.0/token"
@@ -54,6 +56,9 @@ class TokenDelAgente:
         final = self._token({"client_id": self.agente, "scope": scope,                  # [3] la identidad de agente
                              "grant_type": "client_credentials", "client_assertion_type": JWT_BEARER,
                              "client_assertion": t1})
-        token = AccessToken(final["access_token"], int(time.time()) + int(final.get("expires_in", 3600)))
+        vida = int(final.get("expires_in", 3600))
+        if self.ttl:
+            vida = min(vida, self.ttl + 300)  # get_token renueva cuando quedan menos de 300 s
+        token = AccessToken(final["access_token"], int(time.time()) + vida)
         self._cache[scope] = token
         return token

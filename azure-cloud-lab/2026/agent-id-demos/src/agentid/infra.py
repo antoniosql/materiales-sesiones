@@ -7,9 +7,13 @@ import tempfile
 import time
 from pathlib import Path
 
-from agentid.az import ambito_contenedor, asignar_rol, az
+from agentid.az import AzError, ambito_contenedor, asignar_rol, az
 from agentid.config import RAIZ
 from agentid.contexto import Ctx
+
+
+PROVEEDORES = ("Microsoft.App", "Microsoft.ContainerRegistry", "Microsoft.OperationalInsights",
+               "Microsoft.CognitiveServices", "Microsoft.Storage", "Microsoft.ManagedIdentity")
 
 
 def _salidas(despliegue: dict) -> dict:
@@ -20,6 +24,11 @@ def desplegar(ctx: Ctx) -> None:
     s = ctx.s
     if s.subscription_id:
         az("account", "set", "--subscription", s.subscription_id, salida_json=False)
+    # Suscripciones nuevas o de pago por uso: Microsoft.App suele venir sin registrar
+    for proveedor in PROVEEDORES:
+        if az("provider", "show", "--namespace", proveedor, "--query", "registrationState") != "Registered":
+            print(f"  · registrando {proveedor}…")
+            az("provider", "register", "--namespace", proveedor, "--wait", salida_json=False)
     existia = az("group", "exists", "--name", s.resource_group)
     az("group", "create", "--name", s.resource_group, "--location", s.location,
        "--tags", "evento=azure-cloud-lab-2026", "escenario=frasohome")
@@ -115,6 +124,10 @@ def apps(ctx: Ctx) -> None:
 
 def reiniciar_triage(ctx: Ctx) -> None:
     rg = ctx.s.resource_group
+    if _estado_app(rg, "ca-fs-triage") == "Stopped":
+        print("  · ca-fs-triage estaba parada (`agentid pausa parar`): la arranco")
+        arrancar_apps(ctx)
+        return
     revisiones = az("containerapp", "revision", "list", "--name", "ca-fs-triage", "--resource-group", rg,
                     "--query", "[?properties.active].name")
     for rev in revisiones or []:
@@ -137,3 +150,62 @@ def eliminar(ctx: Ctx) -> None:
         print(f"  − grupo de recursos {rg['id']} (borrado en segundo plano)")
     for k in ("resource_group", "infra", "imagenes", "apps", "foundry_conexion", "foundry_agente"):
         ctx.estado.quitar(k)
+
+
+# ---------------------------------------------------------------- pausa: sin coste entre ensayos
+APPS = ("ca-fs-devoluciones-mcp", "ca-fs-triage")
+
+
+def _accion_app(ctx: Ctx, nombre: str, accion: str) -> None:
+    """start/stop por ARM: `az containerapp start|stop` solo existe con la extensión containerapp."""
+    sub = ctx.s.subscription_id or az("account", "show", "--query", "id")
+    az("rest", "--method", "post", "--url",
+       f"https://management.azure.com/subscriptions/{sub}/resourceGroups/{ctx.s.resource_group}/providers/"
+       f"Microsoft.App/containerApps/{nombre}/{accion}?api-version=2024-03-01", salida_json=False)
+
+
+def _estado_app(rg: str, nombre: str) -> str:
+    try:
+        return az("containerapp", "show", "--name", nombre, "--resource-group", rg,
+                  "--query", "properties.runningStatus") or "?"
+    except AzError as e:
+        if "notfound" in str(e).lower().replace(" ", ""):
+            return "no existe"
+        raise
+
+
+def estado_apps(ctx: Ctx) -> None:
+    rg = ctx.s.resource_group
+    for nombre in APPS:
+        print(f"  {nombre:<24} {_estado_app(rg, nombre)}")
+
+
+def parar_apps(ctx: Ctx) -> None:
+    """Para las dos Container Apps: sin réplicas no hay coste de cómputo. La URL del MCP no cambia."""
+    rg = ctx.s.resource_group
+    if ctx.s.subscription_id:
+        az("account", "set", "--subscription", ctx.s.subscription_id, salida_json=False)
+    for nombre in APPS:
+        if _estado_app(rg, nombre) == "Stopped":
+            print(f"  = {nombre} ya estaba parada")
+            continue
+        _accion_app(ctx, nombre, "stop")
+        print(f"  ■ {nombre} parada")
+    print("\n  Sigue costando poco: ACR Basic (~0,15 €/día), Storage y Log Analytics. Foundry solo cobra por uso.\n"
+          "  Para volver: `agentid pausa arrancar` (o `agentid ensayo reiniciar`, que también las arranca).")
+
+
+def arrancar_apps(ctx: Ctx) -> None:
+    rg = ctx.s.resource_group
+    if ctx.s.subscription_id:
+        az("account", "set", "--subscription", ctx.s.subscription_id, salida_json=False)
+    for nombre in APPS:
+        estado = _estado_app(rg, nombre)
+        if estado == "no existe":
+            raise RuntimeError(f"No existe {nombre} en {rg}: ejecuta `agentid apps`.")
+        if estado == "Running":
+            print(f"  = {nombre} ya estaba en marcha")
+            continue
+        _accion_app(ctx, nombre, "start")
+        print(f"  ▶ {nombre} arrancada")
+    print("  El servidor MCP tarda ~30 s en responder y fs-triage pide un token nuevo al arrancar.")

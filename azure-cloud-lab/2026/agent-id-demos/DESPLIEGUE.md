@@ -147,6 +147,20 @@ Después de la sesión: `agentid ensayo reiniciar` si vas a reutilizar el tenant
 
 ---
 
+### Entre ensayos: sin coste
+
+Las dos Container Apps tienen una réplica siempre encendida, y es casi todo el coste fijo (en torno a 1 € al día entre las dos).
+Páralas cuando no estés ensayando:
+
+```powershell
+agentid pausa parar      # detiene ca-fs-devoluciones-mcp y ca-fs-triage
+agentid pausa estado     # Running / Stopped
+agentid pausa arrancar   # las vuelve a arrancar (la URL del MCP no cambia)
+```
+
+`agentid ensayo reiniciar` las arranca si están paradas, así que el jueves a las 12:00 no hay que acordarse.
+Lo demás apenas cuesta parado: ACR Basic (~0,15 €/día), Storage y Log Analytics. Foundry solo cobra por uso.
+
 ## 6 · Limpieza
 
 ```powershell
@@ -166,7 +180,7 @@ Foundry (se borran en sus portales; al borrar el de Copilot Studio se borra su A
 | `AADSTS700016` / `AADSTS7000112` al pedir T1 | La federated credential no apunta al `principalId` de `id-fs-triage`, o el blueprint está deshabilitado | `agentid blueprint` la revisa y la crea si falta |
 | `AADSTS70021` en el paso 2 del token | El `subject` de la federated credential no coincide con la MI que usa el contenedor | Comprueba `AZURE_CLIENT_ID` de `ca-fs-triage` = client id de `id-fs-triage` |
 | 403 en Storage con el agente bien configurado | Propagación de RBAC | Espera 5–10 min. Por eso el éxito de la demo 2 va en clip |
-| CA-AG-01 no bloquea | El token anterior sigue vivo, o el riesgo no ha propagado | `agentid demo4 reiniciar` fuerza un token nuevo. Graba el clip con margen |
+| CA-AG-01 no bloquea | El riesgo aún no ha llegado al acceso condicional: los primeros minutos alterna bloqueo y éxito | Compromete **al menos 10 min antes** de enseñarlo. `ca-fs-triage` renueva el token cada 120 s, no hace falta reiniciar |
 | `confirmCompromised` devuelve error | API beta de riesgo de agentes | Entra → ID Protection → Risky agents → Confirm compromised |
 | Sponsors: 403 al añadir | La API de sponsors para identidades de agente pide Agent ID Administrator | Comprueba el rol de Nuria o hazlo en el portal |
 | `403 … not licensed` / `Insufficient license` en `acceso`, `ciclo` o `demo4` | Faltan licencias (ver §1) | El CLI lo dice y sigue; activa la trial y repite el comando |
@@ -177,32 +191,54 @@ Foundry (se borran en sus portales; al borrar el de Copilot Studio se borra su A
 
 ---
 
-## 8 · Verificado en un tenant real (27/11/2026)
+## 8 · Verificado en tenants reales (27/11/2026)
 
-Prueba completa con `agentid` en un tenant de demo con solo licencias gratuitas, suscripción Visual Studio, `swedencentral`.
+Dos pruebas completas con `agentid`: un tenant sin licencias de pago (suscripción Visual Studio) y un tenant de
+desarrollo con **Agent 365 + Microsoft 365 E5 (developer)** y suscripción de pago por uso. Región `swedencentral`.
+
+### Lo que funciona
 
 | Pieza | Resultado |
 |---|---|
-| Login de Graph con *Microsoft Graph Command Line Tools* y los 17 permisos de Agent ID, CA, LCW y riesgo | ✅ Consentimiento de una vez; el token trae todos los `scp` |
-| `infra/main.bicep` (base + Foundry) | ✅ Tras corregir la carrera modelo/proyecto |
-| `personas` · `atributos` · `datos` | ✅ Atributos con los roles de atributos asignados al admin (un Global Admin no los tiene) |
+| Login de Graph con *Microsoft Graph Command Line Tools* y los 17 permisos | ✅ Consentimiento de una vez; el token trae todos los `scp` |
+| `infra/main.bicep` (base + Foundry) | ✅ Tras corregir la carrera modelo/proyecto. En suscripciones nuevas hay que registrar `Microsoft.App` (ahora lo hace `agentid infra`) |
+| `personas` · `atributos` · `datos` | ✅ Atributos solo con los roles de atributos asignados al admin (un Global Admin no los tiene) |
 | `blueprint` (v1.0 `POST /applications` + principal + federated credential) | ✅ |
-| `identidad` (beta `POST servicePrincipals/microsoft.graph.agentIdentity`) · owners · atributo `Carril` en la identidad | ✅ El `appId` de la identidad es su propio `id` |
-| Sponsors delegados: añadir usuario y grupo y quitar (`…/microsoft.graph.agentIdentity/sponsors/$ref`) | ✅ |
+| `identidad` (beta `POST servicePrincipals/microsoft.graph.agentIdentity`) · owners · `Carril` | ✅ El `appId` de la identidad es su propio `id` |
+| Sponsors delegados: añadir usuario y grupo, quitar | ✅ |
 | RBAC a la identidad de agente con `--assignee-object-id` + `ServicePrincipal` | ✅ |
-| **Demo 3**: MI → T1 (`fmi_path`) → token del agente → Storage | ✅ El contenedor procesa los 18 correos sin ningún secreto |
-| Conexión de Foundry *remote tool* con `authType: AgenticIdentityToken` y `audience` | ✅ Por ARM (`2025-06-01`), sin azd |
-| **Demo 2**: con el rol en la identidad del proyecto → `403 AuthorizationPermissionMismatch`; con el rol en la del agente → datos | ✅ El cambio se nota en ~60 s |
-| Foundry crea **dos** identidades: `<cuenta>-<proyecto>-AgentIdentity` (proyecto) y `<cuenta>-<proyecto>-<agente>-AgentIdentity`, cada una con **su propio blueprint** | ✅ La identidad compartida existe en el modelo actual: aparece al crear el primer agente |
-| `ensayo reiniciar` | ✅ Salvo la puerta 1 (falta el agente de Copilot Studio) y el riesgo (licencia) |
-| Acceso condicional para agentes (CA-AG-01/02) | ⛔ `403 Your tenant is not licensed for this feature` sin Entra ID P1 |
-| Lifecycle Workflows (LW-Mover-Sponsors) | ⛔ `403 … Agent-related workflows require a Microsoft Agent 365 or Microsoft 365 E7 license` |
-| `riskyAgents/confirmCompromised` | ⛔ `403 Your tenant is not licensed for this feature` |
+| **Demo 3**: MI → T1 (`fmi_path`) → token del agente → Storage | ✅ Sin secretos. En los sign-in logs salen **dos** inicios de sesión: el blueprint contra *AAD Token Exchange Endpoint* y la identidad de agente contra *Azure Storage* (`agent.agentType = agenticAppInstance`, `parentAppId` = blueprint) |
+| Conexión de Foundry *remote tool* `authType: AgenticIdentityToken` + `audience` | ✅ Por ARM (`2025-06-01`), sin azd |
+| **Demo 2**: rol en la identidad del proyecto → `403 AuthorizationPermissionMismatch`; rol en la del agente → datos | ✅ El cambio tarda **1–3 min** en notarse |
+| Foundry crea **dos** identidades al crear el primer agente: `<cuenta>-<proyecto>-AgentIdentity` y `<cuenta>-<proyecto>-<agente>-AgentIdentity`, **cada una con su blueprint** | ✅ |
+| **Puerta 1**: identidad automática del agente de Copilot Studio (blueprint global *Microsoft Copilot Studio agent identity blueprint*), cambio de sponsor y `Carril` | ✅ |
+| **CA-AG-01 / CA-AG-02** con `agentIdServicePrincipalFilter` + `agentIdRiskLevels` · report-only aceptado | ✅ Con `includeAgentIdServicePrincipals: []` (ver abajo) |
+| **Demo 4**: `confirmCompromised` → riesgo alto → `AADSTS53003` *blocked by Conditional Access* | ✅ El riesgo aparece en `riskyAgents` a los **~3 min** y el bloqueo llega a los **~6 min**. `confirmSafe` lo devuelve a la normalidad en **~4 min** |
+| `LW-Mover-Sponsors` (`attributeChangeTrigger`, `locale es-es`) · ejecución bajo demanda | ✅ Correo al manager enviado. La tarea de co-sponsors falla si el agente tiene **un solo sponsor** («co-sponsor did not exist»): es lo esperado |
 
-### Sigue por verificar (necesita licencias o el agente de Copilot Studio)
+### Lo que cambió en el repo tras la prueba
 
-- Que el filtro `CustomSecurityAttribute.FraSoHome_Carril -eq "Produccion"` y `agentIdRiskLevels` se aceptan en beta.
-- `riskyAgents/confirmSafe` o `dismiss` para limpiar el riesgo (el CLI prueba los dos).
-- El disparador `attributeChangeTrigger` sobre `department` para workflows de mover y el `locale` `es-es`.
+- **Filtro de CA**: con `includeAgentIdServicePrincipals: ["All"]` el filtro por atributo **se suma** a «todos»: los
+  sign-in logs mostraban CA-AG-02 (*Playground*) evaluándose sobre agentes de *Produccion*. Con la lista vacía solo
+  entran los que cumplen la regla (comprobado en los dos sentidos: Producción → `reportOnlyNotApplied`,
+  Playground → `reportOnlyFailure`).
+- `ca-fs-triage` renueva el token cada `TOKEN_TTL_SECONDS` (120 s por defecto en `apps.bicep`): el bloqueo se ve
+  **sin reiniciar el contenedor**. Y el cliente de Storage va sin reintentos (`retry_total=0`): el reintento del SDK
+  repetía la petición de token y tapaba el 53003 en el log.
+- Limpieza: borrar el blueprint se lleva su principal (borrar el principal directamente da 403); `cleanup` borra
+  también las identidades y blueprints que Foundry creó para el proyecto, y sigue aunque un paso falle.
+
+### Tiempos para el ensayo
+
+| Acción | Se nota en |
+|---|---|
+| Rol a la identidad del agente (demo 2) | 1–3 min |
+| `demo4 comprometer` → bloqueo en el log | ~6 min |
+| `demo4 descartar` → el agente vuelve a funcionar | ~4 min |
+| `demo4 mover` → correo a Lucía | ~1 min |
+
+### Sigue por verificar
+
 - Que el registro de Agent 365 muestra la identidad `fs-triage-devoluciones` sin onboarding adicional.
-- Puerta 1: identidad automática del agente de Copilot Studio y cambio de sponsor.
+- La política de inactividad por defecto (se activa a mano en el portal).
+- KQL de `kql/consultas.kql` contra el Log Analytics con los diagnósticos de Entra.

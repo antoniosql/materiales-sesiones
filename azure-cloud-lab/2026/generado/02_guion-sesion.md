@@ -738,19 +738,26 @@ Hereda el del Bizz Summit (`bizz-summit-2026/escenario-frasohome.md`). Lo que ca
 
 # Anexo C · Por verificar (la semana del evento)
 
-| # | Qué | Por qué importa | Fuente |
-|---|---|---|---|
-| 1 | **Foundry:** en el modelo actual, crear un agente le da blueprint e identidad propios. El salto "identidad compartida → identidad propia" ocurre con agentes del modelo anterior (o al publicarlos). Comprobar si todavía se puede crear un agente con la identidad compartida del proyecto. | Es la demo 2. Si ya no se puede reproducir, se cuenta con el agente legacy de `frasohome-agents-foundry` o se monta un "antes" en capturas | Learn: *Agent identities in Foundry* (actualizado en nov 2026) |
-| 2 | **Copilot Studio:** Agent ID automático para agentes nuevos **desde mayo de 2026** (Learn). El guion del Bizz Summit decía julio | Coherencia con lo que dijiste en el Bizz Summit | Learn: *Entra Agent IDs for Copilot Studio agents* |
-| 3 | **Tarea "Transferir sponsorships al manager" en un mover:** ¿al manager antiguo o al nuevo? | Sostiene la recomendación de la slide 28 | Learn: *Agent sponsor tasks* (no lo aclara) |
-| 4 | **Política de inactividad:** GA según el blog de Ignite (17 nov); Learn seguía diciendo preview el 19 nov. Confirmar también si viene activada por defecto o hay que activarla | Slide 27 y checklist | Blog de Entra en Ignite · Learn |
-| 5 | **ID Protection para agentes:** Learn decía que las detecciones estaban "offline". Comprobar que "Confirm compromised" sube el riesgo y que CA-AG-01 bloquea | Es el beat 1 de la demo 4 | Learn: *Risky agents* |
-| 6 | **Report-only** en políticas de acceso condicional para agentes | Respuesta del Q&A | Learn no lo documenta |
-| 7 | Que el **registro de Agent 365** muestre un agente de blueprint propio sin onboarding adicional | Demo 3, beat 4 | — |
-| 8 | **Revisiones de acceso (access reviews)** sobre identidades de agente: Learn no las documenta para agentes. El guion las sustituye por la reconfirmación del sponsor y la caducidad de los access packages | El abstract menciona "revisiones de acceso" | Learn: *Agent ID governance overview* |
-| 9 | Si `agentType` y `blueprintId` llegan a las tablas `SigninLogs` y `AuditLogs` de Log Analytics, para dar una consulta KQL en el handout | Slide 29 | Learn: *Sign-in and audit logs for agents* |
-| 10 | Que se pueda seleccionar **Azure Storage** como recurso en CA-AG-02 (necesita enterprise app en el tenant) | Slide 25 | Learn: *Target agent identities in CA* |
-| 11 | **Licencias** de ID Protection para agentes ("pronto requerirá Agent 365") | Slide 31 | Learn: *Risky agents* |
+> **Probado el 27/11/2026** con `agent-id-demos` en el tenant de desarrollo (Agent 365 + M365 E5 developer).
+> Resultados completos y tiempos en `agent-id-demos/DESPLIEGUE.md` §8.
+
+| # | Qué | Estado (27/11) |
+|---|---|---|
+| 1 | **Foundry:** ¿sigue existiendo la identidad compartida del proyecto? | ✅ **Sí.** Al crear el primer agente aparecen dos: `<cuenta>-<proyecto>-AgentIdentity` (proyecto) y `<cuenta>-<proyecto>-<agente>-AgentIdentity`, cada una con su blueprint. La demo 2 se reproduce tal cual: con el rol en la del proyecto, `403 AuthorizationPermissionMismatch`; con el rol en la del agente, datos en 1–3 min |
+| 2 | **Copilot Studio:** Agent ID automático | ✅ El *Asistente de Devoluciones FraSoHome* tiene identidad del blueprint global *Microsoft Copilot Studio agent identity blueprint*; sponsors y atributo se cambian por API |
+| 3 | **Transferir sponsorships** en un mover: ¿manager antiguo o nuevo? | ⏳ Sin probar (el workflow de la demo no transfiere) |
+| 4 | **Política de inactividad** GA y activación | ⏳ Se activa a mano en el portal |
+| 5 | **ID Protection para agentes:** «Confirm compromised» sube el riesgo y CA-AG-01 bloquea | ✅ Riesgo alto en ~3 min y `AADSTS53003` en ~6 min. **Los primeros minutos alterna bloqueo y éxito**: compromete al menos 10 min antes de enseñarlo (o usa el clip). `confirmSafe` lo deshace en ~4 min |
+| 6 | **Report-only** en CA para agentes | ✅ Sí: CA-AG-02 sale como `reportOnlyFailure` / `reportOnlyNotApplied` en los sign-in logs |
+| 7 | Registro de Agent 365 con un blueprint propio | ⏳ Sin comprobar en el portal |
+| 8 | **Access reviews** sobre agentes | — Se mantiene la sustitución por la reconfirmación del sponsor |
+| 9 | `agentType` y `blueprintId` en los logs | ✅ En los sign-in logs de Graph: `agent.agentType = agenticAppInstance` y `parentAppId` = blueprint. Se ven **dos** inicios de sesión por token (blueprint → *AAD Token Exchange Endpoint*, agente → *Azure Storage*). ⏳ Sin comprobar en Log Analytics |
+| 10 | **Azure Storage** como recurso en CA-AG-02 | ✅ Aceptado (`e406a681-…`) |
+| 11 | **Licencias** | ✅ Con Agent 365 + E5 todo funciona. Sin licencias, CA, Lifecycle Workflows y riesgo devuelven 403 «not licensed» |
+
+**Corrección importante para la slide 25 (filtro por atributo):** con `includeAgentIdServicePrincipals: ["All"]` el filtro
+**se suma** a «todos» y la política alcanza a cualquier agente. Hay que dejar la lista de incluidos vacía y poner solo el filtro
+(en el portal: *Select agent identities* → filtro por atributo, **no** *All agent identities*). Ya está corregido en los scripts.
 
 # Referencias para las notas del orador
 
